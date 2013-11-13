@@ -6,7 +6,7 @@ var initialR = 5;
 var numDiscreteVar = 60;
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 400 - margin.left - margin.right,
+    width = 800 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
@@ -132,7 +132,7 @@ $('#state').on('change', function() {
         case '2':
 
     x = d3.scale.ordinal()
-        .rangePoints([0,width],.2);
+        .rangePoints([0,width],1);
 
     y = d3.scale.linear()
         .range([height, 0]);
@@ -168,7 +168,7 @@ $('#state').on('change', function() {
       case '3':
 
            x = d3.scale.ordinal()
-        .rangePoints([0,width],.2);
+        .rangePoints([0,width],1);
 
     y = d3.scale.linear()
         .range([height, 0]);
@@ -195,16 +195,16 @@ $('#state').on('change', function() {
                     .entries(data);
 
     nest.forEach(function(d,i,j) { 
-        console.log (d); 
-        console.log(i); 
-        console.log(j);
+        // console.log (d); 
+        // console.log(i); 
+        // console.log(j);
         d.values.forEach(function(d,i,j) {
 
             var count = 0;
 
             d.values.forEach(function(d,i,j) {
 
-                console.log (d); 
+                // console.log (d); 
                 
                 d.tempID = count;
 
@@ -233,7 +233,7 @@ $('#state').on('change', function() {
 case '4':
 
            x = d3.scale.ordinal()
-        .rangePoints([0,width],.2);
+        .rangePoints([0,width],1);
 
     y = d3.scale.linear()
         .range([height, 0]);
@@ -261,16 +261,16 @@ case '4':
                     .entries(data);
     
     nest.forEach(function(d,i,j) { 
-        console.log (d); 
-        console.log(i); 
-        console.log(j);
+        // console.log (d); 
+        // console.log(i); 
+        // console.log(j);
         d.values.forEach(function(d,i,j) {
 
             var count = 0;
 
             d.values.forEach(function(d,i,j) {
 
-                console.log (d); 
+                // console.log (d); 
                 
                 d.tempID = count;
 
@@ -301,6 +301,180 @@ case '4':
                 .transition()
                 .duration(1000)
                 .attr("transform",function(d,i) {return "translate(" + (- (+d.tempGroupSize/2.0) +d.tempID) *5 + ",0)"; });
+          break;
+/////////////////////////////////////
+/////////
+/////////////////////////////////////
+//////////////////////////////////////
+/////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+case '5':
+
+           x = d3.scale.ordinal()
+        .rangePoints([0,width],1);
+
+    y = d3.scale.linear()
+        .range([height, 0]);
+
+    x.domain( ['M','F']);
+    y.domain(d3.extent(data, function(d) { return d.discrete_variable; }));
+
+
+    xAxis.scale(x)
+        .orient("bottom");
+
+    yAxis.scale(y)
+        .orient("left");
+
+  d3.select(".x").call(xAxis);
+  d3.select(".y").call(yAxis);
+   
+   var selection_order = ['Group 1','Group 1 & 2', 'Group 2', 'None'];
+
+    var nest = d3.nest()
+                    .key(function(d) {return d.nominal_variable;})
+                    .key(function(d){return d.discrete_variable;})
+                    .sortKeys(function(a,b){return +a - (+b);} )
+                    .sortValues(function(a,b) {return selection_order.indexOf(a.selection_variable) - selection_order.indexOf(b.selection_variable);})
+                    .entries(data);
+    
+    nest.forEach(function(d,i,j) { 
+        // console.log (d); 
+        // console.log(i); 
+        // console.log(j);
+        d.values.forEach(function(d,i,j) {
+
+            var count = 0;
+
+            d.values.forEach(function(d,i,j) {
+
+                // console.log (d); 
+                
+                d.tempID = count;
+
+                count += 1;
+
+            });
+
+            d.values.forEach(function(d,i,j) {
+
+                d.tempGroupSize = count;
+
+            });
+
+
+        });
+    });
+var tempMax;
+    nest.forEach(function(d,i,j) {
+        tempMax = d3.max( d.values, function (d2 ) {
+            console.log(d2);
+
+            return d2.values[0].tempGroupSize;
+        });
+
+        d.values.forEach(function(d,i,j) {
+            d.values.forEach(function (d,i,j) {
+                d.tempMax1 = tempMax;
+            });
+        });
+    });
+
+    var max = d3.max(data, function(d) { return d.tempGroupSize; } );
+
+
+
+          svg.selectAll(".dot")
+                .data(data, function(d) {return +d.id;})
+                .attr("class", "dot")
+                .attr("width", function(d) { return initialR * d.tempMax1/d.tempGroupSize;})
+                .attr("height",initialR)
+                .attr("rx",0)
+                .attr("ry",0)
+                .attr("x", function(d) { return x(d.nominal_variable); })
+                .attr("y", function(d) { return y(d.discrete_variable); })
+                .style("fill", function(d) { return color(d.selection_variable); })
+                .transition()
+                .duration(1000)
+                .attr("transform",function(d,i) {return "translate(" + (initialR * d.tempMax1/d.tempGroupSize ) * (+d.tempID)  + ",0)"; });
+          break;
+///////////////////////////////////
+///////////////////////////////////
+          case '6':
+
+           x = d3.scale.ordinal()
+        .rangePoints([0,width],1);
+
+    y = d3.scale.linear()
+        .range([height, 0]);
+
+    x.domain( ['M','F']);
+    y.domain(d3.extent(data, function(d) { return d.discrete_variable; }));
+
+
+    xAxis.scale(x)
+        .orient("bottom");
+
+    yAxis.scale(y)
+        .orient("left");
+
+  d3.select(".x").call(xAxis);
+  d3.select(".y").call(yAxis);
+   
+   var selection_order = ['Group 1','Group 1 & 2', 'Group 2', 'None'];
+
+    var nest = d3.nest()
+                    .key(function(d) {return d.nominal_variable;})
+                    .key(function(d){return d.discrete_variable;})
+                    .sortKeys(function(a,b){return +a - (+b);} )
+                    .sortValues(function(a,b) {return selection_order.indexOf(a.selection_variable) - selection_order.indexOf(b.selection_variable);})
+                    .entries(data);
+    
+    nest.forEach(function(d,i,j) { 
+        // console.log (d); 
+        // console.log(i); 
+        // console.log(j);
+        d.values.forEach(function(d,i,j) {
+
+            var count = 0;
+
+            d.values.forEach(function(d,i,j) {
+
+                // console.log (d); 
+                
+                d.tempID = count;
+
+                count += 1;
+
+            });
+
+            d.values.forEach(function(d,i,j) {
+
+                d.tempGroupSize = count;
+
+            });
+
+
+        });
+    });
+
+    var max = d3.max(data, function(d) { return d.tempGroupSize; } );
+
+
+
+          svg.selectAll(".dot")
+                .data(data, function(d) {return +d.id;})
+                .attr("class", "dot")
+                .attr("width", function(d) { return initialR * max/d.tempGroupSize;})
+                .attr("height",initialR)
+                .attr("rx",0)
+                .attr("ry",0)
+                .attr("x", function(d) { return x(d.nominal_variable); })
+                .attr("y", function(d) { return y(d.discrete_variable); })
+                .style("fill", function(d) { return color(d.selection_variable); })
+                .transition()
+                .duration(1000)
+                .attr("transform",function(d,i) {return "translate(" + (initialR * max/d.tempGroupSize ) * (+d.tempID)  + ",0)"; });
           break;
 
         }
