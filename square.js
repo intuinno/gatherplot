@@ -37,6 +37,8 @@ for (var count = 0; count < numberOfEntity; count++) {
 
   var temp = new Array();
 
+  temp.id = count;
+
   temp.continous_variable1 = Math.random();
   temp.continous_variable2 = Math.random();
   temp.discrete_variable = Math.round(Math.random()*(numDiscreteVar - 1 ));
@@ -45,6 +47,17 @@ for (var count = 0; count < numberOfEntity; count++) {
     temp.nominal_variable = 'M';
   } else {
     temp.nominal_variable = 'F';
+  }
+
+  if (temp.continous_variable1 * temp.continous_variable2 > 0.8) {
+    temp.selection_variable = 'Group 1';
+
+  } else if (temp.continous_variable1 * temp.continous_variable2 > 0.6) {
+    temp.selection_variable = 'Group 1 & 2';
+  } else if (temp.continous_variable1 * temp.continous_variable2 > 0.4) {
+    temp.selection_variable = 'Group 2';
+  } else {
+    temp.selection_variable = 'None';
   }
 
   data.push(temp);
@@ -78,7 +91,7 @@ for (var count = 0; count < numberOfEntity; count++) {
       .text("Sepal Length (cm)")
 
   svg.selectAll(".dot")
-      .data(data)
+      .data(data,function(d) { return +d.id;})
     .enter().append("rect")
       .attr("class", "dot")
       .attr("width", initialR*2)
@@ -87,7 +100,7 @@ for (var count = 0; count < numberOfEntity; count++) {
       .attr("ry",initialR)
       .attr("x", function(d) { return x(d.continous_variable1); })
       .attr("y", function(d) { return y(d.continous_variable2); })
-      .style("fill", function(d) { return color(d.nominal_variable); });
+      .style("fill", function(d) { return color(d.selection_variable); });
 
   var legend = svg.selectAll(".legend")
       .data(color.domain())
@@ -139,7 +152,7 @@ $('#state').on('change', function() {
    
    
           svg.selectAll(".dot")
-                .data(data)
+                .data(data, function(d){return +d.id;})
                 .attr("class", "dot")
                 .attr("width", initialR)
                 .attr("height",initialR)
@@ -149,60 +162,145 @@ $('#state').on('change', function() {
                 .attr("ry",0)
                 .attr("x", function(d) { return x(d.nominal_variable); })
                 .attr("y", function(d) { return y(d.discrete_variable); })
-                .style("fill", function(d) { return color(d.nominal_variable); });
+                .style("fill", function(d) { return color(d.selection_variable); });
           break;
 
       case '3':
 
+           x = d3.scale.ordinal()
+        .rangePoints([0,width],.2);
+
+    y = d3.scale.linear()
+        .range([height, 0]);
+
+    x.domain( ['M','F']);
+    y.domain(d3.extent(data, function(d) { return d.discrete_variable; }));
+
+
+    xAxis.scale(x)
+        .orient("bottom");
+
+    yAxis.scale(y)
+        .orient("left");
+
+  d3.select(".x").call(xAxis);
+  d3.select(".y").call(yAxis);
+    var selection_order = ['Group 1','Group 1 & 2', 'Group 2', 'None'];
+
+    var nest = d3.nest()
+                    .key(function(d) {return d.nominal_variable;})
+                    .key(function(d){return d.discrete_variable;})
+                    .sortKeys(function(a,b){return +a - (+b);} )
+                    .sortValues(function(a,b) {return selection_order.indexOf(a.selection_variable) - selection_order.indexOf(b.selection_variable);})  
+                    .entries(data);
+
+    nest.forEach(function(d,i,j) { 
+        console.log (d); 
+        console.log(i); 
+        console.log(j);
+        d.values.forEach(function(d,i,j) {
+
+            var count = 0;
+
+            d.values.forEach(function(d,i,j) {
+
+                console.log (d); 
+                
+                d.tempID = count;
+
+                count += 1;
+
+            });
+        });
+    });
+
+
           svg.selectAll(".dot")
-            .remove();
-
-          var nest = d3.nest()
-                        .key(function(d) {return d.nominal_variable;})
-                        .key(function(d){return d.discrete_variable;})
-                        .sortKeys(function(a,b){return +a - (+b);} )
-                        .entries(data);
-
-          x0 = d3.scale.ordinal()
-                  .domain(['M','F'])
-                  .rangeBands([0,width],.2);
-
-          y = d3.scale.ordinal()
-                  .domain(d3.range(numDiscreteVar))
-                  .rangeBands([height, 0]);
-      
-          x1 = d3.scale.ordinal()
-                  .domain(d3.range(15))
-                  .rangeBands([0, x0.rangeBand()]);
-
-            svg.append("g")
-                .attr("class","square")
-                .selectAll("g")
-                .data(nest)
-                .enter().append("g")
-                .attr("transform",function(d,i) {
- console.log(d);
- return "translate(" + x0(d.key) + ",0)";})
-              .selectAll("g")
-                .data(function(d) {return d.values;})
-                .enter().append("g")
-                .attr("transform",function(d,i) {return "translate(0," + y(d.key) +")"; })
-              .selectAll("rect")
-                .data(function(d) {return d.values;})
-                .enter().append("rect")
+                .data(data, function(d) {return +d.id;})
                 .attr("class", "dot")
                 .attr("width", initialR)
                 .attr("height",initialR)
-                .attr("transform", function(d,i) {
-                  console.log(d);
-                  console.log(i);
-                  return "translate(" + x1(i) + ",0)"})
                 .attr("rx",0)
                 .attr("ry",0)
-                .attr("x", 0 )
-                .attr("y", 0 )
-                .style("fill", function(d) { return color(d.nominal_variable); });
+                .attr("x", function(d) { return x(d.nominal_variable); })
+                .attr("y", function(d) { return y(d.discrete_variable); })
+                .style("fill", function(d) { return color(d.selection_variable); })
+                .transition()
+                .duration(1000)
+                .attr("transform",function(d,i) {return "translate(" + (+d.tempID) *5 + ",0)"; });
+          break;
 
+case '4':
+
+           x = d3.scale.ordinal()
+        .rangePoints([0,width],.2);
+
+    y = d3.scale.linear()
+        .range([height, 0]);
+
+    x.domain( ['M','F']);
+    y.domain(d3.extent(data, function(d) { return d.discrete_variable; }));
+
+
+    xAxis.scale(x)
+        .orient("bottom");
+
+    yAxis.scale(y)
+        .orient("left");
+
+  d3.select(".x").call(xAxis);
+  d3.select(".y").call(yAxis);
+   
+   var selection_order = ['Group 1','Group 1 & 2', 'Group 2', 'None'];
+
+    var nest = d3.nest()
+                    .key(function(d) {return d.nominal_variable;})
+                    .key(function(d){return d.discrete_variable;})
+                    .sortKeys(function(a,b){return +a - (+b);} )
+                    .sortValues(function(a,b) {return selection_order.indexOf(a.selection_variable) - selection_order.indexOf(b.selection_variable);})
+                    .entries(data);
+    
+    nest.forEach(function(d,i,j) { 
+        console.log (d); 
+        console.log(i); 
+        console.log(j);
+        d.values.forEach(function(d,i,j) {
+
+            var count = 0;
+
+            d.values.forEach(function(d,i,j) {
+
+                console.log (d); 
+                
+                d.tempID = count;
+
+                count += 1;
+
+            });
+
+            d.values.forEach(function(d,i,j) {
+
+                d.tempGroupSize = count;
+
+            });
+
+        });
+    });
+
+
+          svg.selectAll(".dot")
+                .data(data, function(d) {return +d.id;})
+                .attr("class", "dot")
+                .attr("width", initialR)
+                .attr("height",initialR)
+                .attr("rx",0)
+                .attr("ry",0)
+                .attr("x", function(d) { return x(d.nominal_variable); })
+                .attr("y", function(d) { return y(d.discrete_variable); })
+                .style("fill", function(d) { return color(d.selection_variable); })
+                .transition()
+                .duration(1000)
+                .attr("transform",function(d,i) {return "translate(" + (- (+d.tempGroupSize/2.0) +d.tempID) *5 + ",0)"; });
           break;
 
         }
