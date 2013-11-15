@@ -1,12 +1,12 @@
 //Values for config
 
 
-var numberOfEntity = 1000;
+var numberOfEntity = 2000;
 var initialR = 5;
 var numDiscreteVar = 60;
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 800 - margin.left - margin.right,
+    width = 900 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
@@ -49,12 +49,12 @@ for (var count = 0; count < numberOfEntity; count++) {
     temp.nominal_variable = 'F';
   }
 
-  if (temp.continous_variable1 * temp.continous_variable2 > 0.8) {
+  if (temp.continous_variable1 * temp.continous_variable2 > 0.7) {
     temp.selection_variable = 'Group 1';
 
-  } else if (temp.continous_variable1 * temp.continous_variable2 > 0.6) {
+  } else if (temp.continous_variable1 * temp.continous_variable2 > 0.5) {
     temp.selection_variable = 'Group 1 & 2';
-  } else if (temp.continous_variable1 * temp.continous_variable2 > 0.4) {
+  } else if (temp.continous_variable1 * temp.continous_variable2 > 0.3) {
     temp.selection_variable = 'Group 2';
   } else {
     temp.selection_variable = 'None';
