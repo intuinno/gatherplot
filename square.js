@@ -1,13 +1,13 @@
 //Values for config
 
 
-var numberOfEntity = 2000;
+var numberOfEntity = 2201;
 var initialR = 5;
 var numDiscreteVar = 60;
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 900 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 800 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -31,11 +31,19 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var legend;
+
+var squares;
+
+//Making random data set
 var data = [];
 
-for (var count = 0; count < numberOfEntity; count++) {
+d3.tsv("Titanic.txt", function(error, tdata) {
+  console.log(tdata);
+  tdata;
+  for (var count = 0; count < numberOfEntity; count++) {
 
-  var temp = new Array();
+  var temp = new Object();
 
   temp.id = count;
 
@@ -59,6 +67,12 @@ for (var count = 0; count < numberOfEntity; count++) {
   } else {
     temp.selection_variable = 'None';
   }
+
+  temp.passengerClass = tdata[count].Class;
+  temp.age = tdata[count].Age;
+  temp.sex = tdata[count].Sex;
+  temp.survived = tdata[count].Survived;
+
 
   data.push(temp);
 }
@@ -90,7 +104,7 @@ for (var count = 0; count < numberOfEntity; count++) {
       .style("text-anchor", "end")
       .text("Sepal Length (cm)")
 
-  svg.selectAll(".dot")
+  squares = svg.selectAll(".dot")
       .data(data,function(d) { return +d.id;})
     .enter().append("rect")
       .attr("class", "dot")
@@ -102,7 +116,7 @@ for (var count = 0; count < numberOfEntity; count++) {
       .attr("y", function(d) { return y(d.continous_variable2); })
       .style("fill", function(d) { return color(d.selection_variable); });
 
-  var legend = svg.selectAll(".legend")
+  legend = svg.selectAll(".legend")
       .data(color.domain())
     .enter().append("g")
       .attr("class", "legend")
@@ -120,6 +134,9 @@ for (var count = 0; count < numberOfEntity; count++) {
       .attr("dy", ".35em")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
+});
+
+
 
 $('#state').on('change', function() {
     
@@ -154,8 +171,8 @@ $('#state').on('change', function() {
           svg.selectAll(".dot")
                 .data(data, function(d){return +d.id;})
                 .attr("class", "dot")
-                .attr("width", initialR)
-                .attr("height",initialR)
+                .attr("width", initialR*2)
+                .attr("height",initialR*2)
                 .transition()
                 .duration(1000)
                 .attr("rx",0)
@@ -218,8 +235,8 @@ $('#state').on('change', function() {
           svg.selectAll(".dot")
                 .data(data, function(d) {return +d.id;})
                 .attr("class", "dot")
-                .attr("width", initialR)
-                .attr("height",initialR)
+                .attr("width", initialR*2)
+                .attr("height",initialR*2)
                 .attr("rx",0)
                 .attr("ry",0)
                 .attr("x", function(d) { return x(d.nominal_variable); })
@@ -227,7 +244,7 @@ $('#state').on('change', function() {
                 .style("fill", function(d) { return color(d.selection_variable); })
                 .transition()
                 .duration(1000)
-                .attr("transform",function(d,i) {return "translate(" + (+d.tempID) *5 + ",0)"; });
+                .attr("transform",function(d,i) {return "translate(" + (+d.tempID) *10 + ",0)"; });
           break;
 
 case '4':
@@ -291,8 +308,8 @@ case '4':
           svg.selectAll(".dot")
                 .data(data, function(d) {return +d.id;})
                 .attr("class", "dot")
-                .attr("width", initialR)
-                .attr("height",initialR)
+                .attr("width", initialR*2)
+                .attr("height",initialR*2)
                 .attr("rx",0)
                 .attr("ry",0)
                 .attr("x", function(d) { return x(d.nominal_variable); })
@@ -300,7 +317,7 @@ case '4':
                 .style("fill", function(d) { return color(d.selection_variable); })
                 .transition()
                 .duration(1000)
-                .attr("transform",function(d,i) {return "translate(" + (- (+d.tempGroupSize/2.0) +d.tempID) *5 + ",0)"; });
+                .attr("transform",function(d,i) {return "translate(" + (- (+d.tempGroupSize/2.0) +d.tempID) *10 + ",0)"; });
           break;
 /////////////////////////////////////
 /////////
@@ -387,8 +404,8 @@ var tempMax;
           svg.selectAll(".dot")
                 .data(data, function(d) {return +d.id;})
                 .attr("class", "dot")
-                .attr("width", function(d) { return initialR * d.tempMax1/d.tempGroupSize;})
-                .attr("height",initialR)
+                .attr("width", function(d) { return initialR * d.tempMax1/d.tempGroupSize*2;})
+                .attr("height",initialR*2)
                 .attr("rx",0)
                 .attr("ry",0)
                 .attr("x", function(d) { return x(d.nominal_variable); })
@@ -396,7 +413,7 @@ var tempMax;
                 .style("fill", function(d) { return color(d.selection_variable); })
                 .transition()
                 .duration(1000)
-                .attr("transform",function(d,i) {return "translate(" + (initialR * d.tempMax1/d.tempGroupSize ) * (+d.tempID)  + ",0)"; });
+                .attr("transform",function(d,i) {return "translate(" + (initialR * d.tempMax1/d.tempGroupSize ) * (+d.tempID)*2  + ",0)"; });
           break;
 ///////////////////////////////////
 ///////////////////////////////////
@@ -465,20 +482,107 @@ var tempMax;
           svg.selectAll(".dot")
                 .data(data, function(d) {return +d.id;})
                 .attr("class", "dot")
-                .attr("width", function(d) { return initialR * max/d.tempGroupSize;})
-                .attr("height",initialR)
+                .attr("width", function(d) { return initialR * max/d.tempGroupSize*2;})
+                .attr("height",initialR*2)
                 .attr("rx",0)
                 .attr("ry",0)
+                .transition()
+                .duration(1000)
                 .attr("x", function(d) { return x(d.nominal_variable); })
                 .attr("y", function(d) { return y(d.discrete_variable); })
                 .style("fill", function(d) { return color(d.selection_variable); })
-                .transition()
-                .duration(1000)
-                .attr("transform",function(d,i) {return "translate(" + (initialR * max/d.tempGroupSize ) * (+d.tempID)  + ",0)"; });
+                .attr("transform",function(d,i) {return "translate(" + (initialR * max/d.tempGroupSize ) * (+d.tempID) *2  + ",0)"; });
           break;
+
+
+///////////////////////////////////
+///////////////////////////////////
+// Mosaic plot for Gender
+          case '7':
+
+        
+
+    xAxis.orient("bottom");
+
+    yAxis.orient("left");
+
+  d3.select(".x").call(xAxis);
+  d3.select(".y").call(yAxis);
+   
+  var selection_order = ['Yes','No'];
+  var class_order = ['First', 'Second', 'Third', 'Crew'];
+
+  // var nest = d3.nest()
+  //                   .key(function(d) {return d.passengerClass;})
+  //                   .sortKeys(function(a,b){return class_order.indexOf(a.passengerClass) - class_order.indexOf(b.passengerClass);} )
+  //                   .sortValues(function(a,b) {return selection_order.indexOf(a.survived) - selection_order.indexOf(b.survived);})
+  //                   .entries(data);
+    
+  // nest.forEach(function(d,i,j) { 
+  //       // console.log (d); 
+  //       // console.log(i); 
+  //       // console.log(j);
+
+  //       var count = 0;
+
+  //       d.values.forEach(function(d,i,j) {
+
+           
+  //               d.tempID = count;
+
+  //               count += 1;
+
+  //           });
+
+  //        d.values.forEach(function(d,i,j) {
+
+           
+  //              d.tempXGroupSize = count;
+
+  //           });
+
+        
+       
+  //   });
+
+ var nest = d3.nest()
+                    .sortValues(function(a,b) {return selection_order.indexOf(a.survived) - selection_order.indexOf(b.survived);})
+                    .entries(data);
+    
+  nest.forEach(function(d,i,j) { 
+        // console.log (d); 
+        // console.log(i); 
+        // console.log(j);
+
+      d.tempID = i;
+
+        
+       
+    });
+
+
+    var max = d3.max(data, function(d) { return d.tempGroupSize; } );
+
+    var xModulusSize =  Math.floor(Math.sqrt(data.length)) 
+
+    svg.selectAll(".dot")
+            .data(data, function(d) {return +d.id;})
+            .attr("width", 10)
+            .attr("height",10)
+            .attr("rx",0)
+            .attr("ry",0)
+            .transition()
+            .duration(1000)
+            .attr("x", function(d) { return (+d.tempID % xModulusSize) * 10; })
+            .attr("y", function(d) { return height - Math.floor(+d.tempID / xModulusSize) *10; })
+            .style("fill", function(d) { return color(d.survived); })
+            .attr("transform",function(d,i) {return "translate(0,0)"; });
+      break;
+
 
         }
       });
+
 
 
 
