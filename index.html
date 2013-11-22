@@ -14,11 +14,18 @@ body {
 }
 
 .dot {
-  stroke: #000;
+  stroke: none;
 }
 
 </style>
 <body>
+<select id="multiply" name="">
+                  <option value="0"> Select Data size </option>
+                   <option value="1"> Original</option>
+                    <option value="2"> 10times </option>
+                    <option value="3"> 100 times </option>
+                  </select>
+
 <select id="state" name="">
                      <option value="0"> Reset</option>
                     <option value="1"> Initial Cont vs Cont </option>
@@ -33,9 +40,12 @@ body {
                    <option value="10"> 10 NomaRect - PassengerClass </option>
                    <option value="11"> 11 Mosaic Plot - Class vs Gender  </option>
                    <option value="12"> 12 NomaRect - Class vs Gender  </option>
-                   
+                  <option value="13"> 13 Optimizing Aspect Ratio NomaRect - Class vs Gender  </option>
+                  <option value="14"> 14 Optimizing Margin NomaRect - Class vs Gender  </option>
+                  
               
                   </select>
+
 
 <script src="jquery-2.0.3.js"></script>
 <script src="d3.v3.js"></script>
