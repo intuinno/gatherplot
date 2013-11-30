@@ -1,0 +1,172 @@
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NomaRect</title>
+    <meta name="description" content="nomarect">
+    <script src="scripts/library/angular.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/services/d3.js"></script>
+    <script src="scripts/controllers/demoCtrl.js"></script>
+    <script src="scripts/controllers/AccordionDemoCtrl.js"></script>
+    <script src="scripts/directives/d3Basic.js"></script>
+    <script type="text/javascript" src="scripts/services/ui-bootstrap-tpls-0.7.0.js"></script>
+    <!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <style type="text/css">
+    body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+    }
+    .sidebar-nav {
+        padding: 9px 0;
+    }
+    @media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+            float: none;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    }
+    </style>
+    <link rel="stylesheet" href="/css/bootstrap-responsive.css">
+    <link rel="stylesheet" href="/css/nomarect.css">
+</head>
+
+<body ng-app="myApp">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="#">NomaRect</a>
+                <div class="nav-collapse collapse">
+                    <p class="navbar-text pull-right">
+                        Logged in as <a href="#" class="navbar-link">Username</a>
+                    </p>
+                    <ul class="nav">
+                        <li class="active"><a href="#">Home</a>
+                        </li>
+                        <li><a href="#about">About</a>
+                        </li>
+                        <li><a href="#about">Help</a>
+                        </li>
+                        <li><a href="#contact">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid" ng-controller="DemoCtrl">
+        <div class="row-fluid">
+
+            <div class="span9">
+                <div class="hero-unit">
+                    <h4> {{activeData}} </h4>
+                    <nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData"></nomarect>
+                    <div ng-show="showDetailPanel">
+                        <h3>Details</h3>
+                        <h4>Item : {{detailItem.name}}</h4>
+                        <a ng-click="showDetailPanel=false">Hide</a>
+                    </div>
+                    <br>
+                    <span>First Item</span>
+                    <input type="text" ng-model="d3Data[0].score"></input>
+                    <br>
+                    <span>Second Item</span>
+                    <input type="text" ng-model="d3Data[1].score"></input>
+                    <br>
+                    <span>Third Item</span>
+                    <input type="text" ng-model="d3Data[2].score"></input>
+
+                </div>
+
+                <div class="row-fluid">
+                    <div class="span4">
+                        <h2>Heading</h2>
+                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+                        <p><a class="btn" href="#">View details &raquo;</a>
+                        </p>
+                    </div>
+                    <!--/span-->
+                    <div class="span4">
+                        <h2>Heading</h2>
+                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+                        <p><a class="btn" href="#">View details &raquo;</a>
+                        </p>
+                    </div>
+                    <!--/span-->
+                    <div class="span4">
+                        <h2>Heading</h2>
+                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
+                        <p><a class="btn" href="#">View details &raquo;</a>
+                        </p>
+                    </div>
+                    <!--/span-->
+                </div>
+                <!--/row-->
+            </div>
+            <!--/span-->
+            <div class="span3">
+                <div class="well sidebar-nav">
+                    
+
+                        <h3>Examples</h3>
+                        <accordion close-others="true">
+                            <accordion-group>
+                             <accordion-heading>
+                                    <a href="" ng-click="changeActiveData('Survivor of Titanic') "> Survivor of Titanic </a> <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                                </accordion-heading>
+                                This content is straight in the template.
+                            </accordion-group>
+                            <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
+                                {{group.content}}
+                            </accordion-group>
+                            <accordion-group heading="Dynamic Body Content">
+                                <p>The body of the accordion group grows to fit the contents</p>
+                                <button class="btn btn-small" ng-click="addItem()">Add Item</button>
+                                <div ng-repeat="item in items">{{item}}</div>
+                            </accordion-group>
+                            <accordion-group is-open="isopen">
+                                <accordion-heading>
+                                    I can have markup, too! <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                                </accordion-heading>
+                                This is just some content to illustrate fancy headings.
+                            </accordion-group>
+                        </accordion>
+                    
+                </div>
+                <!--/.well -->
+            </div>
+            <!--/span-->
+
+
+
+        </div>
+        <!--/row-->
+
+        <hr>
+
+        <footer>
+            <p>&copy; Company 2013</p>
+        </footer>
+
+    </div>
+
+
+
+
+
+
+</body>
+
+</html>
