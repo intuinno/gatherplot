@@ -19,8 +19,8 @@
                                         var XMargin = 10;
                                         var YMargin = 2;
                                         var margin = 80;
-                                        var width = 800;
-                                        var height = 700;
+                                        var width = 1040;
+                                        var height = 520;
                                         var outerWidth = width + 2* margin;
                                         var outerHeight = height + 2*margin;
 
@@ -29,7 +29,7 @@
                                         var svg = d3.select(iElement[0])
                                             .append("svg:svg")
                                             .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
-                                            .attr("preserveAspectRatio", "xMidYMid meet");
+                                            .attr("preserveAspectRatio", "none");
 
                                         var svgGroup = svg.append("g")
                                             .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -318,7 +318,7 @@
                                                 .append("text")
                                                 .attr("class", "label")
                                                 .attr("x", width / 2)
-                                                .attr("y", 36)
+                                                .attr("y", 56)
                                                 .style("text-anchor", "end")
                                                 .text("Passenger Class");
 
