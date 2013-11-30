@@ -34,6 +34,7 @@
           d3.tsv("data/Titanic.txt", function(error, tdata) {
 
             $scope.nomaData = tdata;
+            $scope.$apply();
 
           });
         });
@@ -75,6 +76,8 @@
 
             });
           });
+
+
 
         };
 

@@ -72,8 +72,7 @@
             <div class="span9">
                 <div class="hero-unit">
                     <h4> {{activeData}} </h4>
-                    <nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData"></nomarect>
-                    <p> <h4> {{activeData}} </h4></p>
+                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData"></div>
 
                 </div>
 
@@ -111,7 +110,7 @@
                         <accordion close-others="true">
                             <accordion-group>
                              <accordion-heading>
-                                    <a href="" ng-click="changeActiveData('Survivor of Titanic') "> Survivor of Titanic </a> <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                                    <a href="" ng-click="changeActiveDataTitanic() "> Survivor of Titanic </a> <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
                                 </accordion-heading>
                                 This content is straight in the template.
                             </accordion-group>

@@ -20,8 +20,8 @@
                             var YMargin = 2;
 
                             var margin = parseInt(iAttrs.margin) || 80;
-                            var height = parseInt(iAttrs.height) || 500 - margin;
-                            var width = parseInt(iAttrs.width) || 1000 - margin;
+                            var height = parseInt(iAttrs.height) || 500 - 2 * margin;
+                            var width = parseInt(iAttrs.width) || 1000 - 2 * margin;
 
 
                             var color = d3.scale.category10();
@@ -42,9 +42,10 @@
 
                             var svg = d3.select(iElement[0])
                                 .append("svg:svg")
-                                .attr("viewBox", "0 0 " + width + " " + height)
-                                .attr("preserveAspectRatio", "xMinYMin meet")
-                                .append("g")
+                                // .attr("viewBox", "0 0 " + width + " " + height)
+                                // .attr("preserveAspectRatio", "xMinYMin meet");
+
+                            var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
 
                             // .attr("width", "100%" )
@@ -185,6 +186,14 @@
                                 if (!data) return;
 
 
+                                width = d3.select(iElement[0]).node().offsetWidth ;
+                                // calculate the height
+                                height = d3.select(iElement[0]).node().offsetWidth/2 ;
+
+                                svg.attr('height', height);
+                                svg.attr('width', width);
+
+
 
                                 xAxis.orient("bottom");
 
@@ -288,7 +297,7 @@
                                     }));
 
                                 y = d3.scale.ordinal()
-                                    .rangeRoundBands([height, 0],1)
+                                    .rangeRoundBands([height, 0], 1)
                                     .domain(nest[0].values.map(function(d) {
                                         return d.key;
                                     }));
@@ -300,6 +309,8 @@
                                 yAxis = d3.svg.axis()
                                     .scale(y)
                                     .orient("left");
+
+                                svg.selectAll(".axis").remove();
 
                                 svg.append("g")
                                     .attr("class", "x axis")
