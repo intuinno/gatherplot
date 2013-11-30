@@ -176,7 +176,7 @@
 
                                 if (!data) return;
 
-                                var initialSquareLenth = 10;
+                                
 
                                 xAxis.orient("bottom");
 
@@ -187,6 +187,7 @@
 
                                 var selection_order = ['Yes', 'No'];
                                 var class_order = ['First', 'Second', 'Third', 'Crew'];
+                                var initialSquareLenth = 10;
                                 var gender_order = ['Male', 'Female'];
 
                                 var nest = d3.nest()
@@ -262,13 +263,13 @@
                                         });
 
 
-                                        YOffset += Math.sqrt(sum) / YnumGroup * 10 + 10;
+                                        YOffset += Math.sqrt(sum) / YnumGroup * initialSquareLenth + 10;
 
 
                                     });
 
 
-                                    XOffset += Math.sqrt(sum) / XnumGroup * 10 + 10;
+                                    XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLenth + 10;
 
                                 });
 
@@ -299,20 +300,21 @@
                                     .enter().append("rect")
                                     .attr("class", "dot")
                                     .attr("width", function(d) {
-                                        return 10 * d.widthRatio;
+                                        // console.log(initialSquareLenth);
+                                        return initialSquareLenth * d.widthRatio;
                                     })
                                     .attr("height", function(d) {
-                                        return 10 * d.heightRatio;
+                                        return initialSquareLenth * d.heightRatio;
                                     })
                                     .attr("rx", 0)
                                     .attr("ry", 0)
                                     .transition()
                                     .duration(1000)
                                     .attr("x", function(d) {
-                                        return (+d.tempID % (+d.tempXWidth)) * 10 * d.widthRatio;
+                                        return (+d.tempID % (+d.tempXWidth)) * initialSquareLenth * d.widthRatio;
                                     })
                                     .attr("y", function(d) {
-                                        return height - (Math.floor(+d.tempID / (+d.tempXWidth)) + 1) * 10 * d.heightRatio;
+                                        return height - (Math.floor(+d.tempID / (+d.tempXWidth)) + 1) * initialSquareLenth * d.heightRatio;
                                     })
                                     .style("fill", function(d) {
                                         return color(d.Survived);
