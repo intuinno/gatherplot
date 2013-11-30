@@ -71,31 +71,74 @@
 
             <div class="span9">
                 <div class="hero-unit">
-                    <h4 class="chart-title"> {{activeData}} </h4>
-                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData"></div>
+                    <h4 class="chart-title">{{activeData}}</h4>
+                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData" config="nomaConfig"></div>
 
                 </div>
 
                 <div class="row-fluid">
                     <div class="span4">
-                        <h2>Heading</h2>
-                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-                        <p><a class="btn" href="#">View details &raquo;</a>
+                        <h3>X-axis:
+                            <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
+                                <option></option>
+                            </select>
+                        </h3>
+                        <p>
+                            <input type="checkbox" ng-model="nomaConfig.xNormailize">Normailize
                         </p>
+                        <p>
+                            <h4>Align: </h><br>
+
+
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.xAlign" btn-radio="'Left'">Left</button>
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.xAlign" btn-radio="'Center'">Center</button>
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.xAlign" btn-radio="'Right'">Right</button>
+                                </div>
+                        </p>
+
                     </div>
                     <!--/span-->
                     <div class="span4">
-                        <h2>Heading</h2>
-                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-                        <p><a class="btn" href="#">View details &raquo;</a>
+                        <h3>Y-axis:
+                            <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
+                                <option></option>
+                            </select>
+                        </h3>
+                        <p>
+                            <input type="checkbox" ng-model="nomaConfig.xNormailize">Normailize
                         </p>
+                        <p>
+                            <h4>Align: </h><br>
+
+
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.yAlign" btn-radio="'Top'">Top</button>
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.yAlign" btn-radio="'Middle'">Middle</button>
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.yAlign" btn-radio="'Bottom'">Bottom</button>
+                                </div>
+                        </p>
+
                     </div>
                     <!--/span-->
                     <div class="span4">
-                        <h2>Heading</h2>
-                        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.</p>
-                        <p><a class="btn" href="#">View details &raquo;</a>
+                        <h3>Color:
+                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
+                                <option></option>
+                            </select>
+                        </h3>
+                        
+                        <p>
+                            <h4>Sort: </h>
+
+
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.colorOrder" btn-radio="'Vertical'">Vertical</button>
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.colorOrder" btn-radio="'Horizontal'">Horizontal</button>
+                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.colorOrder" btn-radio="''">Both</button>
+                                </div>
                         </p>
+
                     </div>
                     <!--/span-->
                 </div>
@@ -104,32 +147,32 @@
             <!--/span-->
             <div class="span3">
                 <div class="well sidebar-nav">
-                    
 
-                        <h3>Examples</h3>
-                        <accordion close-others="true">
-                            <accordion-group>
-                             <accordion-heading>
-                                    <a href="" ng-click="changeActiveDataTitanic() "> Survivor of Titanic </a> <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
-                                </accordion-heading>
-                                This content is straight in the template.
-                            </accordion-group>
-                            <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
-                                {{group.content}}
-                            </accordion-group>
-                            <accordion-group heading="Dynamic Body Content">
-                                <p>The body of the accordion group grows to fit the contents</p>
-                                <button class="btn btn-small" ng-click="addItem()">Add Item</button>
-                                <div ng-repeat="item in items">{{item}}</div>
-                            </accordion-group>
-                            <accordion-group is-open="isopen">
-                                <accordion-heading>
-                                    I can have markup, too! <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
-                                </accordion-heading>
-                                This is just some content to illustrate fancy headings.
-                            </accordion-group>
-                        </accordion>
-                    
+
+                    <h3>Examples</h3>
+                    <accordion close-others="true">
+                        <accordion-group>
+                            <accordion-heading>
+                                <a href="" ng-click="changeActiveDataTitanic() "> Survivor of Titanic </a>  <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                            </accordion-heading>
+                            This content is straight in the template.
+                        </accordion-group>
+                        <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
+                            {{group.content}}
+                        </accordion-group>
+                        <accordion-group heading="Dynamic Body Content">
+                            <p>The body of the accordion group grows to fit the contents</p>
+                            <button class="btn btn-small" ng-click="addItem()">Add Item</button>
+                            <div ng-repeat="item in items">{{item}}</div>
+                        </accordion-group>
+                        <accordion-group is-open="isopen">
+                            <accordion-heading>
+                                I can have markup, too! <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                            </accordion-heading>
+                            This is just some content to illustrate fancy headings.
+                        </accordion-group>
+                    </accordion>
+
                 </div>
                 <!--/.well -->
             </div>
