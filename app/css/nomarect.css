@@ -1,11 +1,24 @@
+.hero-unit {
+    padding: 0px;
+    padding-top:  10px;
+}
+
+.chart-title {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
+
+}
+
 svg {
     max-width: 100%;
-    height: 40%;
+    height: 100%;
 
 }
 
 .label {
-  font: 10px sans-serif;
+  font: 20px sans-serif;
+
 }
 
 .axis path,
