@@ -19,9 +19,10 @@
                             var XMargin = 10;
                             var YMargin = 2;
 
-                            var margin = parseInt(iAttrs.margin) || 20;
-                            var height = parseInt(iAttrs.height) || 400 - 2 * margin;
-                            var width = parseInt(iAttrs.width) || 1200 - 2 * margin;
+                            var margin = parseInt(iAttrs.margin) || 80;
+                            var height = parseInt(iAttrs.height) || 500 - margin;
+                            var width = parseInt(iAttrs.width) || 1000 - margin;
+
 
                             var color = d3.scale.category10();
 
@@ -40,10 +41,17 @@
                                 .orient("left");
 
                             var svg = d3.select(iElement[0])
-                                .append("svg")
-                                .attr("width", "100%")
+                                .append("svg:svg")
+                                .attr("viewBox", "0 0 " + width + " " + height)
+                                .attr("preserveAspectRatio", "xMinYMin meet")
                                 .append("g")
-                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                                .attr("transform", "translate(" + margin + "," + margin + ")");
+
+                            // .attr("width", "100%" )
+                            // .attr("height","500")
+
+
+
 
                             // on window resize, re-render d3 canvas
                             window.onresize = function() {
@@ -176,7 +184,7 @@
 
                                 if (!data) return;
 
-                                
+
 
                                 xAxis.orient("bottom");
 
@@ -273,16 +281,36 @@
 
                                 });
 
+                                x = d3.scale.ordinal()
+                                    .rangeRoundBands([0, width], 1)
+                                    .domain(nest.map(function(d) {
+                                        return d.key;
+                                    }));
+
+                                y = d3.scale.ordinal()
+                                    .rangeRoundBands([height, 0],1)
+                                    .domain(nest[0].values.map(function(d) {
+                                        return d.key;
+                                    }));
+
+                                xAxis = d3.svg.axis()
+                                    .scale(x)
+                                    .orient("bottom");
+
+                                yAxis = d3.svg.axis()
+                                    .scale(y)
+                                    .orient("left");
+
                                 svg.append("g")
                                     .attr("class", "x axis")
                                     .attr("transform", "translate(0," + height + ")")
                                     .call(xAxis)
                                     .append("text")
                                     .attr("class", "label")
-                                    .attr("x", width)
-                                    .attr("y", -6)
+                                    .attr("x", width / 2)
+                                    .attr("y", 36)
                                     .style("text-anchor", "end")
-                                    .text("Sepal Width (cm)");
+                                    .text("Passenger Class");
 
                                 svg.append("g")
                                     .attr("class", "y axis")
@@ -290,10 +318,11 @@
                                     .append("text")
                                     .attr("class", "label")
                                     .attr("transform", "rotate(-90)")
-                                    .attr("y", 6)
+                                    .attr("x", -height / 2)
+                                    .attr("y", -50)
                                     .attr("dy", ".71em")
                                     .style("text-anchor", "end")
-                                    .text("Sepal Length (cm)")
+                                    .text("Gender")
 
                                 svg.selectAll(".dot")
                                     .data(data)

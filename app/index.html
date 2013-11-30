@@ -73,20 +73,7 @@
                 <div class="hero-unit">
                     <h4> {{activeData}} </h4>
                     <nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData"></nomarect>
-                    <div ng-show="showDetailPanel">
-                        <h3>Details</h3>
-                        <h4>Item : {{detailItem.name}}</h4>
-                        <a ng-click="showDetailPanel=false">Hide</a>
-                    </div>
-                    <br>
-                    <span>First Item</span>
-                    <input type="text" ng-model="d3Data[0].score"></input>
-                    <br>
-                    <span>Second Item</span>
-                    <input type="text" ng-model="d3Data[1].score"></input>
-                    <br>
-                    <span>Third Item</span>
-                    <input type="text" ng-model="d3Data[2].score"></input>
+                    <p> <h4> {{activeData}} </h4></p>
 
                 </div>
 
