@@ -87,13 +87,20 @@
                             <input type="checkbox" ng-model="nomaConfig.xNormailize">Normailize
                         </p>
                         <p>
-                            <h4>Align: </h><br>
+                            <input type="checkbox" ng-model="nomaConfig.boarder">Border line
+                        </p>
+                        <p>
+                            <h4>Align:</h>
 
 
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.xAlign" btn-radio="'Left'">Left</button>
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.xAlign" btn-radio="'Center'">Center</button>
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.xAlign" btn-radio="'Right'">Right</button>
+
+                                <div class="btn-toolbar">
+                                    <div class="btn-group">
+                                        <a class="btn" href="#"><i class="icon-align-left"></i></a>
+                                        <a class="btn" href="#"><i class="icon-align-center"></i></a>
+                                        <a class="btn" href="#"><i class="icon-align-right"></i></a>
+                                        <a class="btn" href="#"><i class="icon-align-justify"></i></a>
+                                    </div>
                                 </div>
                         </p>
 
@@ -109,7 +116,8 @@
                             <input type="checkbox" ng-model="nomaConfig.xNormailize">Normailize
                         </p>
                         <p>
-                            <h4>Align: </h><br>
+                            <h4>Align:</h>
+                                <br>
 
 
                                 <div class="btn-group">
@@ -127,9 +135,9 @@
                                 <option></option>
                             </select>
                         </h3>
-                        
+
                         <p>
-                            <h4>Sort: </h>
+                            <h4>Sort:</h>
 
 
                                 <div class="btn-group">
@@ -150,13 +158,27 @@
 
 
                     <h3>Examples</h3>
-                    <accordion close-others="true">
-                        <accordion-group>
+                    <accordion close-others="false">
+                        <accordion-group is-open="isTitanicOpen">
                             <accordion-heading>
-                                <a href="" ng-click="changeActiveDataTitanic() "> Survivor of Titanic </a>  <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                                <i class="pull-left" ng-class="{'icon-chevron-down': isTitanicOpen, 'icon-chevron-right': !isTitanicOpen}"></i>
+                                Survivor of Titanic
+                                <a href=""  ng-click="changeActiveDataTitanic()" >Load</a>
                             </accordion-heading>
                             This content is straight in the template.
                         </accordion-group>
+
+                        <accordion-group is-open="isMammoOpen">
+                            <accordion-heading>
+                                <i class="pull-left" ng-class="{'icon-chevron-down': isMammoOpen, 'icon-chevron-right': !isMammoOpen}"></i>
+                                Bayesian Inference - Mammogram 
+ 
+                                <a href=""  ng-click="changeActiveDataMammo()" >Load</a>
+                            </accordion-heading>
+
+                            The probability that a woman at age 40 has breast cancer is 1%. According to the literature, the probability that the disease is detected by a mammography is 80%. The probability that the test detects the disease although the patient does not have it is 9.6%. If a woman at age 40 is tested as positive, what is the prob- ability that she indeed has breast cancer?
+                        </accordion-group>
+
                         <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
                             {{group.content}}
                         </accordion-group>
