@@ -7,8 +7,8 @@
 
                 $scope.nomaConfig = {
 
-                    //initial Data
-
+                  //initial Data
+                  
 
                 };
 
@@ -22,8 +22,40 @@
                     });
                 };
 
+                $scope.loadData = function() {
 
 
+                   switch ($scope.activeData) {
+
+                        case 'titanic':
+                            changeActiveDataTitanic();
+                            break;
+                        case 'mammo':
+                            changeActiveDataMammo();
+                            break;
+
+                          }
+
+
+
+                };
+
+
+                // $scope.setData = function() {
+
+                //     switch ($scope.activeData) {
+
+                //         case 'Survivor of Titanic':
+                //             $scope.nomaConfig.data.isTitanic = true;
+                //             $scope.nomaConfig.data.isMammo = false;
+                //             break;
+                //         case 'Bayesian Inference - Mammogram':
+                //             $scope.nomaConfig.data.isTitanic = false;
+                //             $scope.nomaConfig.data.isMammo = true;
+                //             break;
+
+                //     }
+                // };
 
                 $scope.groups = [{
                     title: "Dynamic Group Header - 1",
@@ -33,21 +65,21 @@
                     content: "Dynamic Group Body - 2"
                 }];
 
-
                 $scope.items = ['Item 1', 'Item 2', 'Item 3'];
 
-                
                 $scope.addItem = function() {
                     var newItemNo = $scope.items.length + 1;
                     $scope.items.push('Item ' + newItemNo);
                 };
-
 
                 $scope.changeActiveDataTitanic = function() {
 
 
                     $scope.activeData = 'Survivor of Titanic';
                     // $scope.setData();
+                    
+
+
 
 
                     d3Service.d3().then(function(d3) {
@@ -169,26 +201,6 @@
 
 
                 }; //End  $scope.changeActiveDataMammo()
-
-
-                $scope.loadData = function() {
-
-
-                    switch (this.loadedData) {
-
-                        case 'titanic':
-                            $scope.changeActiveDataTitanic();
-                            break;
-                        case 'mammo':
-                            $scope.changeActiveDataMammo();
-                            break;
-
-                    }
-
-
-
-                };
-
 
 
             }
