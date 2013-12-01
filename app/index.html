@@ -163,7 +163,7 @@
                             <accordion-heading>
                                 <i class="pull-left" ng-class="{'icon-chevron-down': isTitanicOpen, 'icon-chevron-right': !isTitanicOpen}"></i>
                                 Survivor of Titanic
-                                <a href=""  ng-click="changeActiveDataTitanic()" >Load</a>
+                                <input type="radio" ng-model="loadedData" value="titanic" ng-change="loadData()">Load
                             </accordion-heading>
                             This content is straight in the template.
                         </accordion-group>
@@ -172,8 +172,7 @@
                             <accordion-heading>
                                 <i class="pull-left" ng-class="{'icon-chevron-down': isMammoOpen, 'icon-chevron-right': !isMammoOpen}"></i>
                                 Bayesian Inference - Mammogram 
- 
-                                <a href=""  ng-click="changeActiveDataMammo()" >Load</a>
+                                <input type="radio" ng-model="loadedData" value="mammo" ng-change="loadData()">Load
                             </accordion-heading>
 
                             The probability that a woman at age 40 has breast cancer is 1%. According to the literature, the probability that the disease is detected by a mammography is 80%. The probability that the test detects the disease although the patient does not have it is 9.6%. If a woman at age 40 is tested as positive, what is the prob- ability that she indeed has breast cancer?
