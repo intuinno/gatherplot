@@ -16,6 +16,10 @@
 
                         d3Service.d3().then(function(d3) {
 
+
+
+                            //Constants and Setting Environment variables 
+
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -23,6 +27,10 @@
                             var height = 520;
                             var outerWidth = width + 2 * margin;
                             var outerHeight = height + 2 * margin;
+                            var initialSquareLenth = 10;
+                            var color = d3.scale.category20();
+                            
+
 
 
 
@@ -59,7 +67,7 @@
                             // watch for Config changes and re-render
 
                             scope.$watch('config', function(newVals, oldVals) {
-                                return scope.renderConfigChange(scope.Data, newVals);
+                                return scope.renderConfigChange(scope.data, newVals);
                             }, true);
 
 
@@ -197,7 +205,7 @@
                                     .scale(y)
                                     .orient("left");
 
-                                var color = d3.scale.category10();
+                               
 
 
                                 xAxis.orient("bottom");
@@ -291,7 +299,9 @@
                                     });
 
 
-                                    XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLenth + 10;
+               
+
+                             XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLenth + 10;
 
                                 });
 
@@ -389,7 +399,7 @@
 
                                 if (!data) return;
 
-
+                                //Update size of SVG
                                 var widthSVG = d3.select(iElement[0]).node().offsetWidth;
                                 // calculate the height
                                 var heightSVG = d3.select(iElement[0]).node().offsetWidth / 2;
@@ -397,50 +407,58 @@
                                 svg.attr('height', heightSVG);
                                 svg.attr('width', widthSVG);
 
-                                var x = d3.scale.linear()
-                                    .range([0, width]);
-
-                                var y = d3.scale.linear()
-                                    .range([height, 0]);
-
-                                var xAxis = d3.svg.axis()
-                                    .scale(x)
-                                    .orient("bottom");
-
-                                var yAxis = d3.svg.axis()
-                                    .scale(y)
-                                    .orient("left");
-
-                                var color = d3.scale.category10();
-
-
-                                xAxis.orient("bottom");
-
-                                yAxis.orient("left");
-
-                                d3.select(".x").call(xAxis);
-                                d3.select(".y").call(yAxis);
-
-                                var selection_order = ['Yes', 'No'];
-                                var class_order = ['First', 'Second', 'Third', 'Crew'];
-                                var initialSquareLenth = 10;
-                                var gender_order = ['Male', 'Female'];
+                                //Organize Data according to the dimension
 
                                 var nest = d3.nest()
                                     .key(function(d) {
-                                        return d.Class;
+                                        return d[config.xDim];
+                                    })
+                                    .entries(data);
+
+                                config.xDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.yDim];
+                                    })
+                                    .entries(data);
+
+
+                                config.yDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.colorDim];
+                                    })
+                                    .entries(data);
+
+                                config.colorDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                               
+
+
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.xDim];
                                     })
                                     .sortKeys(function(a, b) {
-                                        return class_order.indexOf(a) - class_order.indexOf(b);
+                                        return config.xDimOrder.indexOf(a) - config.xDimOrder.indexOf(b);
                                     })
                                     .key(function(d) {
-                                        return d.Sex;
+                                        return d[config.yDim];
                                     })
                                     .sortKeys(function(a, b) {
-                                        return gender_order.indexOf(a) - gender_order.indexOf(b);
+                                        return config.yDimOrder.indexOf(a) - config.yDimOrder.indexOf(b);
                                     })
                                     .sortValues(function(a, b) {
-                                        return selection_order.indexOf(a.Survived) - selection_order.indexOf(b.Survived);
+                                        return config.colorDimOrder.indexOf(a[config.colorDim]) - config.colorDimOrder.indexOf(b[config.colorDim]);
                                     })
                                     .entries(data);
 
@@ -509,23 +527,24 @@
 
                                 });
 
-                                x = d3.scale.ordinal()
+
+
+
+
+
+                                var x = d3.scale.ordinal()
                                     .rangeRoundBands([0, width], 1)
-                                    .domain(nest.map(function(d) {
-                                        return d.key;
-                                    }));
+                                    .domain(config.xDimOrder);
 
-                                y = d3.scale.ordinal()
+                                var y = d3.scale.ordinal()
                                     .rangeRoundBands([height, 0], 1)
-                                    .domain(nest[0].values.map(function(d) {
-                                        return d.key;
-                                    }));
+                                    .domain(config.yDimOrder);
 
-                                xAxis = d3.svg.axis()
+                                var xAxis = d3.svg.axis()
                                     .scale(x)
                                     .orient("bottom");
 
-                                yAxis = d3.svg.axis()
+                                var yAxis = d3.svg.axis()
                                     .scale(y)
                                     .orient("left");
 
@@ -540,7 +559,7 @@
                                     .attr("x", width / 2)
                                     .attr("y", 56)
                                     .style("text-anchor", "end")
-                                    .text("Passenger Class");
+                                    .text(config.xDim);
 
                                 svgGroup.append("g")
                                     .attr("class", "y axis")
@@ -552,12 +571,12 @@
                                     .attr("y", -50)
                                     .attr("dy", ".71em")
                                     .style("text-anchor", "end")
-                                    .text("Gender")
+                                    .text(config.yDim)
 
                                 svgGroup.selectAll(".dot")
-                                    .data(data)
-                                    .enter().append("rect")
-                                    .attr("class", "dot")
+                                    .data(data, function(d) {
+                                        return +d.id;
+                                    })
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
                                         return initialSquareLenth * d.widthRatio;
@@ -576,11 +595,43 @@
                                         return height - (Math.floor(+d.tempID / (+d.tempXWidth)) + 1) * initialSquareLenth * d.heightRatio;
                                     })
                                     .style("fill", function(d) {
-                                        return color(d.Survived);
+                                        return color(d[config.colorDim]);
                                     })
                                     .attr("transform", function(d, i) {
                                         return "translate(" + (+d.tempXOffset) + "," + (-d.tempYOffset) + ")";
                                     });
+
+                                var legendGroup = svg.selectAll(".legend")
+                                    .data(config.colorDimOrder, function(d) {
+                                        return d;
+                                    });
+
+                                legendGroup.exit().remove();
+
+
+                                var legend = legendGroup.enter().append("g")
+                                    .attr("class", "legend")
+                                    .attr("transform", function(d, i) {
+                                        return "translate(0," + i * 20 + ")";
+                                    });
+
+                                legend.append("rect")
+                                    .attr("x", width - 18)
+                                    .attr("width", 18)
+                                    .attr("height", 18)
+                                    .style("fill", function(d) {
+                                        return color(d);
+                                    });
+
+                                legend.append("text")
+                                    .attr("x", width - 24)
+                                    .attr("y", 9)
+                                    .attr("dy", ".35em")
+                                    .style("text-anchor", "end")
+                                    .text(function(d) {
+                                        return d;
+                                    });
+
 
 
                             }; //End renderer

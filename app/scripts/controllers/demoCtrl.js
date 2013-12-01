@@ -38,12 +38,21 @@
 
                 d3Service.d3().then(function(d3) {
                     d3.tsv("data/Titanic.txt", function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        })
 
                         $scope.nomaData = tdata;
                         $scope.nomaConfig.dims = d3.keys(tdata[0]);
                         $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                         $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                         $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+
+
+
                         $scope.$apply();
 
                     });
