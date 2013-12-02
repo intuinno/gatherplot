@@ -9,7 +9,8 @@
                     scope: {
                         data: "=",
                         onClick: '&',
-                        config: "="
+                        config: "=",
+                        inputDataLabel: "="
                     },
 
                     link: function(scope, iElement, iAttrs) {
@@ -60,8 +61,8 @@
                             });
 
                             // watch for data changes and re-render
-                            scope.$watch('data', function(newVals, oldVals) {
-                                return scope.renderDataChange(newVals, scope.config);
+                            scope.$watch('inputDataLabel', function(newVals, oldVals) {
+                                return scope.renderDataChange(scope.data, scope.config);
 
                             }, true);
 

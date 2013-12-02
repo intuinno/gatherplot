@@ -25,7 +25,7 @@
                 $scope.changeActiveDataTitanic = function() {
 
 
-                    $scope.activeData = 'Survivor of Titanic';
+                    
 
 
                     d3Service.d3().then(function(d3) {
@@ -47,8 +47,9 @@
                             $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                             $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
 
+$scope.activeData = 'Survivor of Titanic';
 
-                            $scope.$apply();
+                            // $scope.$apply();
 
 
 
@@ -75,7 +76,7 @@
                     var numberOfEntity = 1000;
                     var numDiscreteVar = 60;
 
-                    $scope.activeData = 'Bayesian Inference - Mammogram';
+                    
                     var data = [];
 
                     for (var count = 0; count < numberOfEntity; count++) {
@@ -127,6 +128,8 @@
                     $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                     $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                     $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+
+                    $scope.activeData = 'Bayesian Inference - Mammogram';
 
                     // $scope.$apply();
 
