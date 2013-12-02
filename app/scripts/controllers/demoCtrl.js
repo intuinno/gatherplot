@@ -7,8 +7,8 @@
 
                 $scope.nomaConfig = {
 
-                  //initial Data
-                  
+                    //initial Data
+
 
                 };
 
@@ -22,64 +22,10 @@
                     });
                 };
 
-                $scope.loadData = function() {
-
-
-                   switch ($scope.activeData) {
-
-                        case 'titanic':
-                            changeActiveDataTitanic();
-                            break;
-                        case 'mammo':
-                            changeActiveDataMammo();
-                            break;
-
-                          }
-
-
-
-                };
-
-
-                // $scope.setData = function() {
-
-                //     switch ($scope.activeData) {
-
-                //         case 'Survivor of Titanic':
-                //             $scope.nomaConfig.data.isTitanic = true;
-                //             $scope.nomaConfig.data.isMammo = false;
-                //             break;
-                //         case 'Bayesian Inference - Mammogram':
-                //             $scope.nomaConfig.data.isTitanic = false;
-                //             $scope.nomaConfig.data.isMammo = true;
-                //             break;
-
-                //     }
-                // };
-
-                $scope.groups = [{
-                    title: "Dynamic Group Header - 1",
-                    content: "Dynamic Group Body - 1"
-                }, {
-                    title: "Dynamic Group Header - 2",
-                    content: "Dynamic Group Body - 2"
-                }];
-
-                $scope.items = ['Item 1', 'Item 2', 'Item 3'];
-
-                $scope.addItem = function() {
-                    var newItemNo = $scope.items.length + 1;
-                    $scope.items.push('Item ' + newItemNo);
-                };
-
                 $scope.changeActiveDataTitanic = function() {
 
 
                     $scope.activeData = 'Survivor of Titanic';
-                    // $scope.setData();
-                    
-
-
 
 
                     d3Service.d3().then(function(d3) {
@@ -130,9 +76,6 @@
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
-                    // $scope.nomaConfig.data.isMammo = true;
-                    //  $scope.setData();
-
                     var data = [];
 
                     for (var count = 0; count < numberOfEntity; count++) {
@@ -171,18 +114,6 @@
                         }
 
                         temp.descriptor = temp.cancer + ", " + temp.mamo;
-
-                        // if (temp.continous_variable1 * temp.continous_variable2 > 0.7) {
-                        //     temp.selection_variable = 'Group 1';
-
-                        // } else if (temp.continous_variable1 * temp.continous_variable2 > 0.5) {
-                        //     temp.selection_variable = 'Group 1 & 2';
-                        // } else if (temp.continous_variable1 * temp.continous_variable2 > 0.3) {
-                        //     temp.selection_variable = 'Group 2';
-                        // } else {
-                        //     temp.selection_variable = 'None';
-                        // }
-
 
                         data.push(temp);
                     }
