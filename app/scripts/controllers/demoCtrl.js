@@ -15,6 +15,7 @@
 
                 $scope.loadedData = 'titanic';
                 $scope.nomaConfig.optimizeAspect = "true";
+                $scope.nomaConfig.fillingDirection = "vertical";
 
                 $scope.onClick = function(item) {
                     $scope.$apply(function() {

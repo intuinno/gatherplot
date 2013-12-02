@@ -72,23 +72,23 @@
                                 return scope.renderConfigChange(renderData, newVals);
                             }, true);
 
-                            var optimalNumElementHorizontal = function(width, height, n, isAspect) {
+                            var optimalNumElementHorizontal = function(width, height, n, isAspect, fillingDirection) {
 
-                                if (isAspect == "true") { 
+                                if (isAspect == "true") {
 
-                                if (width > height) {
-                                    return optimalNumElementWidthAspect(width, height, n);
+                                    if (fillingDirection == "horizontal") {
+                                        return optimalNumElementWidthAspect(width, height, n);
+                                    } else {
+                                        return optimalNumElementHeightAspect(width, height, n);
+                                    }
                                 } else {
-                                    return optimalNumElementHeightAspect(width, height, n);
-                                } 
-                             } else {
 
-                                 if (width > height) {
-                                    return n;
-                                } else {
-                                    return 1;
+                                    if (fillingDirection == "horizontal") {
+                                        return n;
+                                    } else {
+                                        return 1;
+                                    }
                                 }
-                             }
 
                             };
 
@@ -152,7 +152,7 @@
 
                                 }
 
-                                return Math.round(n/optimalNumElementHeight);
+                                return Math.round(n / optimalNumElementHeight);
 
                             };
 
@@ -181,9 +181,9 @@
                                     .enter().append("rect")
                                     .attr("class", "dot");
 
-                                    renderData = data;
+                                renderData = data;
 
-                                    scope.renderConfigChange(renderData, config);
+                                scope.renderConfigChange(renderData, config);
 
 
                             }; //End Data change renderer
@@ -302,7 +302,7 @@
 
 
                                         //clusterWidth, clusterHeight is for the region 
-                                        
+
 
                                         // If uniform Scaling X width 
 
@@ -333,28 +333,37 @@
                                         }
 
 
-                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect);
+                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect,config.fillingDirection);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
                                         d.values.forEach(function(d, i, j) {
 
                                             d.tempXGroupSize = count;
-                                            
+
                                             d.numNodeX = tempXWidth;
                                             d.numNodeY = tempYHeight;
 
 
-                                            d.nodeWidth = clusterWidth/tempXWidth;
-                                            d.nodeHeight = clusterHeight/tempYHeight;
-                                            
+                                            d.nodeWidth = clusterWidth / tempXWidth;
+                                            d.nodeHeight = clusterHeight / tempYHeight;
+
                                             d.XOffset = XOffset;
                                             d.YOffset = YOffset;
 
+                                            if (config.fillingDirection == "vertical") {
 
-                                            d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
-                                            d.nodeY = -d.nodeHeight-1*Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;                                            
-                                            
+                                                d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;
+
+                                            } else if (config.fillingDirection == "horizontal") {
+
+                                                d.nodeX = +Math.floor(d.tempID / d.numNodeY) * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * (+d.tempID % d.numNodeY) * d.nodeHeight;
+
+                                            }
+
+
                                         });
 
 
@@ -421,7 +430,7 @@
                                         return +d.id;
                                     })
                                     .style("stroke", function(d) {
-                                        return 'black'; 
+                                        return 'black';
                                     })
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
@@ -439,8 +448,8 @@
                                     .attr("height", function(d) {
                                         return initialSquareLenth;
                                     })
-                                    .attr("rx", initialSquareLenth/2)
-                                    .attr("ry", initialSquareLenth/2)
+                                    .attr("rx", initialSquareLenth / 2)
+                                    .attr("ry", initialSquareLenth / 2)
                                     .transition()
                                     .duration(1200)
                                     .attr("transform", function(d, i) {
@@ -475,9 +484,9 @@
                                         return color(d[config.colorDim]);
                                     })
                                     .style("stroke", function(d) {
-                                        return config.border ? 'black':'none' ; 
+                                        return config.border ? 'black' : 'none';
                                     });
-                                    
+
 
                                 var legendGroup = svg.selectAll(".legend")
                                     .data(config.colorDimOrder, function(d) {
