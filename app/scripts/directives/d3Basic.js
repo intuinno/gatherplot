@@ -29,6 +29,7 @@
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
                             var color = d3.scale.category20();
+                            var renderData = {};
 
 
 
@@ -56,7 +57,7 @@
                             scope.$watch(function() {
                                 return angular.element(window)[0].innerWidth;
                             }, function() {
-                                return scope.renderConfigChange(scope.data, scope.config);
+                                return scope.renderConfigChange(renderData, scope.config);
                             });
 
                             // watch for data changes and re-render
@@ -68,7 +69,7 @@
                             // watch for Config changes and re-render
 
                             scope.$watch('config', function(newVals, oldVals) {
-                                return scope.renderConfigChange(scope.data, newVals);
+                                return scope.renderConfigChange(renderData, newVals);
                             }, true);
 
                             var optimalNumElementAspect = function(width, height, n) {
@@ -202,7 +203,9 @@
                                     .enter().append("rect")
                                     .attr("class", "dot");
 
-                                    scope.renderConfigChange(data, config);
+                                    renderData = data;
+
+                                    scope.renderConfigChange(renderData, config);
 
 
                             }; //End Data change renderer
@@ -458,6 +461,9 @@
                                     })
                                     .style("fill", function(d) {
                                         return color(d[config.colorDim]);
+                                    })
+                                    .style("stroke", function(d) {
+                                        return config.border ? 'black':'none' ; 
                                     })
                                     .attr("transform", function(d, i) {
 
