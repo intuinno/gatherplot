@@ -200,14 +200,6 @@
                             // define render function
                             scope.renderConfigChange = function(data, config) {
 
-                                // remove all previous items before render
-                                //   svg.selectAll("*").remove();
-
-                                //   // setup variables
-                                //   var width, height, max;
-                                //   width = d3.select(iElement[0]).node().offsetWidth - margin;
-                                //   // 20 is for margins and can be changed
-                                //   height = scope.data.length * (barHeight + barPadding);
 
 
                                 if (!data) return;
