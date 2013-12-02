@@ -72,7 +72,7 @@
 
                             var optimalNumElementAspect = function(width, height, n) {
 
-                                if (width < height) {
+                                if (width > height) {
                                     return optimalNumElementWidthAspect(width, height, n);
                                 } else {
                                     return optimalNumElementHeightAspect(width, height, n);
@@ -140,7 +140,7 @@
 
                                 }
 
-                                return optimalNumElementHeight;
+                                return Math.round(n/optimalNumElementHeight);
 
                             };
 
@@ -281,8 +281,10 @@
                                     }, 0));
                                 }, 0);
 
-                                var XOffset = 0;
-                                var YOffset = 0;
+                                var XOffset = padding;
+                                var YOffset = padding;
+
+                                var clusterWidth, clusterHeight;
 
                                 var XnumGroup = config.xDimOrder.length;
                                 var YnumGroup = config.yDimOrder.length;
@@ -295,7 +297,9 @@
                                     var tempXWidth = 0;
                                     var tempYHeight = 0;
 
-                                    YOffset = 0;
+
+
+                                    YOffset = padding;
 
 
                                     d.values.forEach(function(d, i, j) {
@@ -314,40 +318,38 @@
 
 
                                         //clusterWidth, clusterHeight is for the region 
-                                        var clusterWidth, clusterHeight;
+                                        
 
                                         // If uniform Scaling X width 
 
                                         if (config.isXUniformSpacing == true) {
 
-                                            d.clusterWidth = (width - (XnumGroup + 1) * padding) / XnumGroup;
+                                            clusterWidth = (width - (XnumGroup + 1) * padding) / XnumGroup;
 
                                         } else {
 
                                             //If Mosaic plot spacing 
 
-                                            d.clusterWidth = (width - (XnumGroup + 1) * padding) * d.parent.sum / sum;
+                                            clusterWidth = (width - (XnumGroup + 1) * padding) * d.parent.sum / sum;
 
                                         }
-
-
-
 
                                         // If uniform Scaling  Y Height 
 
                                         if (config.isYUniformSpacing == true) {
 
-                                            d.clusterHeight = (height - (YnumGroup + 1) * padding) / YnumGroup;
+                                            clusterHeight = (height - (YnumGroup + 1) * padding) / YnumGroup;
 
                                         } else {
 
                                             //If Mosaic plot spacing 
 
-                                            d.clusterHeight = (height - (YnumGroup + 1) * padding) * count / d.parent.sum;
+                                            clusterHeight = (height - (YnumGroup + 1) * padding) * count / d.parent.sum;
 
                                         }
 
-                                        tempXWidth = optimalNumElementAspect(d.clusterWidth, d.clusterHeight, count);
+
+                                        tempXWidth = optimalNumElementAspect(clusterWidth, clusterHeight, count);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
@@ -355,8 +357,8 @@
 
                                             d.tempXGroupSize = count;
                                             d.nodeWidth = tempXWidth;
-                                            d.tempXOffset = XOffset;
-                                            d.tempYOffset = YOffset;
+                                            d.XOffset = XOffset;
+                                            d.YOffset = YOffset;
                                             d.nodeHeight = tempYHeight;
                                             d.widthRatio = Math.sqrt(sum) / XnumGroup / tempXWidth;
                                             d.heightRatio = Math.sqrt(sum) / YnumGroup / tempYHeight;
@@ -364,13 +366,18 @@
                                         });
 
 
-                                        YOffset += Math.sqrt(sum) / YnumGroup * initialSquareLenth + 10;
+                                        YOffset += clusterHeight + padding;
+
+                                        d.clusterHeight = clusterHeight;
+                                        d.clusterWidth = clusterWidth;
 
 
                                     });
 
 
-                                    XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLenth + 10;
+                                    XOffset += clusterWidth + padding;
+                                    d.clusterHeight = clusterHeight;
+                                    d.clusterWidth = clusterWidth;
 
                                 });
 
@@ -442,7 +449,7 @@
                                         return color(d[config.colorDim]);
                                     })
                                     .attr("transform", function(d, i) {
-                                        return "translate(" + x(d[config.xDim]) + "," + (y(d[config.yDim])) + ")";
+                                        return "translate(" + (d.XOffset) + "," + (height - (d.YOffset)) + ")";
                                     });
 
                                 var legendGroup = svg.selectAll(".legend")
