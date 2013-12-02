@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: none;
+  stroke-width: 0.2;
+}
+
+
+</style>
+<body>
+<select id="multiply" name="">
+                  <option value="0"> Select Data size </option>
+                   <option value="1"> Original</option>
+                    <option value="2"> 10times </option>
+                    <option value="3"> 100 times </option>
+                  </select>
+
+<select id="state" name="">
+                     <option value="0"> Reset</option>
+                    <option value="1"> Initial Cont vs Cont </option>
+                    <option value="2"> Original Discrete Oridnal vs Nominal </option>
+                    <option value="3"> Square Discrete Original vs Nominal </option>
+                    <option value="4"> Center Aligned Square </option>
+                   <option value="5"> Normalize Age </option>
+                   <option value="6"> Normalize Age & Gender </option>
+                   <option value="7"> 7 Mosaic Plot - Zero  </option>
+                   <option value="8"> 8 Mosaic Plot - PassengerClass </option>
+                   <option value="9"> 9 Height Adjustment Mosaic Plot - PassengerClass </option>
+                   <option value="10"> 10 NomaRect - PassengerClass </option>
+                   <option value="11"> 11 Mosaic Plot - Class vs Gender  </option>
+                   <option value="12"> 12 NomaRect - Class vs Gender  </option>
+                  <option value="13"> 13 Optimizing Aspect Ratio NomaRect - Class vs Gender  </option>
+                  <option value="14"> 14 Optimizing Margin NomaRect - Class vs Gender  </option>
+                  <option value="15"> 15 Big data Square Discrete vs Nominal  </option>
+                  <option value="16"> 16 Big data Square Nominal vs Discrete  </option>
+                  <option value="17"> 17 Bayesian Reasoning - Cancer Mosaic Plot - Square Aspect Ratio</option>
+                  <option value="18"> 18 Bayesian Reasoning - Cancer Mosaic Plot - Same Height </option>
+<option value="19"> 19 Bayesian Reasoning - Mamography Mosaic Plot - Same Height </option>
+
+                    
+              
+                  </select>
+
+
+<script src="jquery-2.0.3.js"></script>
+<script src="d3.v3.js"></script>
+<script src="square.js"></script>
+
+</body>
