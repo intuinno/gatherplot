@@ -19,7 +19,7 @@
 
 
                             //Constants and Setting Environment variables 
-
+                            var padding = 60;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -29,7 +29,7 @@
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
                             var color = d3.scale.category20();
-                            
+
 
 
 
@@ -69,6 +69,16 @@
                             scope.$watch('config', function(newVals, oldVals) {
                                 return scope.renderConfigChange(scope.data, newVals);
                             }, true);
+
+                            var optimalNumElementAspect = function(width, height, n) {
+
+                                if (width < height) {
+                                    return optimalNumElementWidthAspect(width, height, n);
+                                } else {
+                                    return optimalNumElementHeightAspect(width, height, n);
+                                }
+
+                            };
 
 
 
@@ -140,7 +150,7 @@
 
                                 var widthElement, heightElement;
                                 var numElementHeight;
-                                var optimalNumElementWidth  =1;
+                                var optimalNumElementWidth = 1;
                                 var optimalMargin = 1;
                                 var optimalRatio = width * n / height;
 
@@ -302,17 +312,52 @@
 
                                         });
 
-                                        tempXWidth = optimalNumElementWidthAspect(width / XnumGroup, height / YnumGroup, count);
+
+                                        //clusterWidth, clusterHeight is for the region 
+                                        var clusterWidth, clusterHeight;
+
+                                        // If uniform Scaling X width 
+
+                                        if (config.isXUniformSpacing == true) {
+
+                                            d.clusterWidth = (width - (XnumGroup + 1) * padding) / XnumGroup;
+
+                                        } else {
+
+                                            //If Mosaic plot spacing 
+
+                                            d.clusterWidth = (width - (XnumGroup + 1) * padding) * d.parent.sum / sum;
+
+                                        }
+
+
+
+
+                                        // If uniform Scaling  Y Height 
+
+                                        if (config.isYUniformSpacing == true) {
+
+                                            d.clusterHeight = (height - (YnumGroup + 1) * padding) / YnumGroup;
+
+                                        } else {
+
+                                            //If Mosaic plot spacing 
+
+                                            d.clusterHeight = (height - (YnumGroup + 1) * padding) * count / d.parent.sum;
+
+                                        }
+
+                                        tempXWidth = optimalNumElementAspect(d.clusterWidth, d.clusterHeight, count);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
                                         d.values.forEach(function(d, i, j) {
 
                                             d.tempXGroupSize = count;
-                                            d.tempXWidth = tempXWidth;
+                                            d.nodeWidth = tempXWidth;
                                             d.tempXOffset = XOffset;
                                             d.tempYOffset = YOffset;
-                                            d.tempYHeight = tempYHeight;
+                                            d.nodeHeight = tempYHeight;
                                             d.widthRatio = Math.sqrt(sum) / XnumGroup / tempXWidth;
                                             d.heightRatio = Math.sqrt(sum) / YnumGroup / tempYHeight;
 
@@ -332,11 +377,11 @@
 
 
                                 var x = d3.scale.ordinal()
-                                    .rangeRoundBands([0, width], 0.2,0.1)
+                                    .rangeRoundBands([0, width], 0.2, 0.1)
                                     .domain(config.xDimOrder);
 
                                 var y = d3.scale.ordinal()
-                                    .rangeRoundBands([height, 0], 0.2,0.1)
+                                    .rangeRoundBands([height, 0], 0.2, 0.1)
                                     .domain(config.yDimOrder);
 
                                 var xAxis = d3.svg.axis()
@@ -388,10 +433,10 @@
                                     .transition()
                                     .duration(1000)
                                     .attr("x", function(d) {
-                                        return width/(XnumGroup+1)/4 + (+d.tempID % (+d.tempXWidth)) * initialSquareLenth * d.widthRatio;
+                                        return width / (XnumGroup + 1) / 4 + (+d.tempID % (+d.nodeWidth)) * initialSquareLenth * d.widthRatio;
                                     })
                                     .attr("y", function(d) {
-                                        return  height/(YnumGroup+1) - (Math.floor(+d.tempID / (+d.tempXWidth)) + 1) * initialSquareLenth * d.heightRatio;
+                                        return height / (YnumGroup + 1) - (Math.floor(+d.tempID / (+d.nodeWidth)) + 1) * initialSquareLenth * d.heightRatio;
                                     })
                                     .style("fill", function(d) {
                                         return color(d[config.colorDim]);
