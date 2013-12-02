@@ -19,7 +19,7 @@
 
 
                             //Constants and Setting Environment variables 
-
+                            var padding = 60;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -29,7 +29,7 @@
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
                             var color = d3.scale.category20();
-                            
+
 
 
 
@@ -62,13 +62,24 @@
                             // watch for data changes and re-render
                             scope.$watch('data', function(newVals, oldVals) {
                                 return scope.renderDataChange(newVals, scope.config);
-                            }, true);
+
+                            }, false);
 
                             // watch for Config changes and re-render
 
                             scope.$watch('config', function(newVals, oldVals) {
                                 return scope.renderConfigChange(scope.data, newVals);
                             }, true);
+
+                            var optimalNumElementAspect = function(width, height, n) {
+
+                                if (width > height) {
+                                    return optimalNumElementWidthAspect(width, height, n);
+                                } else {
+                                    return optimalNumElementHeightAspect(width, height, n);
+                                }
+
+                            };
 
 
 
@@ -110,7 +121,7 @@
                                 var widthElement, heightElement;
                                 var numElementWidth;
                                 var optimalNumElementHeight = 1;
-                                var optimalRatio = width * n / height;
+                                var optimalRatio = width / n / height;
 
 
 
@@ -130,7 +141,7 @@
 
                                 }
 
-                                return optimalNumElementHeight;
+                                return Math.round(n/optimalNumElementHeight);
 
                             };
 
@@ -140,7 +151,7 @@
 
                                 var widthElement, heightElement;
                                 var numElementHeight;
-                                var optimalNumElementWidth  =1;
+                                var optimalNumElementWidth = 1;
                                 var optimalMargin = 1;
                                 var optimalRatio = width * n / height;
 
@@ -190,6 +201,8 @@
                                     .data(data)
                                     .enter().append("rect")
                                     .attr("class", "dot");
+
+                                    scope.renderConfigChange(data, config);
 
 
                             }; //End Data change renderer
@@ -271,8 +284,10 @@
                                     }, 0));
                                 }, 0);
 
-                                var XOffset = 0;
-                                var YOffset = 0;
+                                var XOffset = padding;
+                                var YOffset = padding;
+
+                                var clusterWidth, clusterHeight;
 
                                 var XnumGroup = config.xDimOrder.length;
                                 var YnumGroup = config.yDimOrder.length;
@@ -285,7 +300,9 @@
                                     var tempXWidth = 0;
                                     var tempYHeight = 0;
 
-                                    YOffset = 0;
+
+
+                                    YOffset = padding;
 
 
                                     d.values.forEach(function(d, i, j) {
@@ -302,41 +319,87 @@
 
                                         });
 
-                                        tempXWidth = optimalNumElementWidthAspect(width / XnumGroup, height / YnumGroup, count);
+
+                                        //clusterWidth, clusterHeight is for the region 
+                                        
+
+                                        // If uniform Scaling X width 
+
+                                        if (config.isXUniformSpacing == true) {
+
+                                            clusterWidth = (width - (XnumGroup + 1) * padding) / XnumGroup;
+
+                                        } else {
+
+                                            //If Mosaic plot spacing 
+
+                                            clusterWidth = (width - (XnumGroup + 1) * padding) * d.parent.sum / sum;
+
+                                        }
+
+                                        // If uniform Scaling  Y Height 
+
+                                        if (config.isYUniformSpacing == true) {
+
+                                            clusterHeight = (height - (YnumGroup + 1) * padding) / YnumGroup;
+
+                                        } else {
+
+                                            //If Mosaic plot spacing 
+
+                                            clusterHeight = (height - (YnumGroup + 1) * padding) * count / d.parent.sum;
+
+                                        }
+
+
+                                        tempXWidth = optimalNumElementAspect(clusterWidth, clusterHeight, count);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
                                         d.values.forEach(function(d, i, j) {
 
                                             d.tempXGroupSize = count;
-                                            d.tempXWidth = tempXWidth;
-                                            d.tempXOffset = XOffset;
-                                            d.tempYOffset = YOffset;
-                                            d.tempYHeight = tempYHeight;
-                                            d.widthRatio = Math.sqrt(sum) / XnumGroup / tempXWidth;
-                                            d.heightRatio = Math.sqrt(sum) / YnumGroup / tempYHeight;
+                                            
+                                            d.numNodeX = tempXWidth;
+                                            d.numNodeY = tempYHeight;
 
+
+                                            d.nodeWidth = clusterWidth/tempXWidth;
+                                            d.nodeHeight = clusterHeight/tempYHeight;
+                                            
+                                            d.XOffset = XOffset;
+                                            d.YOffset = YOffset;
+
+
+                                            d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
+                                            d.nodeY = -d.nodeHeight-1*Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;                                            
+                                            
                                         });
 
 
-                                        YOffset += Math.sqrt(sum) / YnumGroup * initialSquareLenth + 10;
+                                        YOffset += clusterHeight + padding;
+
+                                        d.clusterHeight = clusterHeight;
+                                        d.clusterWidth = clusterWidth;
 
 
                                     });
 
 
-                                    XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLenth + 10;
+                                    XOffset += clusterWidth + padding;
+                                    d.clusterHeight = clusterHeight;
+                                    d.clusterWidth = clusterWidth;
 
                                 });
 
 
 
                                 var x = d3.scale.ordinal()
-                                    .rangeRoundBands([0, width], 0.2,0.1)
+                                    .rangeRoundBands([0, width], 0.2, 0.1)
                                     .domain(config.xDimOrder);
 
                                 var y = d3.scale.ordinal()
-                                    .rangeRoundBands([height, 0], 0.2,0.1)
+                                    .rangeRoundBands([height, 0], 0.2, 0.1)
                                     .domain(config.yDimOrder);
 
                                 var xAxis = d3.svg.axis()
@@ -378,26 +441,30 @@
                                     })
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
-                                        return initialSquareLenth * d.widthRatio;
+                                        return +d.nodeWidth;
                                     })
                                     .attr("height", function(d) {
-                                        return initialSquareLenth * d.heightRatio;
+                                        return +d.nodeHeight;
                                     })
                                     .attr("rx", 0)
                                     .attr("ry", 0)
                                     .transition()
                                     .duration(1000)
                                     .attr("x", function(d) {
-                                        return width/(XnumGroup+1)/4 + (+d.tempID % (+d.tempXWidth)) * initialSquareLenth * d.widthRatio;
+                                        return +d.nodeX;
                                     })
                                     .attr("y", function(d) {
-                                        return  height/(YnumGroup+1) - (Math.floor(+d.tempID / (+d.tempXWidth)) + 1) * initialSquareLenth * d.heightRatio;
+                                        return +d.nodeY;
                                     })
                                     .style("fill", function(d) {
                                         return color(d[config.colorDim]);
                                     })
                                     .attr("transform", function(d, i) {
-                                        return "translate(" + x(d[config.xDim]) + "," + (y(d[config.yDim])) + ")";
+
+                                        // if (d.cancer== "Cancer") {
+                                        //     console.log(height);
+                                        // }
+                                        return "translate(" + (d.XOffset) + "," + (height - (d.YOffset)) + ")";
                                     });
 
                                 var legendGroup = svg.selectAll(".legend")

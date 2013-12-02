@@ -72,7 +72,7 @@
                 $scope.changeActiveDataMammo = function() {
 
                     //Config settings
-                    var numberOfEntity = 1000;
+                    var numberOfEntity = 10000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -86,13 +86,13 @@
 
                         // temp.continous_variable1 = Math.random();
                         //temp.continous_variable2 = Math.random();
-                        temp.discrete_variable = Math.round(Math.random() * (numDiscreteVar - 1));
+                        // temp.discrete_variable = Math.round(Math.random() * (numDiscreteVar - 1));
 
-                        if (Math.random() > 0.3) {
-                            temp.nominal_variable = 'Male';
-                        } else {
-                            temp.nominal_variable = 'Female';
-                        }
+                        // if (Math.random() > 0.3) {
+                        //     temp.nominal_variable = 'Male';
+                        // } else {
+                        //     temp.nominal_variable = 'Female';
+                        // }
 
                         if (Math.random() > 0.99) {
                             temp.cancer = 'Cancer';
@@ -113,7 +113,7 @@
                             }
                         }
 
-                        temp.descriptor = temp.cancer + ", " + temp.mamo;
+                        // temp.descriptor = temp.cancer + ", " + temp.mamo;
 
                         data.push(temp);
                     }
