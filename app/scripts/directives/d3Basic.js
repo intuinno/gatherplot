@@ -19,7 +19,7 @@
 
 
                             //Constants and Setting Environment variables 
-                            var padding = 60;
+                            var padding = 30;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -28,7 +28,7 @@
                             var outerWidth = width + 2 * margin;
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
-                            var color = d3.scale.category20();
+                            var color = d3.scale.category10();
                             var renderData = {};
 
 
@@ -442,6 +442,28 @@
                                     .data(data, function(d) {
                                         return +d.id;
                                     })
+                                    .style("stroke", function(d) {
+                                        return 'black'; 
+                                    })
+                                    .transition()
+                                    .duration(1200)
+                                    .attr("transform", function(d, i) {
+
+                                        // if (d.cancer== "Cancer") {
+                                        //     console.log(height);
+                                        // }
+                                        return "translate(" + (d.XOffset) + "," + (height - (d.YOffset)) + ")";
+                                    })
+                                    .transition()
+                                    .duration(1200)
+                                    .attr("x", function(d) {
+                                        return +d.nodeX;
+                                    })
+                                    .attr("y", function(d) {
+                                        return +d.nodeY;
+                                    })
+                                    .transition()
+                                    .duration(1200)
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
                                         return +d.nodeWidth;
@@ -452,26 +474,14 @@
                                     .attr("rx", 0)
                                     .attr("ry", 0)
                                     .transition()
-                                    .duration(1000)
-                                    .attr("x", function(d) {
-                                        return +d.nodeX;
-                                    })
-                                    .attr("y", function(d) {
-                                        return +d.nodeY;
-                                    })
+                                    .duration(1200)
                                     .style("fill", function(d) {
                                         return color(d[config.colorDim]);
                                     })
                                     .style("stroke", function(d) {
                                         return config.border ? 'black':'none' ; 
-                                    })
-                                    .attr("transform", function(d, i) {
-
-                                        // if (d.cancer== "Cancer") {
-                                        //     console.log(height);
-                                        // }
-                                        return "translate(" + (d.XOffset) + "," + (height - (d.YOffset)) + ")";
                                     });
+                                    
 
                                 var legendGroup = svg.selectAll(".legend")
                                     .data(config.colorDimOrder, function(d) {
