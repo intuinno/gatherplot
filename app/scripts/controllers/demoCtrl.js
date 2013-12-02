@@ -12,6 +12,8 @@
 
                 };
 
+                $scope.nomaData = {};
+
                 $scope.loadedData = 'titanic';
 
                 $scope.onClick = function(item) {
