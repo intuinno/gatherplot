@@ -7,7 +7,7 @@
                 return {
                     restrict: 'EA',
                     scope: {
-                        inputData: "=",
+                        data: "=",
                         onClick: '&',
                         config: "="
                     },
@@ -29,7 +29,6 @@
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
                             var color = d3.scale.category20();
-                            var data = {};
 
 
 
@@ -57,20 +56,18 @@
                             scope.$watch(function() {
                                 return angular.element(window)[0].innerWidth;
                             }, function() {
-                                return scope.renderConfigChange(data, scope.config);
+                                return scope.renderConfigChange(scope.data, scope.config);
                             });
 
                             // watch for data changes and re-render
-                            scope.$watch('inputData', function(newVals, oldVals) {
-                                data = newVals;
-                                return scope.renderDataChange(data, scope.config);
+                            scope.$watch('data', function(newVals, oldVals) {
+                                return scope.renderDataChange(newVals, scope.config);
                             }, true);
 
                             // watch for Config changes and re-render
 
                             scope.$watch('config', function(newVals, oldVals) {
-
-                                return scope.renderConfigChange(data, newVals);
+                                return scope.renderConfigChange(scope.data, newVals);
                             }, true);
 
                             var optimalNumElementAspect = function(width, height, n) {
