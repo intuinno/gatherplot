@@ -356,13 +356,21 @@
                                         d.values.forEach(function(d, i, j) {
 
                                             d.tempXGroupSize = count;
-                                            d.nodeWidth = tempXWidth;
+                                            
+                                            d.numNodeX = tempXWidth;
+                                            d.numNodeY = tempYHeight;
+
+
+                                            d.nodeWidth = clusterWidth/tempXWidth;
+                                            d.nodeHeight = clusterHeight/tempYHeight;
+                                            
                                             d.XOffset = XOffset;
                                             d.YOffset = YOffset;
-                                            d.nodeHeight = tempYHeight;
-                                            d.widthRatio = Math.sqrt(sum) / XnumGroup / tempXWidth;
-                                            d.heightRatio = Math.sqrt(sum) / YnumGroup / tempYHeight;
 
+
+                                            d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
+                                            d.nodeY = -1*Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;                                            
+                                            
                                         });
 
 
@@ -430,20 +438,20 @@
                                     })
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
-                                        return initialSquareLenth * d.widthRatio;
+                                        return +d.nodeWidth;
                                     })
                                     .attr("height", function(d) {
-                                        return initialSquareLenth * d.heightRatio;
+                                        return +d.nodeHeight;
                                     })
                                     .attr("rx", 0)
                                     .attr("ry", 0)
                                     .transition()
                                     .duration(1000)
                                     .attr("x", function(d) {
-                                        return width / (XnumGroup + 1) / 4 + (+d.tempID % (+d.nodeWidth)) * initialSquareLenth * d.widthRatio;
+                                        return +d.nodeX;
                                     })
                                     .attr("y", function(d) {
-                                        return height / (YnumGroup + 1) - (Math.floor(+d.tempID / (+d.nodeWidth)) + 1) * initialSquareLenth * d.heightRatio;
+                                        return +d.nodeY;
                                     })
                                     .style("fill", function(d) {
                                         return color(d[config.colorDim]);
