@@ -62,6 +62,7 @@
                             // watch for data changes and re-render
                             scope.$watch('data', function(newVals, oldVals) {
                                 return scope.renderDataChange(newVals, scope.config);
+
                             }, true);
 
                             // watch for Config changes and re-render
@@ -196,10 +197,12 @@
                                 svgGroup.selectAll("*").remove();
 
 
-                                svgGroup.selectAll(".dot")
-                                    .data(data)
-                                    .enter().append("rect")
-                                    .attr("class", "dot");
+                                // svgGroup.selectAll(".dot")
+                                //     .data(data)
+                                //     .enter().append("rect")
+                                //     .attr("class", "dot");
+
+                                    scope.renderConfigChange(data, config);
 
 
                             }; //End Data change renderer
@@ -436,6 +439,8 @@
                                     .data(data, function(d) {
                                         return +d.id;
                                     })
+                                    .enter().append("rect")
+                                    .attr("class", "dot")
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
                                         return +d.nodeWidth;
