@@ -29,6 +29,5 @@ svg {
 }
 
 .dot {
-  stroke: none;
-  stroke-width: 0.2;
+  stroke-width: 1;
 }
