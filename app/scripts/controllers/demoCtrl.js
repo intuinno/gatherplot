@@ -10,9 +10,11 @@
                     //initial Data
 
 
+
                 };
 
                 $scope.loadedData = 'titanic';
+                $scope.nomaConfig.optimizeAspect = "true";
 
                 $scope.onClick = function(item) {
                     $scope.$apply(function() {
