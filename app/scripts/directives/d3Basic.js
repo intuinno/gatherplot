@@ -121,7 +121,7 @@
                                 var widthElement, heightElement;
                                 var numElementWidth;
                                 var optimalNumElementHeight = 1;
-                                var optimalRatio = width * n / height;
+                                var optimalRatio = width / n / height;
 
 
 
@@ -372,7 +372,7 @@
 
 
                                             d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
-                                            d.nodeY = -1*Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;                                            
+                                            d.nodeY = -d.nodeHeight-1*Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;                                            
                                             
                                         });
 
@@ -460,6 +460,10 @@
                                         return color(d[config.colorDim]);
                                     })
                                     .attr("transform", function(d, i) {
+
+                                        // if (d.cancer== "Cancer") {
+                                        //     console.log(height);
+                                        // }
                                         return "translate(" + (d.XOffset) + "," + (height - (d.YOffset)) + ")";
                                     });
 
