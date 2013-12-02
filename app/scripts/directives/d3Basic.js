@@ -72,13 +72,23 @@
                                 return scope.renderConfigChange(renderData, newVals);
                             }, true);
 
-                            var optimalNumElementAspect = function(width, height, n) {
+                            var optimalNumElementHorizontal = function(width, height, n, isAspect) {
+
+                                if (isAspect == "true") { 
 
                                 if (width > height) {
                                     return optimalNumElementWidthAspect(width, height, n);
                                 } else {
                                     return optimalNumElementHeightAspect(width, height, n);
+                                } 
+                             } else {
+
+                                 if (width > height) {
+                                    return n;
+                                } else {
+                                    return 1;
                                 }
+                             }
 
                             };
 
@@ -147,38 +157,6 @@
                             };
 
 
-
-                            var optimalNumElementWidthMargin = function(width, height, n) {
-
-                                var widthElement, heightElement;
-                                var numElementHeight;
-                                var optimalNumElementWidth = 1;
-                                var optimalMargin = 1;
-                                var optimalRatio = width * n / height;
-
-
-                                for (numElementWidth = 1; numElementWidth < n + 1; numElementWidth++) {
-
-                                    widthElement = width / numElementWidth;
-                                    numElementHeight = Math.ceil(n / numElementWidth);
-                                    heightElement = height / numElementHeight;
-
-                                    var aspectRatio = widthElement / heightElement;
-
-                                    var margin = (n % numElementWidth) * widthElement * heightElement / width * height;
-
-                                    if (margin * Math.pow(Math.abs(1 - aspectRatio), 2) < optimalMargin * Math.pow(Math.abs(1 - optimalRatio), 2)) {
-
-                                        optimalNumElementWidth = numElementWidth;
-                                        optimalRatio = aspectRatio;
-                                        optimalMargin = margin;
-                                    }
-
-                                }
-
-                                return optimalNumElementWidth;
-
-                            };
 
                             scope.renderDataChange = function(data, config) {
 
@@ -355,7 +333,7 @@
                                         }
 
 
-                                        tempXWidth = optimalNumElementAspect(clusterWidth, clusterHeight, count);
+                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
@@ -445,6 +423,24 @@
                                     .style("stroke", function(d) {
                                         return 'black'; 
                                     })
+                                    .attr("width", function(d) {
+                                        // console.log(initialSquareLenth);
+                                        return initialSquareLenth;
+                                    })
+                                    .attr("height", function(d) {
+                                        return initialSquareLenth;
+                                    })
+                                    .transition()
+                                    .duration(1200)
+                                    .attr("width", function(d) {
+                                        // console.log(initialSquareLenth);
+                                        return initialSquareLenth;
+                                    })
+                                    .attr("height", function(d) {
+                                        return initialSquareLenth;
+                                    })
+                                    .attr("rx", initialSquareLenth/2)
+                                    .attr("ry", initialSquareLenth/2)
                                     .transition()
                                     .duration(1200)
                                     .attr("transform", function(d, i) {
