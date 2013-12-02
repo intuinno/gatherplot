@@ -80,28 +80,24 @@
                     <div class="span4">
                         <h3>X-axis:
                             <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
-                                <option></option>
+                                <option value="">-- undefined --</option>
                             </select>
                         </h3>
                         <p>
-                            <input type="checkbox" ng-model="nomaConfig.xNormailize">Normailize
-                        </p>
-                        <p>
-                            <input type="checkbox" ng-model="nomaConfig.boarder">Border line
-                        </p>
-                        <p>
-                            <h4>Align:</h>
 
-
-
-                                <div class="btn-toolbar">
-                                    <div class="btn-group">
-                                        <a class="btn" href="#"><i class="icon-align-left"></i></a>
-                                        <a class="btn" href="#"><i class="icon-align-center"></i></a>
-                                        <a class="btn" href="#"><i class="icon-align-right"></i></a>
-                                        <a class="btn" href="#"><i class="icon-align-justify"></i></a>
-                                    </div>
+                            <div class="btn-toolbar">
+                                <div class="btn-group">
+                                    <a class="btn" href="#"><i class="icon-align-left"></i></a>
+                                    <a class="btn" href="#"><i class="icon-align-center"></i></a>
+                                    <a class="btn" href="#"><i class="icon-align-right"></i></a>
+                                    <a class="btn" href="#"><i class="icon-align-justify"></i></a>
                                 </div>
+                            </div>
+                        </p>
+                        <p>
+                            <label class="checkbox inline">
+                                <input type="checkbox" ng-model="nomaConfig.isXUniformSpacing">Uniform Spacing
+                            </label>
                         </p>
 
                     </div>
@@ -109,22 +105,25 @@
                     <div class="span4">
                         <h3>Y-axis:
                             <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
-                                <option></option>
+                                <option value="">-- undefined --</option>
                             </select>
                         </h3>
+
                         <p>
-                            <input type="checkbox" ng-model="nomaConfig.xNormailize">Normailize
+
+                            <div class="btn-toolbar">
+                                <div class="btn-group">
+                                    <a class="btn" href="#"><i class="icon-align-left"></i></a>
+                                    <a class="btn" href="#"><i class="icon-align-center"></i></a>
+                                    <a class="btn" href="#"><i class="icon-align-right"></i></a>
+                                    <a class="btn" href="#"><i class="icon-align-justify"></i></a>
+                                </div>
+                            </div>
                         </p>
                         <p>
-                            <h4>Align:</h>
-                                <br>
-
-
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.yAlign" btn-radio="'Top'">Top</button>
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.yAlign" btn-radio="'Middle'">Middle</button>
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.yAlign" btn-radio="'Bottom'">Bottom</button>
-                                </div>
+                            <label class="checkbox inline">
+                                <input type="checkbox" ng-model="nomaConfig.isYUniformSpacing">Uniform Spacing
+                            </label>
                         </p>
 
                     </div>
@@ -132,19 +131,39 @@
                     <div class="span4">
                         <h3>Color:
                             <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
-                                <option></option>
+                                <option value="">-- undefined --</option>
                             </select>
                         </h3>
 
                         <p>
-                            <h4>Sort:</h>
 
 
+
+                            <div class="btn-toolbar">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.colorOrder" btn-radio="'Vertical'">Vertical</button>
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.colorOrder" btn-radio="'Horizontal'">Horizontal</button>
-                                    <button type="button" class="btn btn-primary" ng-model="nomaConfig.colorOrder" btn-radio="''">Both</button>
+                                    <a class="btn" href="#"><i class="icon-resize-vertical"></i></a>
+                                    <a class="btn" href="#"><i class="icon-resize-horizontal"></i></a>
+                                    <a class="btn" href="#"><i class="icon-resize-full"></i></a>
                                 </div>
+                            </div>
+
+                        </p>
+
+                        <p>
+                            <label class="checkbox inline">
+                                <input type="checkbox" ng-model="nomaConfig.boarder">Border line
+                            </label>
+                        </p>
+                        <p>
+<label class="radio inline">
+                            Optimize : </label>
+                            <label class="radio inline">
+                                
+                                <input type="radio" ng-model="nomaConfig.optimize" value="aspectRatio">Aspect Ratio
+                            </label>
+                            <label class="radio inline">
+                                <input type="radio" ng-model="nomaConfig.optimize" value="margin">Margin
+                            </label>
                         </p>
 
                     </div>
@@ -163,17 +182,17 @@
                             <accordion-heading>
                                 <i class="pull-left" ng-class="{'icon-chevron-down': isTitanicOpen, 'icon-chevron-right': !isTitanicOpen}"></i>
                                 Survivor of Titanic
-                                <a class="pull-right btn btn-mini" href=""  ng-click="changeActiveDataTitanic()" >Load</a>
+                                <a class="pull-right btn btn-mini" href="" ng-click="changeActiveDataTitanic()">Load</a>
                             </accordion-heading>
-                            This dataset shows the survivors of the Titanic. 
+                            This dataset shows the survivors of the Titanic.
                         </accordion-group>
 
                         <accordion-group is-open="isMammoOpen">
                             <accordion-heading>
                                 <i class="pull-left" ng-class="{'icon-chevron-down': isMammoOpen, 'icon-chevron-right': !isMammoOpen}"></i>
-                                Bayesian Inference Mammogram 
- 
-                                <a href=""   class="pull-right btn btn-mini" ng-click="changeActiveDataMammo()" >Load</a>
+                                Bayesian Inference Mammogram
+
+                                <a href="" class="pull-right btn btn-mini" ng-click="changeActiveDataMammo()">Load</a>
                             </accordion-heading>
                             The probability that a woman at age 40 has breast cancer is 1%. According to the literature, the probability that the disease is detected by a mammography is 80%. The probability that the test detects the disease although the patient does not have it is 9.6%. If a woman at age 40 is tested as positive, what is the prob- ability that she indeed has breast cancer?
                         </accordion-group>
