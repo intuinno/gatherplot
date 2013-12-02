@@ -72,7 +72,7 @@
                 $scope.changeActiveDataMammo = function() {
 
                     //Config settings
-                    var numberOfEntity = 10000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -98,18 +98,18 @@
                             temp.cancer = 'Cancer';
 
                             if (Math.random() > 0.8) {
-                                temp.mamo = 'Negative Mamo';
+                                temp.mammo = 'Negative Mamo';
                             } else {
-                                temp.mamo = 'Positive Mamo';
+                                temp.mammo = 'Positive Mamo';
                             }
 
                         } else {
                             temp.cancer = 'No Cancer';
 
                             if (Math.random() > 0.096) {
-                                temp.mamo = 'Negative Mamo';
+                                temp.mammo = 'Negative Mamo';
                             } else {
-                                temp.mamo = 'Positive Mamo';
+                                temp.mammo = 'Positive Mamo';
                             }
                         }
 
@@ -133,6 +133,37 @@
 
                 }; //End  $scope.changeActiveDataMammo()
 
+
+                $scope.changeConfigMammoProblem = function() {
+
+                    if ($scope.activeData != 'Bayesian Inference - Mammogram') {
+
+                        $scope.changeActiveDataMammo();
+                    }
+
+
+                    $scope.nomaConfig.isXUniformSpacing = true;
+                    $scope.nomaConfig.isYUniformSpacing = true;
+                    $scope.nomaConfig.xDim = 'cancer';
+                    $scope.nomaConfig.yDim = '';
+                    $scope.nomaConfig.colorDim = 'mammo';
+
+                };
+
+                $scope.changeConfigMammoAnswer = function() {
+
+                    if ($scope.activeData != 'Bayesian Inference - Mammogram') {
+
+                        $scope.changeActiveDataMammo();
+                    }
+
+                    $scope.nomaConfig.isXUniformSpacing = true;
+                    $scope.nomaConfig.isYUniformSpacing = true;
+                    $scope.nomaConfig.xDim = 'mammo';
+                    $scope.nomaConfig.yDim = '';
+                    $scope.nomaConfig.colorDim = 'cancer';
+
+                };
 
             }
         ]);

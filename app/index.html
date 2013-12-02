@@ -194,7 +194,15 @@
 
                                 <a href="" class="pull-right btn btn-mini" ng-click="changeActiveDataMammo()">Load</a>
                             </accordion-heading>
-                            The probability that a woman at age 40 has breast cancer is 1%. According to the literature, the probability that the disease is detected by a mammography is 80%. The probability that the test detects the disease although the patient does not have it is 9.6%. If a woman at age 40 is tested as positive, what is the prob- ability that she indeed has breast cancer?
+                            <p>The probability that a woman has breast cancer is 1%. The probability that the disease is detected by a mammography is 80%. The probability that the test detects the disease although the patient does not have it is 9.6%.
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigMammoProblem()">Visualize</a>
+                            </p>
+
+                            <p>If a woman is tested as positive, what is the probability that she indeed has breast cancer?
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigMammoAnswer()">Visualize</a>
+                            </p>
+
+
                         </accordion-group>
 
                         <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
