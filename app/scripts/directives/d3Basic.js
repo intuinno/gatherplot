@@ -19,7 +19,8 @@
 
 
                             //Constants and Setting Environment variables 
-                            var padding = 30;
+                            var XPadding = 30;
+                            var YPadding = 15;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -29,8 +30,12 @@
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
                             var color = d3.scale.category10();
-                            var renderData = {};
+                            var renderData;
+                            var thresholdNominal = 100; //Threshold for automatic nominal identification
+                            var defaultBinSize = 10;
 
+                            scope.config.YBinSize = defaultBinSize;
+                            scope.config.XBinSize = defaultBinSize;
 
 
 
@@ -42,10 +47,6 @@
 
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
-
-                            // .attr("width", "100%" )
-                            // .attr("height","500")
-
 
 
 
@@ -72,23 +73,23 @@
                                 return scope.renderConfigChange(renderData, newVals);
                             }, true);
 
-                            var optimalNumElementHorizontal = function(width, height, n, isAspect) {
+                            var optimalNumElementHorizontal = function(width, height, n, isAspect, fillingDirection) {
 
-                                if (isAspect == "true") { 
+                                if (isAspect == "true") {
 
-                                if (width > height) {
-                                    return optimalNumElementWidthAspect(width, height, n);
+                                    if (fillingDirection == "horizontal") {
+                                        return optimalNumElementWidthAspect(width, height, n);
+                                    } else {
+                                        return optimalNumElementHeightAspect(width, height, n);
+                                    }
                                 } else {
-                                    return optimalNumElementHeightAspect(width, height, n);
-                                } 
-                             } else {
 
-                                 if (width > height) {
-                                    return n;
-                                } else {
-                                    return 1;
+                                    if (fillingDirection == "horizontal") {
+                                        return n;
+                                    } else {
+                                        return 1;
+                                    }
                                 }
-                             }
 
                             };
 
@@ -152,23 +153,13 @@
 
                                 }
 
-                                return Math.round(n/optimalNumElementHeight);
+                                return Math.round(n / optimalNumElementHeight);
 
                             };
 
 
 
                             scope.renderDataChange = function(data, config) {
-
-                                // remove all previous items before render
-                                //   svg.selectAll("*").remove();
-
-                                //   // setup variables
-                                //   var width, height, max;
-                                //   width = d3.select(iElement[0]).node().offsetWidth - margin;
-                                //   // 20 is for margins and can be changed
-                                //   height = scope.data.length * (barHeight + barPadding);
-
 
 
                                 if (!data) return;
@@ -181,9 +172,66 @@
                                     .enter().append("rect")
                                     .attr("class", "dot");
 
-                                    renderData = data;
+                                renderData = data;
 
-                                    scope.renderConfigChange(renderData, config);
+                                var nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.xDim];
+                                    })
+                                    .entries(data);
+
+                                config.xDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.yDim];
+                                    })
+                                    .entries(data);
+
+
+                                config.yDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                                //Try automatic identification 
+                                var isYNumber, isXNumber;
+
+
+
+                                if (config.xDimOrder.length > thresholdNominal) {
+
+                                    config.isXNumber = true;
+
+                                } else {
+
+                                    config.isXNumber = false;
+                                }
+
+
+                                if (config.yDimOrder.length > thresholdNominal) {
+
+                                    config.isYNumber = true;
+
+                                } else {
+
+                                    config.isYNumber = false;
+                                }
+
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.colorDim];
+                                    })
+                                    .entries(data);
+
+                                config.colorDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+
+                                scope.renderConfigChange(renderData, config);
 
 
                             }; //End Data change renderer
@@ -208,11 +256,28 @@
 
                                 //Organize Data according to the dimension
 
+
                                 var nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.xDim];
                                     })
                                     .entries(data);
+
+                                if (config.isXNumber) {
+
+                                    nest = d3.nest()
+                                        .key(function(d) {
+                                            return d[config.xDim];
+                                        })
+                                        .sortKeys(function(a, b) {
+
+
+                                            return +a - b;
+
+
+                                        })
+                                        .entries(data);
+                                }
 
                                 config.xDimOrder = nest.map(function(d) {
                                     return d.key;
@@ -224,10 +289,27 @@
                                     })
                                     .entries(data);
 
+                                if (config.isYNumber) {
+
+                                    nest = d3.nest()
+                                        .key(function(d) {
+                                            return d[config.yDim];
+                                        })
+                                        .sortKeys(function(a, b) {
+
+
+                                            return +a - b;
+
+
+                                        })
+                                        .entries(data);
+                                }
 
                                 config.yDimOrder = nest.map(function(d) {
                                     return d.key;
                                 });
+
+
 
                                 nest = d3.nest()
                                     .key(function(d) {
@@ -239,19 +321,31 @@
                                     return d.key;
                                 });
 
-
                                 nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.xDim];
                                     })
                                     .sortKeys(function(a, b) {
-                                        return config.xDimOrder.indexOf(a) - config.xDimOrder.indexOf(b);
+
+                                        if (config.isXNumber) {
+                                            return +a - b;
+                                        } else {
+                                            return config.xDimOrder.indexOf(a) - config.xDimOrder.indexOf(b);
+
+                                        }
+
                                     })
                                     .key(function(d) {
                                         return d[config.yDim];
                                     })
                                     .sortKeys(function(a, b) {
-                                        return config.yDimOrder.indexOf(a) - config.yDimOrder.indexOf(b);
+
+                                        if (config.isYNumber) {
+                                            return +a - b;
+                                        } else {
+                                            return config.yDimOrder.indexOf(a) - config.yDimOrder.indexOf(b);
+
+                                        }
                                     })
                                     .sortValues(function(a, b) {
                                         return config.colorDimOrder.indexOf(a[config.colorDim]) - config.colorDimOrder.indexOf(b[config.colorDim]);
@@ -265,8 +359,8 @@
                                     }, 0));
                                 }, 0);
 
-                                var XOffset = padding;
-                                var YOffset = padding;
+                                var XOffset = XPadding;
+                                var YOffset = YPadding;
 
                                 var clusterWidth, clusterHeight;
 
@@ -283,7 +377,7 @@
 
 
 
-                                    YOffset = padding;
+                                    YOffset = YPadding;
 
 
                                     d.values.forEach(function(d, i, j) {
@@ -302,19 +396,34 @@
 
 
                                         //clusterWidth, clusterHeight is for the region 
-                                        
+
 
                                         // If uniform Scaling X width 
 
                                         if (config.isXUniformSpacing == true) {
 
-                                            clusterWidth = (width - (XnumGroup + 1) * padding) / XnumGroup;
+                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+
+                                            if (clusterWidth <= 0) {
+
+                                                XPadding = thresholdNominal / (XnumGroup + 1);
+
+                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+
+                                            }
 
                                         } else {
 
                                             //If Mosaic plot spacing 
 
-                                            clusterWidth = (width - (XnumGroup + 1) * padding) * d.parent.sum / sum;
+                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+
+                                            if (clusterWidth <= 0) {
+
+                                                XPadding = thresholdNominal / (XnumGroup + 1);
+
+                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            }
 
                                         }
 
@@ -322,43 +431,69 @@
 
                                         if (config.isYUniformSpacing == true) {
 
-                                            clusterHeight = (height - (YnumGroup + 1) * padding) / YnumGroup;
+                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+
+                                            if (clusterHeight <= 0) {
+
+                                                YPadding = thresholdNominal / (YnumGroup + 1);
+
+                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+                                            }
+
 
                                         } else {
 
                                             //If Mosaic plot spacing 
 
-                                            clusterHeight = (height - (YnumGroup + 1) * padding) * count / d.parent.sum;
+
+
+                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
+
+                                            if (clusterHeight <= 0) {
+
+                                                YPadding = thresholdNominal / (YnumGroup + 1);
+
+                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
+                                            }
 
                                         }
 
 
-                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect);
+                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect, config.fillingDirection);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
                                         d.values.forEach(function(d, i, j) {
 
                                             d.tempXGroupSize = count;
-                                            
+
                                             d.numNodeX = tempXWidth;
                                             d.numNodeY = tempYHeight;
 
 
-                                            d.nodeWidth = clusterWidth/tempXWidth;
-                                            d.nodeHeight = clusterHeight/tempYHeight;
-                                            
+                                            d.nodeWidth = clusterWidth / tempXWidth;
+                                            d.nodeHeight = clusterHeight / tempYHeight;
+
                                             d.XOffset = XOffset;
                                             d.YOffset = YOffset;
 
+                                            if (config.fillingDirection == "vertical") {
 
-                                            d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
-                                            d.nodeY = -d.nodeHeight-1*Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;                                            
-                                            
+                                                d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;
+
+                                            } else if (config.fillingDirection == "horizontal") {
+
+                                                d.nodeX = +Math.floor(d.tempID / d.numNodeY) * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * (+d.tempID % d.numNodeY) * d.nodeHeight;
+
+                                            }
+
+
                                         });
 
 
-                                        YOffset += clusterHeight + padding;
+                                        YOffset += clusterHeight + YPadding;
 
                                         d.clusterHeight = clusterHeight;
                                         d.clusterWidth = clusterWidth;
@@ -367,7 +502,7 @@
                                     });
 
 
-                                    XOffset += clusterWidth + padding;
+                                    XOffset += clusterWidth + XPadding;
                                     d.clusterHeight = clusterHeight;
                                     d.clusterWidth = clusterWidth;
 
@@ -421,7 +556,7 @@
                                         return +d.id;
                                     })
                                     .style("stroke", function(d) {
-                                        return 'black'; 
+                                        return 'black';
                                     })
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
@@ -439,8 +574,8 @@
                                     .attr("height", function(d) {
                                         return initialSquareLenth;
                                     })
-                                    .attr("rx", initialSquareLenth/2)
-                                    .attr("ry", initialSquareLenth/2)
+                                    .attr("rx", initialSquareLenth / 2)
+                                    .attr("ry", initialSquareLenth / 2)
                                     .transition()
                                     .duration(1200)
                                     .attr("transform", function(d, i) {
@@ -475,9 +610,9 @@
                                         return color(d[config.colorDim]);
                                     })
                                     .style("stroke", function(d) {
-                                        return config.border ? 'black':'none' ; 
+                                        return config.border ? 'black' : 'none';
                                     });
-                                    
+
 
                                 var legendGroup = svg.selectAll(".legend")
                                     .data(config.colorDimOrder, function(d) {

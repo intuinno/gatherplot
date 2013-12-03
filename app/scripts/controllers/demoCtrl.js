@@ -15,6 +15,7 @@
 
                 $scope.loadedData = 'titanic';
                 $scope.nomaConfig.optimizeAspect = "true";
+                $scope.nomaConfig.fillingDirection = "vertical";
 
                 $scope.onClick = function(item) {
                     $scope.$apply(function() {
@@ -164,6 +165,72 @@
                     $scope.nomaConfig.xDim = 'mammo';
                     $scope.nomaConfig.yDim = '';
                     $scope.nomaConfig.colorDim = 'cancer';
+
+                };
+
+                $scope.changeActiveDataContinuous = function() {
+
+                    //Config settings
+                    var numberOfEntity = 1000;
+                    var numDiscreteVar = 60;
+
+                    $scope.activeData = 'Continuous Variables';
+                    var data = [];
+
+                    for (var count = 0; count < numberOfEntity; count++) {
+
+                        var temp = new Object();
+
+                        temp.id = count;
+
+                        
+                        if (Math.random() > 0.3) {
+                            temp.nominal_variable = 'Male';
+                        } else {
+                            temp.nominal_variable = 'Female';
+                        }
+
+                        if (Math.random() > 0.99) {
+                            temp.cancer = 'Cancer';
+
+                            if (Math.random() > 0.8) {
+                                temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
+                            }
+
+                        } else {
+                            temp.cancer = 'No Cancer';
+
+                            if (Math.random() > 0.096) {
+                                temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
+                            }
+                        }
+
+                        temp.continous_variable1 = d3.random.normal([0.3, 2]);
+                        temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
+                        temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
+
+
+                        temp.descriptor = temp.cancer + ", " + temp.mamo;
+
+                        data.push(temp);
+                    }
+
+                    $scope.nomaData = data;
+                    $scope.nomaConfig.dims = d3.keys(data[0]);
+
+                    var index = $scope.nomaConfig.dims.indexOf("id");
+                    $scope.nomaConfig.dims.splice(index, 1);
+
+                    $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
+                    $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
+                    $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+
+                    // $scope.$apply();
+
 
                 };
 
