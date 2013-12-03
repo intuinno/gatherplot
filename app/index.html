@@ -126,6 +126,44 @@
                             </label>
                         </p>
 
+                        <dl>
+                            <dt>
+
+                                Type of Data:
+                            </dt>
+                            <dd>
+                                <label class="radio ">
+                                    <input type="radio" ng-model="nomaConfig.isYNumber" ng-value="false">Name or Category
+                                </label>
+                            </dd>
+                            <dd>
+                                <label class="radio ">
+
+                                    <input type="radio" ng-model="nomaConfig.isYNumber" ng-value="true">Continuous Number
+                                </label>
+                            </dd>
+                            <div ng-show="nomaConfig.isYNumber">
+                                <dt>
+
+                                    Data Binning:
+                                </dt>
+                                <dd>
+                                    <label class="checkbox inline">
+                                        <input type="checkbox" ng-model="nomaConfig.isYDataBinning">Enable Data binning
+                                    </label>
+                                </dd>
+                                <dd ng-show="nomaConfig.isYDataBinning">
+                                    Input the number of bins:
+                                    <input type="number" name="inputYBinSize" ng-model="nomaConfig.YBinSize" min="0" max="100">
+
+                                    <span class="error" ng-show="DemoCtrl.inputYBinSize.$error.number">
+                                        Not valid number!</span>
+                                </dd>
+                            </div>
+                        </dl>
+
+
+
                     </div>
                     <!--/span-->
                     <div class="span4">
@@ -141,9 +179,12 @@
 
                             <div class="btn-toolbar">
                                 <div class="btn-group">
-                                    <button type="button" class="btn"  ng-model="nomaConfig.fillingDirection" btn-radio="'vertical'"><i class="icon-resize-vertical"></i></button>
-                                    <button type="button" class="btn" ng-model="nomaConfig.fillingDirection" btn-radio="'horizontal'"><i class="icon-resize-horizontal"></i></button>
-                                    <button type="button" class="btn" ng-model="nomaConfig.fillingDirection" btn-radio="both"><i class="icon-resize-full"></i></button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.fillingDirection" btn-radio="'vertical'"><i class="icon-resize-vertical"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.fillingDirection" btn-radio="'horizontal'"><i class="icon-resize-horizontal"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.fillingDirection" btn-radio="both"><i class="icon-resize-full"></i>
+                                    </button>
                                 </div>
                             </div>
 
@@ -201,24 +242,29 @@
                             <p>If a woman is tested as positive, what is the probability that she indeed has breast cancer?
                                 <a href="" class="pull-right btn btn-link" ng-click="changeConfigMammoAnswer()">Visualize</a>
                             </p>
-
-
                         </accordion-group>
 
-                        <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
-                            {{group.content}}
-                        </accordion-group>
-                        <accordion-group heading="Dynamic Body Content">
-                            <p>The body of the accordion group grows to fit the contents</p>
-                            <button class="btn btn-small" ng-click="addItem()">Add Item</button>
-                            <div ng-repeat="item in items">{{item}}</div>
-                        </accordion-group>
-                        <accordion-group is-open="isopen">
+
+                        <accordion-group is-open="isContinuousOpen">
                             <accordion-heading>
-                                I can have markup, too! <i class="pull-right" ng-class="{'icon-chevron-down': isopen, 'icon-chevron-right': !isopen}"></i>
+                                <i class="pull-left" ng-class="{'icon-chevron-down': isContinuousOpen, 'icon-chevron-right': !isContinousOpen}"></i>
+                                Continuous Variables
+
+                                <a href="" class="pull-right btn btn-mini" ng-click="changeActiveDataContinuous()">Load</a>
                             </accordion-heading>
-                            This is just some content to illustrate fancy headings.
+                            <p>This example shows how to handle continuous variables.</p>
+
+                            <p>Continuous variables
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigMammoProblem()">Visualize</a>
+                            </p>
+
+                            <p>Binning continuous variables
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigMammoProblem()">Visualize</a>
+                            </p>
+
                         </accordion-group>
+
+
                     </accordion>
 
                 </div>

@@ -29,8 +29,12 @@
                             var outerHeight = height + 2 * margin;
                             var initialSquareLenth = 10;
                             var color = d3.scale.category10();
-                            var renderData = {};
+                            var renderData;
+                            var thresholdNominal = 100; //Threshold for automatic nominal identification
+                            var defaultBinSize = 10;
 
+                            scope.config.YBinSize = defaultBinSize;
+                            scope.config.XBinSize = defaultBinSize;
 
 
 
@@ -42,10 +46,6 @@
 
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
-
-                            // .attr("width", "100%" )
-                            // .attr("height","500")
-
 
 
 
@@ -183,6 +183,51 @@
 
                                 renderData = data;
 
+                                var nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.xDim];
+                                    })
+                                    .entries(data);
+
+                                config.xDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.yDim];
+                                    })
+                                    .entries(data);
+
+
+                                config.yDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+                                //Try automatic identification 
+                                var isYNumberTemp;
+
+                                if (config.yDimOrder.length > thresholdNominal) {
+
+                                    config.isYNumber = true;
+
+                                } else {
+
+                                    config.isYNumber = false;
+                                }
+
+
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.colorDim];
+                                    })
+                                    .entries(data);
+
+                                config.colorDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
+
                                 scope.renderConfigChange(renderData, config);
 
 
@@ -208,6 +253,7 @@
 
                                 //Organize Data according to the dimension
 
+
                                 var nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.xDim];
@@ -229,6 +275,19 @@
                                     return d.key;
                                 });
 
+                                //Try automatic identification 
+                                var isYNumberTemp;
+
+                                if (config.yDimOrder.length > thresholdNominal) {
+
+                                    config.isYNumber = true;
+
+                                } else {
+
+                                    config.isYNumber = false;
+                                }
+
+
                                 nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.colorDim];
@@ -238,7 +297,6 @@
                                 config.colorDimOrder = nest.map(function(d) {
                                     return d.key;
                                 });
-
 
                                 nest = d3.nest()
                                     .key(function(d) {
@@ -333,7 +391,7 @@
                                         }
 
 
-                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect,config.fillingDirection);
+                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect, config.fillingDirection);
 
                                         tempYHeight = Math.ceil(count / tempXWidth);
 
