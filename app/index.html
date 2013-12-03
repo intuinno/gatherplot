@@ -99,6 +99,43 @@
                                 <input type="checkbox" ng-model="nomaConfig.isXUniformSpacing">Uniform Spacing
                             </label>
                         </p>
+                        
+                        <dl>
+                            <dt>
+
+                                Type of Data:
+                            </dt>
+                            <dd>
+                                <label class="radio ">
+                                    <input type="radio" ng-model="nomaConfig.isXNumber" ng-value="false">Name or Category
+                                </label>
+                            </dd>
+                            <dd>
+                                <label class="radio ">
+
+                                    <input type="radio" ng-model="nomaConfig.isXNumber" ng-value="true">Continuous Number
+                                </label>
+                            </dd>
+                            <div ng-show="nomaConfig.isXNumber">
+                                <dt>
+
+                                    Data Binning:
+                                </dt>
+                                <dd>
+                                    <label class="checkbox inline">
+                                        <input type="checkbox" ng-model="nomaConfig.isXDataBinning">Enable Data binning
+                                    </label>
+                                </dd>
+                                <dd ng-show="nomaConfig.isXDataBinning">
+                                    Input the number of bins:
+                                    <input type="number" name="inputXBinSize" ng-model="nomaConfig.XBinSize" min="0" max="100">
+
+                                    <span class="error" ng-show="DemoCtrl.inputXBinSize.$error.number">
+                                        Not valid number!</span>
+                                </dd>
+                            </div>
+                        </dl>
+
 
                     </div>
                     <!--/span-->

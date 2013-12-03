@@ -196,7 +196,19 @@
                                 });
 
                                 //Try automatic identification 
-                                var isYNumber;
+                                var isYNumber, isXNumber;
+
+
+
+                                if (config.xDimOrder.length > thresholdNominal) {
+
+                                    config.isXNumber = true;
+
+                                } else {
+
+                                    config.isXNumber = false;
+                                }
+
 
                                 if (config.yDimOrder.length > thresholdNominal) {
 
@@ -251,6 +263,22 @@
                                     })
                                     .entries(data);
 
+                                if (config.isXNumber) {
+
+                                    nest = d3.nest()
+                                        .key(function(d) {
+                                            return d[config.xDim];
+                                        })
+                                        .sortKeys(function(a, b) {
+
+
+                                            return +a - b;
+
+
+                                        })
+                                        .entries(data);
+                                }
+
                                 config.xDimOrder = nest.map(function(d) {
                                     return d.key;
                                 });
@@ -298,7 +326,14 @@
                                         return d[config.xDim];
                                     })
                                     .sortKeys(function(a, b) {
-                                        return config.xDimOrder.indexOf(a) - config.xDimOrder.indexOf(b);
+
+                                        if (config.isXNumber) {
+                                            return +a - b;
+                                        } else {
+                                            return config.xDimOrder.indexOf(a) - config.xDimOrder.indexOf(b);
+
+                                        }
+
                                     })
                                     .key(function(d) {
                                         return d[config.yDim];

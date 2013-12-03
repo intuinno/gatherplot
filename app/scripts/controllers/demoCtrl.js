@@ -211,7 +211,7 @@
 
                         temp.continous_variable1 = d3.random.normal([0.3, 2]);
                         temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
-                        temp.Age = Math.round(Math.random() * (numDiscreteVar - 1));
+                        temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
 
 
                         temp.descriptor = temp.cancer + ", " + temp.mamo;
