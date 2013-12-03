@@ -183,36 +183,38 @@
 
                         temp.id = count;
 
-                        temp.continous_variable1 = Math.random();
-                        temp.continous_variable2 = Math.random();
-                        temp.discrete_variable = Math.round(Math.random() * (numDiscreteVar - 1));
-
+                        
                         if (Math.random() > 0.3) {
                             temp.nominal_variable = 'Male';
                         } else {
                             temp.nominal_variable = 'Female';
                         }
 
-                        // if (Math.random() > 0.99) {
-                        //     temp.cancer = 'Cancer';
+                        if (Math.random() > 0.99) {
+                            temp.cancer = 'Cancer';
 
-                        //     if (Math.random() > 0.8) {
-                        //         temp.mammo = 'Negative Mamo';
-                        //     } else {
-                        //         temp.mammo = 'Positive Mamo';
-                        //     }
+                            if (Math.random() > 0.8) {
+                                temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
+                            }
 
-                        // } else {
-                        //     temp.cancer = 'No Cancer';
+                        } else {
+                            temp.cancer = 'No Cancer';
 
-                        //     if (Math.random() > 0.096) {
-                        //         temp.mammo = 'Negative Mamo';
-                        //     } else {
-                        //         temp.mammo = 'Positive Mamo';
-                        //     }
-                        // }
+                            if (Math.random() > 0.096) {
+                                temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
+                            }
+                        }
 
-                        // temp.descriptor = temp.cancer + ", " + temp.mamo;
+                        temp.continous_variable1 = d3.random.normal([0.3, 2]);
+                        temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
+                        temp.Age = Math.round(Math.random() * (numDiscreteVar - 1));
+
+
+                        temp.descriptor = temp.cancer + ", " + temp.mamo;
 
                         data.push(temp);
                     }

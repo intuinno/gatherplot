@@ -19,7 +19,8 @@
 
 
                             //Constants and Setting Environment variables 
-                            var padding = 30;
+                            var XPadding = 30;
+                            var YPadding = 15;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -160,16 +161,6 @@
 
                             scope.renderDataChange = function(data, config) {
 
-                                // remove all previous items before render
-                                //   svg.selectAll("*").remove();
-
-                                //   // setup variables
-                                //   var width, height, max;
-                                //   width = d3.select(iElement[0]).node().offsetWidth - margin;
-                                //   // 20 is for margins and can be changed
-                                //   height = scope.data.length * (barHeight + barPadding);
-
-
 
                                 if (!data) return;
 
@@ -205,7 +196,7 @@
                                 });
 
                                 //Try automatic identification 
-                                var isYNumberTemp;
+                                var isYNumber;
 
                                 if (config.yDimOrder.length > thresholdNominal) {
 
@@ -270,22 +261,26 @@
                                     })
                                     .entries(data);
 
+                                if (config.isYNumber) {
+
+                                    nest = d3.nest()
+                                        .key(function(d) {
+                                            return d[config.yDim];
+                                        })
+                                        .sortKeys(function(a, b) {
+
+
+                                            return +a - b;
+
+
+                                        })
+                                        .entries(data);
+                                }
 
                                 config.yDimOrder = nest.map(function(d) {
                                     return d.key;
                                 });
 
-                                //Try automatic identification 
-                                var isYNumberTemp;
-
-                                if (config.yDimOrder.length > thresholdNominal) {
-
-                                    config.isYNumber = true;
-
-                                } else {
-
-                                    config.isYNumber = false;
-                                }
 
 
                                 nest = d3.nest()
@@ -309,7 +304,13 @@
                                         return d[config.yDim];
                                     })
                                     .sortKeys(function(a, b) {
-                                        return config.yDimOrder.indexOf(a) - config.yDimOrder.indexOf(b);
+
+                                        if (config.isYNumber) {
+                                            return +a - b;
+                                        } else {
+                                            return config.yDimOrder.indexOf(a) - config.yDimOrder.indexOf(b);
+
+                                        }
                                     })
                                     .sortValues(function(a, b) {
                                         return config.colorDimOrder.indexOf(a[config.colorDim]) - config.colorDimOrder.indexOf(b[config.colorDim]);
@@ -323,8 +324,8 @@
                                     }, 0));
                                 }, 0);
 
-                                var XOffset = padding;
-                                var YOffset = padding;
+                                var XOffset = XPadding;
+                                var YOffset = YPadding;
 
                                 var clusterWidth, clusterHeight;
 
@@ -341,7 +342,7 @@
 
 
 
-                                    YOffset = padding;
+                                    YOffset = YPadding;
 
 
                                     d.values.forEach(function(d, i, j) {
@@ -366,13 +367,28 @@
 
                                         if (config.isXUniformSpacing == true) {
 
-                                            clusterWidth = (width - (XnumGroup + 1) * padding) / XnumGroup;
+                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+
+                                            if (clusterWidth <= 0) {
+
+                                                XPadding = thresholdNominal / (XnumGroup + 1);
+
+                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+
+                                            }
 
                                         } else {
 
                                             //If Mosaic plot spacing 
 
-                                            clusterWidth = (width - (XnumGroup + 1) * padding) * d.parent.sum / sum;
+                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+
+                                            if (clusterWidth <= 0) {
+
+                                                XPadding = thresholdNominal / (XnumGroup + 1);
+
+                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            }
 
                                         }
 
@@ -380,13 +396,30 @@
 
                                         if (config.isYUniformSpacing == true) {
 
-                                            clusterHeight = (height - (YnumGroup + 1) * padding) / YnumGroup;
+                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+
+                                            if (clusterHeight <= 0) {
+
+                                                YPadding = thresholdNominal / (YnumGroup + 1);
+
+                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+                                            }
+
 
                                         } else {
 
                                             //If Mosaic plot spacing 
 
-                                            clusterHeight = (height - (YnumGroup + 1) * padding) * count / d.parent.sum;
+
+
+                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
+
+                                            if (clusterHeight <= 0) {
+
+                                                YPadding = thresholdNominal / (YnumGroup + 1);
+
+                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
+                                            }
 
                                         }
 
@@ -425,7 +458,7 @@
                                         });
 
 
-                                        YOffset += clusterHeight + padding;
+                                        YOffset += clusterHeight + YPadding;
 
                                         d.clusterHeight = clusterHeight;
                                         d.clusterWidth = clusterWidth;
@@ -434,7 +467,7 @@
                                     });
 
 
-                                    XOffset += clusterWidth + padding;
+                                    XOffset += clusterWidth + XPadding;
                                     d.clusterHeight = clusterHeight;
                                     d.clusterWidth = clusterWidth;
 
