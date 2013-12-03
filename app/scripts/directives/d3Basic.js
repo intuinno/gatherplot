@@ -33,6 +33,8 @@
                             var renderData;
                             var thresholdNominal = 100; //Threshold for automatic nominal identification
                             var defaultBinSize = 10;
+                            var minWidth = 12;
+                            var minHeight = 6;
 
                             scope.config.YBinSize = defaultBinSize;
                             scope.config.XBinSize = defaultBinSize;
@@ -465,27 +467,46 @@
 
                                         d.values.forEach(function(d, i, j) {
 
-                                            d.tempXGroupSize = count;
+                                            // d.tempXGroupSize = count;
 
-                                            d.numNodeX = tempXWidth;
-                                            d.numNodeY = tempYHeight;
+                                            // d.numNodeX = tempXWidth;
+                                            // d.numNodeY = tempYHeight;
+                                            if (config.XAlign == 'justify') {
+
+                                                d.nodeWidth = clusterWidth / tempXWidth;
 
 
-                                            d.nodeWidth = clusterWidth / tempXWidth;
-                                            d.nodeHeight = clusterHeight / tempYHeight;
+                                            } else {
+
+                                                d.nodeWidth = minWidth;
+                                            }
+
+                                            if (config.YAlign == 'justify') {
+
+                                                d.nodeHeight = clusterHeight / tempYHeight;
+
+
+                                            } else {
+
+                                                d.nodeHeight = minHeight;
+                                            }
+
+
+
+                                           
 
                                             d.XOffset = XOffset;
                                             d.YOffset = YOffset;
 
                                             if (config.fillingDirection == "vertical") {
 
-                                                d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
-                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;
+                                                d.nodeX = +d.tempID % tempXWidth * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.tempID / tempXWidth) * d.nodeHeight;
 
                                             } else if (config.fillingDirection == "horizontal") {
 
-                                                d.nodeX = +Math.floor(d.tempID / d.numNodeY) * d.nodeWidth;
-                                                d.nodeY = -d.nodeHeight - 1 * (+d.tempID % d.numNodeY) * d.nodeHeight;
+                                                d.nodeX = +Math.floor(d.tempID / tempYHeight) * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * (+d.tempID % tempYHeight) * d.nodeHeight;
 
                                             }
 

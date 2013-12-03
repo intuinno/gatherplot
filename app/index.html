@@ -85,14 +85,21 @@
                         </h3>
                         <p>
 
-                            <div class="btn-toolbar">
+                            
+
+                             <div class="btn-toolbar">
                                 <div class="btn-group">
-                                    <a class="btn" href="#"><i class="icon-align-left"></i></a>
-                                    <a class="btn" href="#"><i class="icon-align-center"></i></a>
-                                    <a class="btn" href="#"><i class="icon-align-right"></i></a>
-                                    <a class="btn" href="#"><i class="icon-align-justify"></i></a>
+                                    <button type="button" class="btn" ng-model="nomaConfig.XAlign" btn-radio="'left'"><i class="icon-align-left"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.XAlign" btn-radio="'center'"><i class="icon-align-center"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.XAlign" btn-radio="'right'"><i class="icon-align-right"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.XAlign" btn-radio="'justify'"><i class="icon-align-justify"></i>
+                                    </button>
                                 </div>
                             </div>
+
                         </p>
                         <p>
                             <label class="checkbox inline">
@@ -148,14 +155,19 @@
 
                         <p>
 
-                            <div class="btn-toolbar">
+                             <div class="btn-toolbar">
                                 <div class="btn-group">
-                                    <a class="btn" href="#"><i class="icon-align-left"></i></a>
-                                    <a class="btn" href="#"><i class="icon-align-center"></i></a>
-                                    <a class="btn" href="#"><i class="icon-align-right"></i></a>
-                                    <a class="btn" href="#"><i class="icon-align-justify"></i></a>
+                                    <button type="button" class="btn" ng-model="nomaConfig.YAlign" btn-radio="'top'"><i class="icon-align-left"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.YAlign" btn-radio="'middle'"><i class="icon-align-center"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.YAlign" btn-radio="'bottom'"><i class="icon-align-right"></i>
+                                    </button>
+                                    <button type="button" class="btn" ng-model="nomaConfig.YAlign" btn-radio="'justify'"><i class="icon-align-justify"></i>
+                                    </button>
                                 </div>
                             </div>
+
                         </p>
                         <p>
                             <label class="checkbox inline">
@@ -296,7 +308,7 @@
                             </p>
 
                             <p>Binning continuous variables
-                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigMammoProblem()">Visualize</a>
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigContinuousBinning()">Visualize</a>
                             </p>
 
                         </accordion-group>
