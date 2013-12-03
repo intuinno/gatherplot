@@ -369,6 +369,10 @@
                                 var XnumGroup = config.xDimOrder.length;
                                 var YnumGroup = config.yDimOrder.length;
 
+
+                                minWidth = Math.sqrt(width * height/sum)/2;
+                                minHeight = minWidth;
+
                                 nest.forEach(function(d, i, j) {
 
                                     //Here d is PassengerClass Array

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NomaRect</title>
     <meta name="description" content="nomarect">
+
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap-responsive.css">
+    <link rel="stylesheet" href="/css/nomarect.css">
+
+
     <script src="scripts/library/angular.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/services/d3.js"></script>
@@ -13,26 +19,7 @@
     <script src="scripts/directives/d3Basic.js"></script>
     <script type="text/javascript" src="scripts/services/ui-bootstrap-tpls-0.7.0.js"></script>
     <!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet"> -->
-    <link rel="stylesheet" href="/css/bootstrap.css">
-    <style type="text/css">
-    body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-    }
-    .sidebar-nav {
-        padding: 9px 0;
-    }
-    @media (max-width: 980px) {
-        /* Enable use of floated navbar text */
-        .navbar-text.pull-right {
-            float: none;
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-    }
-    </style>
-    <link rel="stylesheet" href="/css/bootstrap-responsive.css">
-    <link rel="stylesheet" href="/css/nomarect.css">
+
 </head>
 
 <body ng-app="myApp">
@@ -85,9 +72,9 @@
                         </h3>
                         <p>
 
-                            
 
-                             <div class="btn-toolbar">
+
+                            <div class="btn-toolbar">
                                 <div class="btn-group">
                                     <button type="button" class="btn" ng-model="nomaConfig.XAlign" btn-radio="'left'"><i class="icon-align-left"></i>
                                     </button>
@@ -106,7 +93,7 @@
                                 <input type="checkbox" ng-model="nomaConfig.isXUniformSpacing">Uniform Spacing
                             </label>
                         </p>
-                        
+
                         <dl>
                             <dt>
 
@@ -155,7 +142,7 @@
 
                         <p>
 
-                             <div class="btn-toolbar">
+                            <div class="btn-toolbar">
                                 <div class="btn-group">
                                     <button type="button" class="btn" ng-model="nomaConfig.YAlign" btn-radio="'top'"><i class="icon-align-left"></i>
                                     </button>
