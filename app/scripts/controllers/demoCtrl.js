@@ -77,7 +77,7 @@
                 $scope.changeActiveDataMammo = function() {
 
                     //Config settings
-                    var numberOfEntity = 5000;
+                    var numberOfEntity = 4000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -173,7 +173,7 @@
                 $scope.changeActiveDataContinuous = function() {
 
                     //Config settings
-                    var numberOfEntity = 10000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -245,7 +245,7 @@
                         $scope.changeActiveDataContinuous();
                     }
 
-                    $scope.nomaConfig.isXUniformSpacing = false;
+                    $scope.nomaConfig.isXUniformSpacing = true;
                     $scope.nomaConfig.isYUniformSpacing = true;
 
                     $scope.nomaConfig.xDim = 'gender';

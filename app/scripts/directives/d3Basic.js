@@ -19,8 +19,8 @@
 
 
                             //Constants and Setting Environment variables 
-                            var XPadding = 30;
-                            var YPadding = 15;
+                            var XPadding = 60;
+                            var YPadding = 30;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -74,6 +74,34 @@
                             scope.$watch('config', function(newVals, oldVals) {
                                 return scope.renderConfigChange(renderData, newVals);
                             }, true);
+
+
+
+
+                            //Returns minimumSqure length that can be fit 
+                            // n number of node in the given width, height of cluster rectangle
+
+                            var getMinimumSquareLength = function(width, height, n, fillingDirection) {
+
+                                if (fillingDirection == "vertical") {
+
+                                    if (fillingDirection == "horizontal") {
+                                        return optimalNumElementWidthAspect(width, height, n);
+                                    } else {
+                                        return optimalNumElementHeightAspect(width, height, n);
+                                    }
+                                } else {
+
+                                    if (fillingDirection == "horizontal") {
+                                        return n;
+                                    } else {
+                                        return 1;
+                                    }
+                                }
+
+                            };
+
+
 
                             var optimalNumElementHorizontal = function(width, height, n, isAspect, fillingDirection) {
 
@@ -370,114 +398,135 @@
                                 var YnumGroup = config.yDimOrder.length;
 
 
-                                minWidth = Math.sqrt(width * height/sum)/2;
+                                minWidth = Math.sqrt(width * height / sum) / 2;
                                 minHeight = minWidth;
+
+
+
+                                //Sets the clusterWidth and clusterHeight and Xoffset, Yoffset, 
+                                //Affected only by the isXUniformSpacing and isYUniformSpacing 
+
+
+                                nest.forEach(function(d, i, j) {
+
+                                    //Here d is PassengerClass Array
+                                    YOffset = YPadding;
+                                    var tempClusterWidth, tempClusterHeight;
+
+                                    //Sets clusterWidth and clusterHeight
+                                    d.values.forEach(function(d, i, j) {
+
+                                        //clusterWidth, clusterHeight is for the region 
+                                        // If uniform Scaling X width 
+
+                                        if (config.isXUniformSpacing == true) {
+                                            tempClusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+                                            if (clusterWidth <= 0) {
+                                                XPadding = thresholdNominal / (XnumGroup + 1);
+                                                tempClusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+                                            }
+                                        } else {
+                                            //If Mosaic plot spacing 
+                                            tempClusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            if (clusterWidth <= 0) {
+                                                XPadding = thresholdNominal / (XnumGroup + 1);
+                                                tempClusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            }
+                                        }
+
+                                        // If uniform Scaling  Y Height 
+                                        if (config.isYUniformSpacing == true) {
+                                            tempClusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+                                            if (clusterHeight <= 0) {
+                                                YPadding = thresholdNominal / (YnumGroup + 1);
+                                                tempClusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+                                            }
+                                        } else {
+                                            //If Mosaic plot spacing 
+                                            tempClusterHeight = (height - (YnumGroup + 1) * YPadding) * d.values.length / d.parent.sum;
+                                            if (clusterHeight <= 0) {
+                                                YPadding = thresholdNominal / (YnumGroup + 1);
+                                                tempClusterHeight = (height - (YnumGroup + 1) * YPadding) * d.values.length / d.parent.sum;
+                                            }
+                                        }
+
+
+                                        //Update Cluster Variables 
+                                        d.YOffset = YOffset;
+                                        d.XOffset = XOffset;
+                                        d.clusterWidth = tempClusterWidth;
+                                        d.clusterHeight = tempClusterHeight;
+
+                                        //Update YOffset
+                                        YOffset += tempClusterHeight + YPadding;
+
+
+                                    });
+
+                                    XOffset += tempClusterWidth + XPadding;
+
+                                });
+
+
+                                //Gets the minHeight, minWidth for the case when the align is not justify
+                                //To do that first we get the minHeight and minWidth for Every cluster
+                                //And we select minimum one as minHeight 
+
+                                if (config.XAlign != 'justify' || config.YAlign != 'justify') {
+
+                                    //First we get the minHeight and minWidth for Every cluster
+                                    nest.forEach(function(d, i, j) {
+
+                                        //Here d is 1st level subclass
+                                        d.values.forEach(function(d, i, j) {
+
+                                            //Here d is 2nd level subclass
+                                            d.minSquareLength = getMinimumSquareLength(d.clusterWidth, d.clusterHeight, d.values.length, config.fillingDirection);
+
+                                        });
+
+                                    });
+                                }
+
+
+
+                                //Update X, Y and width height
+                                //This is CORE!!!!
 
                                 nest.forEach(function(d, i, j) {
 
                                     //Here d is PassengerClass Array
 
-                                    var count = 0;
-                                    var tempXWidth = 0;
-                                    var tempYHeight = 0;
-
-
-
-                                    YOffset = YPadding;
+                                    var XNumNodeCluster = 0;
+                                    var YNumNodeCluster = 0;
 
 
                                     d.values.forEach(function(d, i, j) {
 
-                                        //Here d is Gender Array
-                                        tempXWidth = 0;
-                                        count = 0;
+                                        //Here d is 2nd level SubCluster 
+
+
+                                        //First we get the number of element in vertical and horizontal direction for 2nd level Subcluster
+                                        //To do that we need the following 
+                                        //   - cluster width, height, 
+                                        // - number of element
+                                        // - config.optimizeAspect :  whether optimize for Aspect or margin
+                                        // - confgi.fillingDirection : filling direction, which is horizontal, vertical, or both
+
+                                        XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
+                                        YNumNodeCluster = Math.ceil(d.values.length / XNumNodeCluster);
+
+                                        clusterHeight = d.clusterHeight;
+                                        clusterWidth = d.clusterWidth;
+                                        XOffset = d.XOffset;
+                                        YOffset = d.YOffset;
 
                                         d.values.forEach(function(d, i, j) {
 
-                                            //Here d is object
-                                            d.tempID = count;
-                                            count += 1;
 
-                                        });
-
-
-                                        //clusterWidth, clusterHeight is for the region 
-
-
-                                        // If uniform Scaling X width 
-
-                                        if (config.isXUniformSpacing == true) {
-
-                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
-
-                                            if (clusterWidth <= 0) {
-
-                                                XPadding = thresholdNominal / (XnumGroup + 1);
-
-                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
-
-                                            }
-
-                                        } else {
-
-                                            //If Mosaic plot spacing 
-
-                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
-
-                                            if (clusterWidth <= 0) {
-
-                                                XPadding = thresholdNominal / (XnumGroup + 1);
-
-                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
-                                            }
-
-                                        }
-
-                                        // If uniform Scaling  Y Height 
-
-                                        if (config.isYUniformSpacing == true) {
-
-                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
-
-                                            if (clusterHeight <= 0) {
-
-                                                YPadding = thresholdNominal / (YnumGroup + 1);
-
-                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
-                                            }
-
-
-                                        } else {
-
-                                            //If Mosaic plot spacing 
-
-
-
-                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
-
-                                            if (clusterHeight <= 0) {
-
-                                                YPadding = thresholdNominal / (YnumGroup + 1);
-
-                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
-                                            }
-
-                                        }
-
-
-                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect, config.fillingDirection);
-
-                                        tempYHeight = Math.ceil(count / tempXWidth);
-
-                                        d.values.forEach(function(d, i, j) {
-
-                                            // d.tempXGroupSize = count;
-
-                                            // d.numNodeX = tempXWidth;
-                                            // d.numNodeY = tempYHeight;
                                             if (config.XAlign == 'justify') {
 
-                                                d.nodeWidth = clusterWidth / tempXWidth;
+                                                d.nodeWidth = clusterWidth / XNumNodeCluster;
 
 
                                             } else {
@@ -487,7 +536,7 @@
 
                                             if (config.YAlign == 'justify') {
 
-                                                d.nodeHeight = clusterHeight / tempYHeight;
+                                                d.nodeHeight = clusterHeight / YNumNodeCluster;
 
 
                                             } else {
@@ -497,20 +546,20 @@
 
 
 
-                                           
+                                            d.clusterID = i;
 
                                             d.XOffset = XOffset;
                                             d.YOffset = YOffset;
 
                                             if (config.fillingDirection == "vertical") {
 
-                                                d.nodeX = +d.tempID % tempXWidth * d.nodeWidth;
-                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.tempID / tempXWidth) * d.nodeHeight;
+                                                d.nodeX = +d.clusterID % XNumNodeCluster * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.clusterID / XNumNodeCluster) * d.nodeHeight;
 
                                             } else if (config.fillingDirection == "horizontal") {
 
-                                                d.nodeX = +Math.floor(d.tempID / tempYHeight) * d.nodeWidth;
-                                                d.nodeY = -d.nodeHeight - 1 * (+d.tempID % tempYHeight) * d.nodeHeight;
+                                                d.nodeX = +Math.floor(d.clusterID / YNumNodeCluster) * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * (+d.clusterID % YNumNodeCluster) * d.nodeHeight;
 
                                             }
 
@@ -518,18 +567,12 @@
                                         });
 
 
-                                        YOffset += clusterHeight + YPadding;
 
-                                        d.clusterHeight = clusterHeight;
-                                        d.clusterWidth = clusterWidth;
 
 
                                     });
 
 
-                                    XOffset += clusterWidth + XPadding;
-                                    d.clusterHeight = clusterHeight;
-                                    d.clusterWidth = clusterWidth;
 
                                 });
 
@@ -599,8 +642,15 @@
                                     .attr("height", function(d) {
                                         return initialSquareLenth;
                                     })
-                                    .attr("rx", initialSquareLenth / 2)
-                                    .attr("ry", initialSquareLenth / 2)
+                                    .attr("rx", function(d) {
+                                        return +d.nodeWidth / 2;
+                                    })
+                                    .attr("ry", function(d) {
+                                        return +d.nodeHeight / 2;
+                                    })
+                                    .style("stroke", function(d) {
+                                        return 'black';
+                                    })
                                     .transition()
                                     .duration(1200)
                                     .attr("transform", function(d, i) {
@@ -627,12 +677,16 @@
                                     .attr("height", function(d) {
                                         return +d.nodeHeight;
                                     })
-                                    .attr("rx", 0)
-                                    .attr("ry", 0)
                                     .transition()
                                     .duration(1200)
                                     .style("fill", function(d) {
                                         return color(d[config.colorDim]);
+                                    })
+                                    .attr("rx", function(d) {
+                                        return config.roundEdge ? +d.nodeWidth / 2 : 0;
+                                    })
+                                    .attr("ry", function(d) {
+                                        return config.roundEdge ? +d.nodeWidth / 2 : 0;
                                     })
                                     .style("stroke", function(d) {
                                         return config.border ? 'black' : 'none';
