@@ -59,7 +59,7 @@
             <div class="span9">
                 <div class="hero-unit">
                     <h4 class="chart-title">{{activeData}}</h4>
-                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData" config="nomaConfig"></div>
+                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" test="nomaShapeRendering"></div>
 
                 </div>
 
@@ -228,7 +228,7 @@
 
                         <p>
                             <label class="checkbox inline">
-                                <input type="checkbox" ng-model="nomaConfig.border">Border line
+                                <input type="checkbox" ng-model="nomaBorder">Border line
                             </label>
                         </p>
                         <p>
@@ -245,9 +245,55 @@
 
                         <p>
                             <label class="checkbox inline">
-                                <input type="checkbox" ng-model="nomaConfig.roundEdge">Round Edge
+                                <input type="checkbox" ng-model="nomaRound">Round Edge
                             </label>
                         </p>
+
+
+                        <dl>
+
+                            <dt>
+
+                                Settings for Chart:
+                            </dt>
+
+                            <dd>
+                                Input Width/Height:
+                                <input type="number" name="inputWidth" ng-model="nomaConfig.SVGAspectRatio" min="0.4" max="3">
+
+                                <span class="error" ng-show="DemoCtrl.inputWidth.$error.number">
+                                    Not valid number!</span>
+                            </dd>
+
+                            <dt>
+
+                                Shape Rendering:
+                            </dt>
+                            <dd>
+                                <label class="radio ">
+                                    <input type="radio" ng-model="nomaShapeRendering" ng-value="'auto'">auto
+                                </label>
+                            </dd>
+                            <dd>
+                                <label class="radio ">
+
+                                    <input type="radio" ng-model="nomaShapeRendering" ng-value="'crispEdges'">Crisp Edges
+                                </label>
+                            </dd>
+                            <dd>
+                                <label class="radio ">
+
+                                    <input type="radio" ng-model="nomaShapeRendering" ng-value="'optimizeSpeed'">Optimize Speed
+                                </label>
+                            </dd>
+                            <dd>
+                                <label class="radio ">
+
+                                    <input type="radio" ng-model="nomaShapeRendering" ng-value="'geometricPrecision'">Geometric Precision
+                                </label>
+                            </dd>
+
+                        </dl>
 
                     </div>
                     <!--/span-->
@@ -322,7 +368,7 @@
         <hr>
 
         <footer>
-            <p>&copy; Company 2013</p>
+            <p>&copy; Intuinno at PivotLab in Purdue University 2013</p>
         </footer>
 
     </div>

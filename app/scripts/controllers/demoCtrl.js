@@ -18,6 +18,14 @@
                 $scope.nomaConfig.fillingDirection = "vertical";
                 $scope.nomaConfig.XAlign = 'justify';
                 $scope.nomaConfig.YAlign = 'justify';
+                $scope.nomaConfig.SVGAspectRatio = 2;
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = true;
+                $scope.nomaShapeRendering = "auto";
+
+
+
 
                 $scope.onClick = function(item) {
                     $scope.$apply(function() {
@@ -252,8 +260,8 @@
                     $scope.nomaConfig.yDim = 'age';
                     $scope.nomaConfig.colorDim = 'mammo';
 
-                    $scope.nomaConfig.XAlign = 'left';
-                    $scope.nomaConfig.YAlign = 'justify';
+                    $scope.nomaConfig.XAlign = 'justify';
+                    $scope.nomaConfig.YAlign = 'left';
 
                     $scope.nomaConfig.isYNumber = true;
 

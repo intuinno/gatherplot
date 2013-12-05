@@ -9,7 +9,10 @@
                     scope: {
                         data: "=",
                         onClick: '&',
-                        config: "="
+                        config: "=",
+                        border: "=",
+                        round: "=",
+                        test: "=",
                     },
 
                     link: function(scope, iElement, iAttrs) {
@@ -45,7 +48,7 @@
                             var svg = d3.select(iElement[0])
                                 .append("svg:svg")
                                 .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
-                                .attr("preserveAspectRatio", "none");
+                                .attr("preserveAspectRatio", "xMinYMin");
 
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -74,6 +77,21 @@
                             scope.$watch('config', function(newVals, oldVals) {
                                 return scope.renderConfigChange(renderData, newVals);
                             }, true);
+
+                            scope.$watch('border', function(newVals, oldVals) {
+                                return scope.renderBorderChange(newVals);
+                            }, true);
+
+                            scope.$watch('round', function(newVals, oldVals) {
+                                return scope.renderRoundChange(newVals);
+                            }, true);
+
+                            scope.$watch('test', function(newVals, oldVals) {
+                                return scope.renderShapeRenderingChange(newVals);
+                            }, true);
+
+
+
 
 
 
@@ -187,6 +205,38 @@
 
                             };
 
+                            scope.renderBorderChange = function(isBorder) {
+
+                                svgGroup.selectAll(".dot")
+                                    .style("stroke", function(d) {
+                                        return isBorder ? 'black' : 'none';
+                                    });
+
+                            };
+
+
+
+
+                            scope.renderRoundChange = function(isRound) {
+
+                                svgGroup.selectAll(".dot")
+                                    .transition()
+                                    .duration(500)
+                                    .attr("rx", function(d) {
+                                        return isRound ? +d.nodeWidth / 2 : 0;
+                                    })
+                                    .attr("ry", function(d) {
+                                        return isRound ? +d.nodeWidth / 2 : 0;
+                                    })
+
+                            };
+
+                            scope.renderShapeRenderingChange = function(newShapeRendering) {
+
+                                svgGroup.selectAll(".dot")
+                                    .style("shape-rendering", newShapeRendering);
+
+                            }
 
 
                             scope.renderDataChange = function(data, config) {
@@ -276,13 +326,20 @@
 
                                 if (!data) return;
 
+
+                                XPadding = 60;
+                                YPadding = 30;
                                 //Update size of SVG
                                 var widthSVG = d3.select(iElement[0]).node().offsetWidth;
                                 // calculate the height
-                                var heightSVG = d3.select(iElement[0]).node().offsetWidth / 2;
+                                var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
 
-                                svg.attr('height', heightSVG);
-                                svg.attr('width', widthSVG);
+                                svg.attr('height', heightSVG)
+                                    .attr('width', widthSVG)
+                                    .attr("viewBox", "0 0 " + (widthSVG) + " " + (heightSVG));
+
+                                width = widthSVG - 2 * margin;
+                                height = width / config.SVGAspectRatio - margin;
 
                                 //Organize Data according to the dimension
 
@@ -596,10 +653,15 @@
 
                                 svg.selectAll(".axis").remove();
 
-                                svgGroup.append("g")
+                                var xAxisNodes = svgGroup.append("g")
                                     .attr("class", "x axis")
                                     .attr("transform", "translate(0," + height + ")")
-                                    .call(xAxis)
+                                    .call(xAxis);
+
+                                xAxisNodes.selectAll('text')
+                                    .style("font-size", 12);
+
+                                xAxisNodes
                                     .append("text")
                                     .attr("class", "axislabel")
                                     .attr("x", width / 2)
@@ -607,9 +669,21 @@
                                     .style("text-anchor", "end")
                                     .text(config.xDim);
 
-                                svgGroup.append("g")
+
+
+                                var yAxisNodes = svgGroup.append("g")
                                     .attr("class", "y axis")
-                                    .call(yAxis)
+                                    .call(yAxis);
+
+                                yAxisNodes.selectAll('text')
+                                    .style("font-size", 12)
+                                    .attr("y", -15)
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("dx", function(d) {
+                                        return (d.length - 1) * 12 / 2;
+                                    });
+
+                                yAxisNodes
                                     .append("text")
                                     .attr("class", "axislabel")
                                     .attr("transform", "rotate(-90)")
@@ -617,24 +691,28 @@
                                     .attr("y", -50)
                                     .attr("dy", ".71em")
                                     .style("text-anchor", "end")
-                                    .text(config.yDim)
+                                    .text(config.yDim);
+
+                                svg.selectAll('.axis line, .axis path').style({
+                                    'stroke': 'Black',
+                                    'fill': 'none',
+                                    'stroke-width': '1px',
+                                    "shape-rendering": "crispEdges"
+                                });
+
 
                                 svgGroup.selectAll(".dot")
                                     .data(data, function(d) {
                                         return +d.id;
                                     })
+                                    .transition()
+                                    .duration(500)
+                                    .style("fill", function(d) {
+                                        return color(d[config.colorDim]);
+                                    })
                                     .style("stroke", function(d) {
                                         return 'black';
                                     })
-                                    .attr("width", function(d) {
-                                        // console.log(initialSquareLenth);
-                                        return initialSquareLenth;
-                                    })
-                                    .attr("height", function(d) {
-                                        return initialSquareLenth;
-                                    })
-                                    .transition()
-                                    .duration(1200)
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
                                         return initialSquareLenth;
@@ -647,9 +725,6 @@
                                     })
                                     .attr("ry", function(d) {
                                         return +d.nodeHeight / 2;
-                                    })
-                                    .style("stroke", function(d) {
-                                        return 'black';
                                     })
                                     .transition()
                                     .duration(1200)
@@ -677,20 +752,17 @@
                                     .attr("height", function(d) {
                                         return +d.nodeHeight;
                                     })
-                                    .transition()
-                                    .duration(1200)
-                                    .style("fill", function(d) {
-                                        return color(d[config.colorDim]);
-                                    })
                                     .attr("rx", function(d) {
-                                        return config.roundEdge ? +d.nodeWidth / 2 : 0;
+                                        return scope.round ? +d.nodeWidth / 2 : 0;
                                     })
                                     .attr("ry", function(d) {
-                                        return config.roundEdge ? +d.nodeWidth / 2 : 0;
+                                        return scope.round ? +d.nodeWidth / 2 : 0;
                                     })
                                     .style("stroke", function(d) {
-                                        return config.border ? 'black' : 'none';
-                                    });
+                                        return scope.border ? 'black' : 'none';
+                                    })
+                                    .style("stroke-width", "1px")
+                                    .style("shape-rendering", scope.test);
 
 
                                 var legendGroup = svg.selectAll(".legend")
