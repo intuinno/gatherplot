@@ -181,7 +181,7 @@
                 $scope.changeActiveDataContinuous = function() {
 
                     //Config settings
-                    var numberOfEntity = 1000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';

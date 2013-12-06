@@ -23,7 +23,7 @@
 
                             //Constants and Setting Environment variables 
                             var XPadding = 30;
-                            var YPadding = 15;
+                            var YPadding = 30;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
