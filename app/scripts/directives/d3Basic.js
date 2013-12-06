@@ -39,6 +39,8 @@
                             var minWidth = 12;
                             var minHeight = 6;
 
+                            var globalMaxLength;
+
                             scope.config.YBinSize = defaultBinSize;
                             scope.config.XBinSize = defaultBinSize;
 
@@ -101,21 +103,45 @@
 
                             var getMinimumSquareLength = function(width, height, n, fillingDirection) {
 
-                                if (fillingDirection == "vertical") {
+                                var numWidth, numHeight;
+                                var maxLengthHorizontal = 0;
+                                var maxLengthVertical = 0;
+                                var tempLength;
 
-                                    if (fillingDirection == "horizontal") {
-                                        return optimalNumElementWidthAspect(width, height, n);
-                                    } else {
-                                        return optimalNumElementHeightAspect(width, height, n);
-                                    }
-                                } else {
+                                //First check horizontal direction
 
-                                    if (fillingDirection == "horizontal") {
-                                        return n;
-                                    } else {
-                                        return 1;
-                                    }
+                                numWidth = 1;
+                                numHeight = Math.floor(height / width);
+
+                                while (numHeight * numWidth < n) {
+
+                                    tempLength = width / numWidth;
+
+                                    numHeight = Math.floor(height / tempLength);
+
+                                    numWidth += 1;
+
                                 }
+
+                                maxLengthHorizontal = tempLength;
+
+                                //Then check vertical direction 
+
+                                numHeight = 1;
+                                numWidth = Math.floor(width / height);
+
+                                while (numHeight * numWidth < n) {
+
+                                    tempLength = height / numHeight;
+
+                                    numWidth = Math.floor(height / tempLength);
+
+                                    numHeight += 1;
+                                }
+
+                                maxLengthVertical = tempLength;
+
+                                return maxLengthVertical > maxLengthHorizontal ? maxLengthVertical : maxLengthHorizontal;
 
                             };
 
@@ -455,11 +481,6 @@
                                 var YnumGroup = config.yDimOrder.length;
 
 
-                                minWidth = Math.sqrt(width * height / sum) / 2;
-                                minHeight = minWidth;
-
-
-
                                 //Sets the clusterWidth and clusterHeight and Xoffset, Yoffset, 
                                 //Affected only by the isXUniformSpacing and isYUniformSpacing 
 
@@ -469,41 +490,47 @@
                                     //Here d is PassengerClass Array
                                     YOffset = YPadding;
                                     var tempClusterWidth, tempClusterHeight;
+                                    var tempXPadding, tempYPadding;
 
                                     //Sets clusterWidth and clusterHeight
                                     d.values.forEach(function(d, i, j) {
+
+                                        tempXPadding= XPadding;
+                                        tempYPadding = YPadding;
+
+
 
                                         //clusterWidth, clusterHeight is for the region 
                                         // If uniform Scaling X width 
 
                                         if (config.isXUniformSpacing == true) {
-                                            tempClusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
-                                            if (clusterWidth <= 0) {
-                                                XPadding = thresholdNominal / (XnumGroup + 1);
-                                                tempClusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
+                                            tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) / XnumGroup;
+                                            if (tempClusterWidth <= 0) {
+                                                tempXPadding = thresholdNominal / (XnumGroup + 1);
+                                                tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) / XnumGroup;
                                             }
                                         } else {
                                             //If Mosaic plot spacing 
                                             tempClusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
-                                            if (clusterWidth <= 0) {
-                                                XPadding = thresholdNominal / (XnumGroup + 1);
-                                                tempClusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            if (tempClusterWidth <= 0) {
+                                                tempXPadding = thresholdNominal / (XnumGroup + 1);
+                                                tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) * d.parent.sum / sum;
                                             }
                                         }
 
                                         // If uniform Scaling  Y Height 
                                         if (config.isYUniformSpacing == true) {
-                                            tempClusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
-                                            if (clusterHeight <= 0) {
-                                                YPadding = thresholdNominal / (YnumGroup + 1);
-                                                tempClusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+                                            tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) / YnumGroup;
+                                            if (tempClusterHeight <= 0) {
+                                                tempYPadding = thresholdNominal / (YnumGroup + 1);
+                                                tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) / YnumGroup;
                                             }
                                         } else {
                                             //If Mosaic plot spacing 
-                                            tempClusterHeight = (height - (YnumGroup + 1) * YPadding) * d.values.length / d.parent.sum;
-                                            if (clusterHeight <= 0) {
-                                                YPadding = thresholdNominal / (YnumGroup + 1);
-                                                tempClusterHeight = (height - (YnumGroup + 1) * YPadding) * d.values.length / d.parent.sum;
+                                            tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) * d.values.length / d.parent.sum;
+                                            if (tempClusterHeight <= 0) {
+                                                tempYPadding = thresholdNominal / (YnumGroup + 1);
+                                                tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) * d.values.length / d.parent.sum;
                                             }
                                         }
 
@@ -515,12 +542,12 @@
                                         d.clusterHeight = tempClusterHeight;
 
                                         //Update YOffset
-                                        YOffset += tempClusterHeight + YPadding;
+                                        YOffset += tempClusterHeight + tempYPadding;
 
 
                                     });
 
-                                    XOffset += tempClusterWidth + XPadding;
+                                    XOffset += tempClusterWidth + tempXPadding;
 
                                 });
 
@@ -538,11 +565,22 @@
                                         d.values.forEach(function(d, i, j) {
 
                                             //Here d is 2nd level subclass
-                                            d.minSquareLength = getMinimumSquareLength(d.clusterWidth, d.clusterHeight, d.values.length, config.fillingDirection);
+                                            d.maxSquareLength = getMinimumSquareLength(d.clusterWidth, d.clusterHeight, d.values.length, config.fillingDirection);
 
                                         });
 
                                     });
+
+                                    //Then we get the global minimum 
+                                    globalMaxLength = d3.min(nest, function(d) {
+
+                                        return d3.min(d.values, function(d) {
+
+                                            return d.maxSquareLength;
+
+                                        });
+                                    });
+
                                 }
 
 
@@ -570,40 +608,55 @@
                                         // - config.optimizeAspect :  whether optimize for Aspect or margin
                                         // - confgi.fillingDirection : filling direction, which is horizontal, vertical, or both
 
-                                        XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
-                                        YNumNodeCluster = Math.ceil(d.values.length / XNumNodeCluster);
 
                                         clusterHeight = d.clusterHeight;
                                         clusterWidth = d.clusterWidth;
-                                        XOffset = d.XOffset;
+                                        
                                         YOffset = d.YOffset;
+
+                                        var nodeWidth, nodeHeight;
+
+                                        if (config.XAlign == 'justify') {
+
+                                            XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
+                                            nodeWidth = clusterWidth / XNumNodeCluster;
+
+                                        } else {
+
+                                            nodeWidth = globalMaxLength;
+                                            XNumNodeCluster = Math.floor(clusterWidth / nodeWidth);
+
+                                        }
+
+                                        if (config.YAlign == 'justify') {
+
+                                            YNumNodeCluster = Math.ceil(d.values.length / XNumNodeCluster);
+                                            nodeHeight = clusterHeight / YNumNodeCluster;
+
+                                        } else {
+
+                                            nodeHeight = globalMaxLength;
+                                            YNumNodeCluster = Math.floor(clusterHeight / nodeHeight);
+
+                                        }
+
+                                        if (config.isXUniformSpacing) {
+
+                                            XOffset = d.XOffset;
+
+                                        } else {
+XOffset = 
+                                            
+                                        }
+
+                                            
 
                                         d.values.forEach(function(d, i, j) {
 
-
-                                            if (config.XAlign == 'justify') {
-
-                                                d.nodeWidth = clusterWidth / XNumNodeCluster;
-
-
-                                            } else {
-
-                                                d.nodeWidth = minWidth;
-                                            }
-
-                                            if (config.YAlign == 'justify') {
-
-                                                d.nodeHeight = clusterHeight / YNumNodeCluster;
-
-
-                                            } else {
-
-                                                d.nodeHeight = minHeight;
-                                            }
-
-
-
                                             d.clusterID = i;
+
+                                            d.nodeHeight = nodeHeight;
+                                            d.nodeWidth = nodeWidth;
 
                                             d.XOffset = XOffset;
                                             d.YOffset = YOffset;
@@ -632,6 +685,32 @@
 
 
                                 });
+
+if (config.isXUniformSpacing != true) {
+
+     nest.forEach(function(d, i, j) {
+
+                                    //Here d is PassengerClass Array
+
+                                    var XNumNodeCluster = 0;
+                                    var YNumNodeCluster = 0;
+
+
+                                    d.values.forEach(function(d, i, j) {
+
+                                        //Here d is 2nd level SubCluster 
+
+
+                                        //First we get the number of element in vertical and horizontal direction for 2nd level Subcluster
+                                        //To do that we need the following 
+                                        //   - cluster width, height, 
+                                        // - number of element
+                                        // - config.optimizeAspect :  whether optimize for Aspect or margin
+                                        // - confgi.fillingDirection : filling direction, which is horizontal, vertical, or both
+
+
+
+}
 
 
 
