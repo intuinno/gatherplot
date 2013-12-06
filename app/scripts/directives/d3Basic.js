@@ -22,8 +22,8 @@
 
 
                             //Constants and Setting Environment variables 
-                            var XPadding = 60;
-                            var YPadding = 30;
+                            var XPadding = 30;
+                            var YPadding = 15;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -353,19 +353,21 @@
                                 if (!data) return;
 
 
-                                XPadding = 60;
-                                YPadding = 30;
+                                // XPadding = 60;
+                                // YPadding = 30;
                                 //Update size of SVG
                                 var widthSVG = d3.select(iElement[0]).node().offsetWidth;
                                 // calculate the height
                                 var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
 
+                                outerHeight = outerWidth/config.SVGAspectRatio;
+
                                 svg.attr('height', heightSVG)
                                     .attr('width', widthSVG)
-                                    .attr("viewBox", "0 0 " + (widthSVG) + " " + (heightSVG));
+                                    .attr("viewBox", "0 0 " + (outerWidth) + " " + (outerHeight));
 
-                                width = widthSVG - 2 * margin;
-                                height = width / config.SVGAspectRatio - margin;
+                                // width = o - 2 * margin;
+                                height = outerHeight - 2*margin;
 
                                 //Organize Data according to the dimension
 
@@ -481,21 +483,21 @@
                                 var YnumGroup = config.yDimOrder.length;
 
 
-                                //Sets the clusterWidth and clusterHeight and Xoffset, Yoffset, 
+                                //Sets the clusterWidth and clusterHeight and  
                                 //Affected only by the isXUniformSpacing and isYUniformSpacing 
-
+                                var tempXPadding, tempYPadding;
 
                                 nest.forEach(function(d, i, j) {
 
                                     //Here d is PassengerClass Array
                                     YOffset = YPadding;
                                     var tempClusterWidth, tempClusterHeight;
-                                    var tempXPadding, tempYPadding;
+
 
                                     //Sets clusterWidth and clusterHeight
                                     d.values.forEach(function(d, i, j) {
 
-                                        tempXPadding= XPadding;
+                                        tempXPadding = XPadding;
                                         tempYPadding = YPadding;
 
 
@@ -536,18 +538,14 @@
 
 
                                         //Update Cluster Variables 
-                                        d.YOffset = YOffset;
-                                        d.XOffset = XOffset;
+
                                         d.clusterWidth = tempClusterWidth;
                                         d.clusterHeight = tempClusterHeight;
 
-                                        //Update YOffset
-                                        YOffset += tempClusterHeight + tempYPadding;
 
 
                                     });
 
-                                    XOffset += tempClusterWidth + tempXPadding;
 
                                 });
 
@@ -611,8 +609,7 @@
 
                                         clusterHeight = d.clusterHeight;
                                         clusterWidth = d.clusterWidth;
-                                        
-                                        YOffset = d.YOffset;
+
 
                                         var nodeWidth, nodeHeight;
 
@@ -640,16 +637,24 @@
 
                                         }
 
-                                        if (config.isXUniformSpacing) {
+                                        d.XNumNodeCluster = XNumNodeCluster;
+                                        d.YNumNodeCluster = YNumNodeCluster;
+                                        d.nodeHeight = nodeHeight;
+                                        d.nodeWidth = nodeWidth;
 
-                                            XOffset = d.XOffset;
+                                        if (config.fillingDirection == "vertical") {
 
-                                        } else {
-XOffset = 
+                                            d.YActualNumCluster = Math.floor(+d.values.length / XNumNodeCluster);
+                                            d.XActualNumCluster = XNumNodeCluster;
+
+                                        } else if (config.fillingDirection == "horizontal") {
+
                                             
+                                            d.XActualNumCluster = Math.floor(+d.values.length / YNumNodeCluster);
+                                            d.YActualNumCluster = YNumNodeCluster;
+
                                         }
 
-                                            
 
                                         d.values.forEach(function(d, i, j) {
 
@@ -657,9 +662,6 @@ XOffset =
 
                                             d.nodeHeight = nodeHeight;
                                             d.nodeWidth = nodeWidth;
-
-                                            d.XOffset = XOffset;
-                                            d.YOffset = YOffset;
 
                                             if (config.fillingDirection == "vertical") {
 
@@ -673,44 +675,61 @@ XOffset =
 
                                             }
 
+                                        });
+
+                                    });
+
+                                });
+
+                                ///Updates offset 
+                                //If uniform spacing, use the cluster height + padding
+                                //If not uniform distance, calculate actual distance using number and height
+
+                                XOffset = tempXPadding;
+                                nest.forEach(function(d, i, j) {
+
+                                    YOffset = tempYPadding;
+
+                                    d.values.forEach(function(d, i, j) {
+
+
+
+                                        d.values.forEach(function(d, i, j) {
+
+                                            d.YOffset = YOffset;
+                                            d.XOffset = XOffset;
 
                                         });
 
+                                        // If uniform Scaling  Y Height 
+                                        if (config.isYUniformSpacing == true) {
 
+                                            YOffset += d.clusterHeight + tempYPadding;
+
+                                        } else {
+
+                                            YOffset += d.nodeHeight * d.YActualNumCluster + tempYPadding;
+
+                                        }
 
 
 
                                     });
 
 
+                                    if (config.isXUniformSpacing == true) {
+
+                                        XOffset += d.values[0].clusterWidth + tempYPadding;
+
+                                    } else {
+
+                                        XOffset += d.values[0].nodeWidth * d.values[0].XActualNumCluster + tempXPadding;
+
+                                    }
 
                                 });
 
-if (config.isXUniformSpacing != true) {
 
-     nest.forEach(function(d, i, j) {
-
-                                    //Here d is PassengerClass Array
-
-                                    var XNumNodeCluster = 0;
-                                    var YNumNodeCluster = 0;
-
-
-                                    d.values.forEach(function(d, i, j) {
-
-                                        //Here d is 2nd level SubCluster 
-
-
-                                        //First we get the number of element in vertical and horizontal direction for 2nd level Subcluster
-                                        //To do that we need the following 
-                                        //   - cluster width, height, 
-                                        // - number of element
-                                        // - config.optimizeAspect :  whether optimize for Aspect or margin
-                                        // - confgi.fillingDirection : filling direction, which is horizontal, vertical, or both
-
-
-
-}
 
 
 
