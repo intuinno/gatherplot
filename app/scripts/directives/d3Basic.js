@@ -9,7 +9,10 @@
                     scope: {
                         data: "=",
                         onClick: '&',
-                        config: "="
+                        config: "=",
+                        border: "=",
+                        round: "=",
+                        test: "=",
                     },
 
                     link: function(scope, iElement, iAttrs) {
@@ -20,7 +23,7 @@
 
                             //Constants and Setting Environment variables 
                             var XPadding = 30;
-                            var YPadding = 15;
+                            var YPadding = 30;
                             var XMargin = 10;
                             var YMargin = 2;
                             var margin = 80;
@@ -33,6 +36,10 @@
                             var renderData;
                             var thresholdNominal = 100; //Threshold for automatic nominal identification
                             var defaultBinSize = 10;
+                            var minWidth = 12;
+                            var minHeight = 6;
+
+                            var globalMaxLength;
 
                             scope.config.YBinSize = defaultBinSize;
                             scope.config.XBinSize = defaultBinSize;
@@ -43,7 +50,7 @@
                             var svg = d3.select(iElement[0])
                                 .append("svg:svg")
                                 .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
-                                .attr("preserveAspectRatio", "none");
+                                .attr("preserveAspectRatio", "xMinYMin");
 
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -72,6 +79,73 @@
                             scope.$watch('config', function(newVals, oldVals) {
                                 return scope.renderConfigChange(renderData, newVals);
                             }, true);
+
+                            scope.$watch('border', function(newVals, oldVals) {
+                                return scope.renderBorderChange(newVals);
+                            }, true);
+
+                            scope.$watch('round', function(newVals, oldVals) {
+                                return scope.renderRoundChange(newVals);
+                            }, true);
+
+                            scope.$watch('test', function(newVals, oldVals) {
+                                return scope.renderShapeRenderingChange(newVals);
+                            }, true);
+
+
+
+
+
+
+
+                            //Returns minimumSqure length that can be fit 
+                            // n number of node in the given width, height of cluster rectangle
+
+                            var getMinimumSquareLength = function(width, height, n, fillingDirection) {
+
+                                var numWidth, numHeight;
+                                var maxLengthHorizontal = 0;
+                                var maxLengthVertical = 0;
+                                var tempLength;
+
+                                //First check horizontal direction
+
+                                numWidth = 1;
+                                numHeight = Math.floor(height / width);
+
+                                while (numHeight * numWidth < n) {
+
+                                    tempLength = width / numWidth;
+
+                                    numHeight = Math.floor(height / tempLength);
+
+                                    numWidth += 1;
+
+                                }
+
+                                maxLengthHorizontal = tempLength;
+
+                                //Then check vertical direction 
+
+                                numHeight = 1;
+                                numWidth = Math.floor(width / height);
+
+                                while (numHeight * numWidth < n) {
+
+                                    tempLength = height / numHeight;
+
+                                    numWidth = Math.floor(height / tempLength);
+
+                                    numHeight += 1;
+                                }
+
+                                maxLengthVertical = tempLength;
+
+                                return maxLengthVertical > maxLengthHorizontal ? maxLengthVertical : maxLengthHorizontal;
+
+                            };
+
+
 
                             var optimalNumElementHorizontal = function(width, height, n, isAspect, fillingDirection) {
 
@@ -157,6 +231,38 @@
 
                             };
 
+                            scope.renderBorderChange = function(isBorder) {
+
+                                svgGroup.selectAll(".dot")
+                                    .style("stroke", function(d) {
+                                        return isBorder ? 'black' : 'none';
+                                    });
+
+                            };
+
+
+
+
+                            scope.renderRoundChange = function(isRound) {
+
+                                svgGroup.selectAll(".dot")
+                                    .transition()
+                                    .duration(500)
+                                    .attr("rx", function(d) {
+                                        return isRound ? +d.nodeWidth / 2 : 0;
+                                    })
+                                    .attr("ry", function(d) {
+                                        return isRound ? +d.nodeWidth / 2 : 0;
+                                    })
+
+                            };
+
+                            scope.renderShapeRenderingChange = function(newShapeRendering) {
+
+                                svgGroup.selectAll(".dot")
+                                    .style("shape-rendering", newShapeRendering);
+
+                            }
 
 
                             scope.renderDataChange = function(data, config) {
@@ -246,13 +352,22 @@
 
                                 if (!data) return;
 
+
+                                // XPadding = 60;
+                                // YPadding = 30;
                                 //Update size of SVG
                                 var widthSVG = d3.select(iElement[0]).node().offsetWidth;
                                 // calculate the height
-                                var heightSVG = d3.select(iElement[0]).node().offsetWidth / 2;
+                                var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
 
-                                svg.attr('height', heightSVG);
-                                svg.attr('width', widthSVG);
+                                outerHeight = outerWidth/config.SVGAspectRatio;
+
+                                svg.attr('height', heightSVG)
+                                    .attr('width', widthSVG)
+                                    .attr("viewBox", "0 0 " + (outerWidth) + " " + (outerHeight));
+
+                                // width = o - 2 * margin;
+                                height = outerHeight - 2*margin;
 
                                 //Organize Data according to the dimension
 
@@ -367,146 +482,254 @@
                                 var XnumGroup = config.xDimOrder.length;
                                 var YnumGroup = config.yDimOrder.length;
 
+
+                                //Sets the clusterWidth and clusterHeight and  
+                                //Affected only by the isXUniformSpacing and isYUniformSpacing 
+                                var tempXPadding, tempYPadding;
+
                                 nest.forEach(function(d, i, j) {
 
                                     //Here d is PassengerClass Array
-
-                                    var count = 0;
-                                    var tempXWidth = 0;
-                                    var tempYHeight = 0;
-
-
-
                                     YOffset = YPadding;
+                                    var tempClusterWidth, tempClusterHeight;
 
 
+                                    //Sets clusterWidth and clusterHeight
                                     d.values.forEach(function(d, i, j) {
 
-                                        //Here d is Gender Array
-                                        tempXWidth = 0;
-                                        count = 0;
+                                        tempXPadding = XPadding;
+                                        tempYPadding = YPadding;
 
-                                        d.values.forEach(function(d, i, j) {
-
-                                            //Here d is object
-                                            d.tempID = count;
-                                            count += 1;
-
-                                        });
 
 
                                         //clusterWidth, clusterHeight is for the region 
-
-
                                         // If uniform Scaling X width 
 
                                         if (config.isXUniformSpacing == true) {
-
-                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
-
-                                            if (clusterWidth <= 0) {
-
-                                                XPadding = thresholdNominal / (XnumGroup + 1);
-
-                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) / XnumGroup;
-
+                                            tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) / XnumGroup;
+                                            if (tempClusterWidth <= 0) {
+                                                tempXPadding = thresholdNominal / (XnumGroup + 1);
+                                                tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) / XnumGroup;
                                             }
-
                                         } else {
-
                                             //If Mosaic plot spacing 
-
-                                            clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
-
-                                            if (clusterWidth <= 0) {
-
-                                                XPadding = thresholdNominal / (XnumGroup + 1);
-
-                                                clusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            tempClusterWidth = (width - (XnumGroup + 1) * XPadding) * d.parent.sum / sum;
+                                            if (tempClusterWidth <= 0) {
+                                                tempXPadding = thresholdNominal / (XnumGroup + 1);
+                                                tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) * d.parent.sum / sum;
                                             }
-
                                         }
 
                                         // If uniform Scaling  Y Height 
-
                                         if (config.isYUniformSpacing == true) {
-
-                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
-
-                                            if (clusterHeight <= 0) {
-
-                                                YPadding = thresholdNominal / (YnumGroup + 1);
-
-                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) / YnumGroup;
+                                            tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) / YnumGroup;
+                                            if (tempClusterHeight <= 0) {
+                                                tempYPadding = thresholdNominal / (YnumGroup + 1);
+                                                tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) / YnumGroup;
                                             }
-
-
                                         } else {
-
                                             //If Mosaic plot spacing 
-
-
-
-                                            clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
-
-                                            if (clusterHeight <= 0) {
-
-                                                YPadding = thresholdNominal / (YnumGroup + 1);
-
-                                                clusterHeight = (height - (YnumGroup + 1) * YPadding) * count / d.parent.sum;
+                                            tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) * d.values.length / d.parent.sum;
+                                            if (tempClusterHeight <= 0) {
+                                                tempYPadding = thresholdNominal / (YnumGroup + 1);
+                                                tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) * d.values.length / d.parent.sum;
                                             }
-
                                         }
 
 
-                                        tempXWidth = optimalNumElementHorizontal(clusterWidth, clusterHeight, count, config.optimizeAspect, config.fillingDirection);
+                                        //Update Cluster Variables 
 
-                                        tempYHeight = Math.ceil(count / tempXWidth);
+                                        d.clusterWidth = tempClusterWidth;
+                                        d.clusterHeight = tempClusterHeight;
 
-                                        d.values.forEach(function(d, i, j) {
-
-                                            d.tempXGroupSize = count;
-
-                                            d.numNodeX = tempXWidth;
-                                            d.numNodeY = tempYHeight;
-
-
-                                            d.nodeWidth = clusterWidth / tempXWidth;
-                                            d.nodeHeight = clusterHeight / tempYHeight;
-
-                                            d.XOffset = XOffset;
-                                            d.YOffset = YOffset;
-
-                                            if (config.fillingDirection == "vertical") {
-
-                                                d.nodeX = +d.tempID % d.numNodeX * d.nodeWidth;
-                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.tempID / d.numNodeX) * d.nodeHeight;
-
-                                            } else if (config.fillingDirection == "horizontal") {
-
-                                                d.nodeX = +Math.floor(d.tempID / d.numNodeY) * d.nodeWidth;
-                                                d.nodeY = -d.nodeHeight - 1 * (+d.tempID % d.numNodeY) * d.nodeHeight;
-
-                                            }
-
-
-                                        });
-
-
-                                        YOffset += clusterHeight + YPadding;
-
-                                        d.clusterHeight = clusterHeight;
-                                        d.clusterWidth = clusterWidth;
 
 
                                     });
 
 
-                                    XOffset += clusterWidth + XPadding;
-                                    d.clusterHeight = clusterHeight;
-                                    d.clusterWidth = clusterWidth;
+                                });
+
+
+                                //Gets the minHeight, minWidth for the case when the align is not justify
+                                //To do that first we get the minHeight and minWidth for Every cluster
+                                //And we select minimum one as minHeight 
+
+                                if (config.XAlign != 'justify' || config.YAlign != 'justify') {
+
+                                    //First we get the minHeight and minWidth for Every cluster
+                                    nest.forEach(function(d, i, j) {
+
+                                        //Here d is 1st level subclass
+                                        d.values.forEach(function(d, i, j) {
+
+                                            //Here d is 2nd level subclass
+                                            d.maxSquareLength = getMinimumSquareLength(d.clusterWidth, d.clusterHeight, d.values.length, config.fillingDirection);
+
+                                        });
+
+                                    });
+
+                                    //Then we get the global minimum 
+                                    globalMaxLength = d3.min(nest, function(d) {
+
+                                        return d3.min(d.values, function(d) {
+
+                                            return d.maxSquareLength;
+
+                                        });
+                                    });
+
+                                }
+
+
+
+                                //Update X, Y and width height
+                                //This is CORE!!!!
+
+                                nest.forEach(function(d, i, j) {
+
+                                    //Here d is PassengerClass Array
+
+                                    var XNumNodeCluster = 0;
+                                    var YNumNodeCluster = 0;
+
+
+                                    d.values.forEach(function(d, i, j) {
+
+                                        //Here d is 2nd level SubCluster 
+
+
+                                        //First we get the number of element in vertical and horizontal direction for 2nd level Subcluster
+                                        //To do that we need the following 
+                                        //   - cluster width, height, 
+                                        // - number of element
+                                        // - config.optimizeAspect :  whether optimize for Aspect or margin
+                                        // - confgi.fillingDirection : filling direction, which is horizontal, vertical, or both
+
+
+                                        clusterHeight = d.clusterHeight;
+                                        clusterWidth = d.clusterWidth;
+
+
+                                        var nodeWidth, nodeHeight;
+
+                                        if (config.XAlign == 'justify') {
+
+                                            XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
+                                            nodeWidth = clusterWidth / XNumNodeCluster;
+
+                                        } else {
+
+                                            nodeWidth = globalMaxLength;
+                                            XNumNodeCluster = Math.floor(clusterWidth / nodeWidth);
+
+                                        }
+
+                                        if (config.YAlign == 'justify') {
+
+                                            YNumNodeCluster = Math.ceil(d.values.length / XNumNodeCluster);
+                                            nodeHeight = clusterHeight / YNumNodeCluster;
+
+                                        } else {
+
+                                            nodeHeight = globalMaxLength;
+                                            YNumNodeCluster = Math.floor(clusterHeight / nodeHeight);
+
+                                        }
+
+                                        d.XNumNodeCluster = XNumNodeCluster;
+                                        d.YNumNodeCluster = YNumNodeCluster;
+                                        d.nodeHeight = nodeHeight;
+                                        d.nodeWidth = nodeWidth;
+
+                                        if (config.fillingDirection == "vertical") {
+
+                                            d.YActualNumCluster = Math.floor(+d.values.length / XNumNodeCluster);
+                                            d.XActualNumCluster = XNumNodeCluster;
+
+                                        } else if (config.fillingDirection == "horizontal") {
+
+                                            
+                                            d.XActualNumCluster = Math.floor(+d.values.length / YNumNodeCluster);
+                                            d.YActualNumCluster = YNumNodeCluster;
+
+                                        }
+
+
+                                        d.values.forEach(function(d, i, j) {
+
+                                            d.clusterID = i;
+
+                                            d.nodeHeight = nodeHeight;
+                                            d.nodeWidth = nodeWidth;
+
+                                            if (config.fillingDirection == "vertical") {
+
+                                                d.nodeX = +d.clusterID % XNumNodeCluster * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.clusterID / XNumNodeCluster) * d.nodeHeight;
+
+                                            } else if (config.fillingDirection == "horizontal") {
+
+                                                d.nodeX = +Math.floor(d.clusterID / YNumNodeCluster) * d.nodeWidth;
+                                                d.nodeY = -d.nodeHeight - 1 * (+d.clusterID % YNumNodeCluster) * d.nodeHeight;
+
+                                            }
+
+                                        });
+
+                                    });
 
                                 });
+
+                                ///Updates offset 
+                                //If uniform spacing, use the cluster height + padding
+                                //If not uniform distance, calculate actual distance using number and height
+
+                                XOffset = tempXPadding;
+                                nest.forEach(function(d, i, j) {
+
+                                    YOffset = tempYPadding;
+
+                                    d.values.forEach(function(d, i, j) {
+
+
+
+                                        d.values.forEach(function(d, i, j) {
+
+                                            d.YOffset = YOffset;
+                                            d.XOffset = XOffset;
+
+                                        });
+
+                                        // If uniform Scaling  Y Height 
+                                        if (config.isYUniformSpacing == true) {
+
+                                            YOffset += d.clusterHeight + tempYPadding;
+
+                                        } else {
+
+                                            YOffset += d.nodeHeight * d.YActualNumCluster + tempYPadding;
+
+                                        }
+
+
+
+                                    });
+
+
+                                    if (config.isXUniformSpacing == true) {
+
+                                        XOffset += d.values[0].clusterWidth + tempYPadding;
+
+                                    } else {
+
+                                        XOffset += d.values[0].nodeWidth * d.values[0].XActualNumCluster + tempXPadding;
+
+                                    }
+
+                                });
+
+
 
 
 
@@ -528,10 +751,15 @@
 
                                 svg.selectAll(".axis").remove();
 
-                                svgGroup.append("g")
+                                var xAxisNodes = svgGroup.append("g")
                                     .attr("class", "x axis")
                                     .attr("transform", "translate(0," + height + ")")
-                                    .call(xAxis)
+                                    .call(xAxis);
+
+                                xAxisNodes.selectAll('text')
+                                    .style("font-size", 12);
+
+                                xAxisNodes
                                     .append("text")
                                     .attr("class", "axislabel")
                                     .attr("x", width / 2)
@@ -539,9 +767,21 @@
                                     .style("text-anchor", "end")
                                     .text(config.xDim);
 
-                                svgGroup.append("g")
+
+
+                                var yAxisNodes = svgGroup.append("g")
                                     .attr("class", "y axis")
-                                    .call(yAxis)
+                                    .call(yAxis);
+
+                                yAxisNodes.selectAll('text')
+                                    .style("font-size", 12)
+                                    .attr("y", -15)
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("dx", function(d) {
+                                        return (d.length - 1) * 12 / 2;
+                                    });
+
+                                yAxisNodes
                                     .append("text")
                                     .attr("class", "axislabel")
                                     .attr("transform", "rotate(-90)")
@@ -549,11 +789,24 @@
                                     .attr("y", -50)
                                     .attr("dy", ".71em")
                                     .style("text-anchor", "end")
-                                    .text(config.yDim)
+                                    .text(config.yDim);
+
+                                svg.selectAll('.axis line, .axis path').style({
+                                    'stroke': 'Black',
+                                    'fill': 'none',
+                                    'stroke-width': '1px',
+                                    "shape-rendering": "crispEdges"
+                                });
+
 
                                 svgGroup.selectAll(".dot")
                                     .data(data, function(d) {
                                         return +d.id;
+                                    })
+                                    .transition()
+                                    .duration(500)
+                                    .style("fill", function(d) {
+                                        return color(d[config.colorDim]);
                                     })
                                     .style("stroke", function(d) {
                                         return 'black';
@@ -565,17 +818,12 @@
                                     .attr("height", function(d) {
                                         return initialSquareLenth;
                                     })
-                                    .transition()
-                                    .duration(1200)
-                                    .attr("width", function(d) {
-                                        // console.log(initialSquareLenth);
-                                        return initialSquareLenth;
+                                    .attr("rx", function(d) {
+                                        return +d.nodeWidth / 2;
                                     })
-                                    .attr("height", function(d) {
-                                        return initialSquareLenth;
+                                    .attr("ry", function(d) {
+                                        return +d.nodeHeight / 2;
                                     })
-                                    .attr("rx", initialSquareLenth / 2)
-                                    .attr("ry", initialSquareLenth / 2)
                                     .transition()
                                     .duration(1200)
                                     .attr("transform", function(d, i) {
@@ -602,16 +850,17 @@
                                     .attr("height", function(d) {
                                         return +d.nodeHeight;
                                     })
-                                    .attr("rx", 0)
-                                    .attr("ry", 0)
-                                    .transition()
-                                    .duration(1200)
-                                    .style("fill", function(d) {
-                                        return color(d[config.colorDim]);
+                                    .attr("rx", function(d) {
+                                        return scope.round ? +d.nodeWidth / 2 : 0;
+                                    })
+                                    .attr("ry", function(d) {
+                                        return scope.round ? +d.nodeWidth / 2 : 0;
                                     })
                                     .style("stroke", function(d) {
-                                        return config.border ? 'black' : 'none';
-                                    });
+                                        return scope.border ? 'black' : 'none';
+                                    })
+                                    .style("stroke-width", "1px")
+                                    .style("shape-rendering", scope.test);
 
 
                                 var legendGroup = svg.selectAll(".legend")

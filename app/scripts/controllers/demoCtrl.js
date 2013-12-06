@@ -16,6 +16,16 @@
                 $scope.loadedData = 'titanic';
                 $scope.nomaConfig.optimizeAspect = "true";
                 $scope.nomaConfig.fillingDirection = "vertical";
+                $scope.nomaConfig.XAlign = 'justify';
+                $scope.nomaConfig.YAlign = 'justify';
+                $scope.nomaConfig.SVGAspectRatio = 2;
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = true;
+                $scope.nomaShapeRendering = "auto";
+
+
+
 
                 $scope.onClick = function(item) {
                     $scope.$apply(function() {
@@ -75,7 +85,7 @@
                 $scope.changeActiveDataMammo = function() {
 
                     //Config settings
-                    var numberOfEntity = 5000;
+                    var numberOfEntity = 4000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -171,7 +181,7 @@
                 $scope.changeActiveDataContinuous = function() {
 
                     //Config settings
-                    var numberOfEntity = 1000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -183,11 +193,11 @@
 
                         temp.id = count;
 
-                        
+
                         if (Math.random() > 0.3) {
-                            temp.nominal_variable = 'Male';
+                            temp.gender = 'Male';
                         } else {
-                            temp.nominal_variable = 'Female';
+                            temp.gender = 'Female';
                         }
 
                         if (Math.random() > 0.99) {
@@ -213,9 +223,6 @@
                         temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
                         temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
 
-
-                        temp.descriptor = temp.cancer + ", " + temp.mamo;
-
                         data.push(temp);
                     }
 
@@ -229,10 +236,37 @@
                     $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                     $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
 
+
+
+
                     // $scope.$apply();
 
 
                 };
+
+
+
+                $scope.changeConfigContinuousBinning = function() {
+
+                    if ($scope.activeData != 'Continuous Variables') {
+
+                        $scope.changeActiveDataContinuous();
+                    }
+
+                    $scope.nomaConfig.isXUniformSpacing = true;
+                    $scope.nomaConfig.isYUniformSpacing = true;
+
+                    $scope.nomaConfig.xDim = 'gender';
+                    $scope.nomaConfig.yDim = 'age';
+                    $scope.nomaConfig.colorDim = 'mammo';
+
+                    $scope.nomaConfig.XAlign = 'justify';
+                    $scope.nomaConfig.YAlign = 'left';
+
+                    $scope.nomaConfig.isYNumber = true;
+
+                };
+
 
             }
         ]);
