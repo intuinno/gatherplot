@@ -12,7 +12,7 @@ var optimalNumElementWidthAspect = function(width, height, n) {
 
 
 
-    for (numElementWidth = 1; numElementWidth < n + 1; numElementWidth++) {
+    for (var numElementWidth = 1; numElementWidth < n + 1; numElementWidth++) {
 
         widthElement = width / numElementWidth;
         numElementHeight = Math.ceil(n / numElementWidth);
@@ -31,6 +31,39 @@ var optimalNumElementWidthAspect = function(width, height, n) {
     return optimalNumElementWidth;
 
 }
+
+//Gets the optimal height of rectangle based on 
+//Aspect ratio 
+var optimalNumElementHeightAspect = function(width, height, n) {
+
+    var widthElement, heightElement;
+    var numElementWidth;
+    var optimalNumElementHeight;
+    var optimalRatio = width * n / height;
+
+
+
+    for (var numElementHeight = 1; numElementHeight < n + 1; numElementHeight++) {
+
+        heightElement = height / numElementHeight;
+        numElementWidth = Math.ceil(n / numElementHeight);
+        widthElement = width / numElementWidth;
+
+        var aspectRatio = widthElement / heightElement;
+
+        if (Math.abs(1 - aspectRatio) < Math.abs(1 - optimalRatio)) {
+
+            optimalNumElementHeight = numElementHeight;
+            optimalRatio = aspectRatio;
+        }
+
+    }
+
+    return optimalNumElementHeight;
+
+}
+
+
 
 var optimalNumElementWidthMargin = function(width, height, n) {
 
@@ -65,14 +98,23 @@ var optimalNumElementWidthMargin = function(width, height, n) {
 }
 
 
+///////////////////////////////////
+///////////////////////////////////
+///////////////////////////////////
+// Setting Variable 
 
 var numberOfEntity = 2201;
 var multiplicationfactor = 1;
+
+var originalSquareLength = 10;
 
 var initialSquareLength = 10;
 var numDiscreteVar = 60;
 
 var nest;
+
+var XMargin = 10;
+var YMargin = 2;
 
 
 var margin = {
@@ -106,6 +148,7 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
 var legend;
 
 var squares;
@@ -118,7 +161,7 @@ var makeData = function() {
     data = [];
 
 
-    initialSquareLength /= multiplicationfactor;
+    initialSquareLength = originalSquareLength / Math.sqrt(multiplicationfactor);
 
     d3.tsv("Titanic.txt", function(error, tdata) {
 
@@ -133,10 +176,31 @@ var makeData = function() {
             temp.discrete_variable = Math.round(Math.random() * (numDiscreteVar - 1));
 
             if (Math.random() > 0.3) {
-                temp.nominal_variable = 'M';
+                temp.nominal_variable = 'Male';
             } else {
-                temp.nominal_variable = 'F';
+                temp.nominal_variable = 'Female';
             }
+
+            if (Math.random() > 0.99) {
+                temp.cancer = 'Cancer';
+
+                if (Math.random() > 0.8) {
+                    temp.mamo = 'Negative Mamo';
+                } else {
+                    temp.mamo = 'Positive Mamo';
+                }
+
+            } else {
+                temp.cancer = 'No Cancer';
+
+                if (Math.random() > 0.096) {
+                    temp.mamo = 'Negative Mamo';
+                } else {
+                    temp.mamo = 'Positive Mamo';
+                }
+            }
+            
+            temp.descriptor = temp.cancer + ", " + temp.mamo;
 
             if (temp.continous_variable1 * temp.continous_variable2 > 0.7) {
                 temp.selection_variable = 'Group 1';
@@ -164,6 +228,7 @@ var makeData = function() {
         y.domain(d3.extent(data, function(d) {
             return d.continous_variable2;
         }));
+
 
 
         svg.append("g")
@@ -237,8 +302,6 @@ var makeData = function() {
 
 
 
-
-
 $('#state').on('change', function() {
 
     var $this = $(this),
@@ -255,7 +318,7 @@ $('#state').on('change', function() {
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            x.domain(['M', 'F']);
+            x.domain(['Male', 'Female']);
             y.domain(d3.extent(data, function(d) {
                 return d.discrete_variable;
             }));
@@ -301,7 +364,7 @@ $('#state').on('change', function() {
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            x.domain(['M', 'F']);
+            x.domain(['Male', 'Female']);
             y.domain(d3.extent(data, function(d) {
                 return d.discrete_variable;
             }));
@@ -374,7 +437,7 @@ $('#state').on('change', function() {
                 .transition()
                 .duration(1000)
                 .attr("transform", function(d, i) {
-                    return "translate(" + (+d.tempID) * 10 + ",0)";
+                    return "translate(" + (+d.tempID) * initialSquareLength + ",0)";
                 });
             break;
 
@@ -386,7 +449,7 @@ $('#state').on('change', function() {
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            x.domain(['M', 'F']);
+            x.domain(['Male', 'Female']);
             y.domain(d3.extent(data, function(d) {
                 return d.discrete_variable;
             }));
@@ -467,7 +530,7 @@ $('#state').on('change', function() {
                 .transition()
                 .duration(1000)
                 .attr("transform", function(d, i) {
-                    return "translate(" + (-(+d.tempGroupSize / 2.0) + d.tempID) * 10 + ",0)";
+                    return "translate(" + (-(+d.tempGroupSize / 2.0) + d.tempID) * initialSquareLength + ",0)";
                 });
             break;
             /////////////////////////////////////
@@ -484,7 +547,7 @@ $('#state').on('change', function() {
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            x.domain(['M', 'F']);
+            x.domain(['Male', 'Female']);
             y.domain(d3.extent(data, function(d) {
                 return d.discrete_variable;
             }));
@@ -600,7 +663,7 @@ $('#state').on('change', function() {
             y = d3.scale.linear()
                 .range([height, 0]);
 
-            x.domain(['M', 'F']);
+            x.domain(['Male', 'Female']);
             y.domain(d3.extent(data, function(d) {
                 return d.discrete_variable;
             }));
@@ -741,17 +804,17 @@ $('#state').on('change', function() {
                 .data(data, function(d) {
                     return +d.id;
                 })
-                .attr("width", 10)
-                .attr("height", 10)
+                .attr("width", initialSquareLength)
+                .attr("height", initialSquareLength)
                 .attr("rx", 0)
                 .attr("ry", 0)
                 .transition()
                 .duration(1000)
                 .attr("x", function(d) {
-                    return (+d.tempID % xModulusSize) * 10;
+                    return (+d.tempID % xModulusSize) * initialSquareLength;
                 })
                 .attr("y", function(d) {
-                    return height - Math.floor(+d.tempID / xModulusSize) * 10;
+                    return height - Math.floor(+d.tempID / xModulusSize) * initialSquareLength;
                 })
                 .style("fill", function(d) {
                     return color(d.survived);
@@ -1154,7 +1217,7 @@ $('#state').on('change', function() {
                     });
 
 
-                    YOffset += tempYHeight * initialSquareLength + 20;
+                    YOffset += tempYHeight * initialSquareLength + 10;
 
 
                 });
@@ -1577,13 +1640,693 @@ $('#state').on('change', function() {
                 .style("fill", function(d) {
                     return color(d.survived);
                 })
+                .style("stroke-width", "none")
                 .attr("transform", function(d, i) {
                     return "translate(" + (+d.tempXOffset) + "," + (-d.tempYOffset) + ")";
                 });
             break;
 
+            /////////////////////////////////////////////////
+            ///////////////////////////////////
+            ///////////////////////////////////
+            // Big Data Square Discrete vs Nominal
+        case '15':
+
+
+
+            xAxis.orient("bottom");
+
+            yAxis.orient("left");
+
+            d3.select(".x").call(xAxis);
+            d3.select(".y").call(yAxis);
+
+            var selection_order = ['Yes', 'No'];
+            var class_order = ['First', 'Second', 'Third', 'Crew'];
+            var gender_order = ['Male', 'Female'];
+
+            nest = d3.nest()
+                .key(function(d) {
+                    return d.discrete_variable;
+                })
+                .sortKeys(function(a, b) {
+                    return +a - b;
+                })
+                .key(function(d) {
+                    return d.nominal_variable;
+                })
+                .sortKeys(function(a, b) {
+                    return gender_order.indexOf(a) - gender_order.indexOf(b);
+                })
+                .sortValues(function(a, b) {
+                    return selection_order.indexOf(a.survived) - selection_order.indexOf(b.survived);
+                })
+                .entries(data);
+
+            var sum = nest.reduce(function(previousValue, currentParent) {
+                return (currentParent.offset = previousValue) + (currentParent.sum = currentParent.values.reduceRight(function(previousValue, currentChild) {
+                    currentChild.parent = currentParent;
+                    return (currentChild.offset = previousValue) + currentChild.values.length;
+                }, 0));
+            }, 0);
+
+            var XOffset = 0;
+            var YOffset = 0;
+
+            var XnumGroup = nest.length;
+            var YnumGroup = nest[0].values.length;
+
+            nest.forEach(function(d, i, j) {
+
+                //Here d is PassengerClass Array
+
+                var count = 0;
+                var tempXWidth = 0;
+
+                YOffset = 0;
+
+
+                d.values.forEach(function(d, i, j) {
+
+                    //Here d is Gender Array
+                    tempXWidth = 0;
+                    count = 0;
+
+                    d.values.forEach(function(d, i, j) {
+
+                        //Here d is object
+                        d.tempID = count;
+                        count += 1;
+
+                    });
+
+                    tempXWidth = optimalNumElementWidthMargin(width / XnumGroup, height / YnumGroup, count);
+
+                    tempYHeight = Math.ceil(count / tempXWidth);
+
+                    d.values.forEach(function(d, i, j) {
+
+                        d.tempXGroupSize = count;
+                        d.tempXWidth = tempXWidth;
+                        d.tempXOffset = XOffset;
+                        d.tempYOffset = YOffset;
+                        d.tempYHeight = tempYHeight;
+                        d.widthRatio = Math.sqrt(sum) / XnumGroup / tempXWidth;
+                        d.heightRatio = Math.sqrt(sum) / YnumGroup / tempYHeight;
+
+                    });
+
+
+                    YOffset += Math.sqrt(sum) / YnumGroup * initialSquareLength + 10;
+
+
+                });
+
+
+                XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLength + 10;
+
+            });
+
+
+            svg.selectAll(".dot")
+                .data(data, function(d) {
+                    return +d.id;
+                })
+                .attr("width", function(d) {
+                    return initialSquareLength * d.widthRatio;
+                })
+                .attr("height", function(d) {
+                    return initialSquareLength * d.heightRatio;
+                })
+                .attr("rx", 0)
+                .attr("ry", 0)
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                    return (+d.tempID % (+d.tempXWidth)) * initialSquareLength * d.widthRatio;
+                })
+                .attr("y", function(d) {
+                    return height - (Math.floor(+d.tempID / (+d.tempXWidth)) + 1) * initialSquareLength * d.heightRatio;
+                })
+                .style("fill", function(d) {
+                    return color(d.survived);
+                })
+                .attr("transform", function(d, i) {
+                    return "translate(" + (+d.tempXOffset) + "," + (-d.tempYOffset) + ")";
+                });
+            break;
+
+            ///////////////////////////////////
+            ///////////////////////////////////
+            // 16 Big data Square Nominal vs Discrete
+        case '16':
+
+
+
+            xAxis.orient("bottom");
+
+            yAxis.orient("left");
+
+            d3.select(".x").call(xAxis);
+            d3.select(".y").call(yAxis);
+
+            var selection_order = ['Yes', 'No'];
+            var class_order = ['First', 'Second', 'Third', 'Crew'];
+            var gender_order = ['Male', 'Female'];
+
+            nest = d3.nest()
+                .key(function(d) {
+                    return d.nominal_variable;
+                })
+                .sortKeys(function(a, b) {
+                    return gender_order.indexOf(a) - gender_order.indexOf(b);
+                })
+                .key(function(d) {
+                    return d.discrete_variable;
+                })
+                .sortKeys(function(a, b) {
+                    return +a - b;
+                })
+                .sortValues(function(a, b) {
+                    return selection_order.indexOf(a.survived) - selection_order.indexOf(b.survived);
+                })
+                .entries(data);
+
+            var sum = nest.reduce(function(previousValue, currentParent) {
+                return (currentParent.offset = previousValue) + (currentParent.sum = currentParent.values.reduceRight(function(previousValue, currentChild) {
+                    currentChild.parent = currentParent;
+                    return (currentChild.offset = previousValue) + currentChild.values.length;
+                }, 0));
+            }, 0);
+
+            var XOffset = 0;
+            var YOffset = 0;
+
+            var XnumGroup = nest.length;
+            var YnumGroup = nest[0].values.length;
+
+            nest.forEach(function(d, i, j) {
+
+                //Here d is Gender Array
+
+                var count = 0;
+                var tempXWidth = 0;
+
+                YOffset = 0;
+
+
+                d.values.forEach(function(d, i, j) {
+
+                    //Here d is Age Array
+                    tempXWidth = 0;
+                    count = 0;
+
+                    d.values.forEach(function(d, i, j) {
+
+                        //Here d is object
+                        d.tempID = count;
+                        count += 1;
+
+                    });
+
+                    tempYHeight = optimalNumElementHeightAspect(width / XnumGroup, height / YnumGroup, count);
+
+                    tempXWidth = Math.ceil(count / tempYHeight);
+
+                    d.values.forEach(function(d, i, j) {
+
+                        d.tempXGroupSize = count;
+                        d.tempXWidth = tempXWidth;
+                        d.tempXOffset = XOffset;
+                        d.tempYOffset = YOffset;
+                        d.tempYHeight = tempYHeight;
+                        d.widthRatio = Math.sqrt(sum) / XnumGroup / tempXWidth;
+                        d.heightRatio = Math.sqrt(sum) / YnumGroup / tempYHeight;
+
+                    });
+
+
+                    YOffset += Math.sqrt(sum) / YnumGroup * initialSquareLength + YMargin;
+
+
+                });
+
+
+                XOffset += Math.sqrt(sum) / XnumGroup * initialSquareLength + XMargin;
+
+            });
+
+
+            svg.selectAll(".dot")
+                .data(data, function(d) {
+                    return +d.id;
+                })
+                .attr("width", function(d) {
+                    return initialSquareLength * d.widthRatio;
+                })
+                .attr("height", function(d) {
+                    return initialSquareLength * d.heightRatio;
+                })
+                .attr("rx", 0)
+                .attr("ry", 0)
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                    return (Math.floor(+d.tempID / (+d.tempYHeight))) * initialSquareLength * d.widthRatio;
+                })
+                .attr("y", function(d) {
+                    return height - (Math.floor(+d.tempID % (+d.tempYHeight)) + 1) * initialSquareLength * d.heightRatio;
+                })
+                .style("fill", function(d) {
+                    return color(d.survived);
+                })
+                .attr("transform", function(d, i) {
+                    return "translate(" + (+d.tempXOffset) + "," + (-d.tempYOffset) + ")";
+                });
+            break;
+
+            ///////////////////////////////////
+            ///////////////////////////////////
+            // 17 Bayesian Reasoning Cancer Mosaic Plot - Square Aspect Ratio
+        case '17':
+
+
+
+            xAxis.orient("bottom");
+
+            yAxis.orient("left");
+
+            d3.select(".x").call(xAxis);
+            d3.select(".y").call(yAxis);
+
+            var selection_order = ['Positive Mamo', 'Negative Mamo'];
+            var class_order = ['No Cancer', 'Cancer'];
+
+            nest = d3.nest()
+                .key(function(d) {
+                    return d.cancer;
+                })
+                .sortKeys(function(a, b) {
+                    return class_order.indexOf(a) - class_order.indexOf(b);
+                })
+                .sortValues(function(a, b) {
+                    return selection_order.indexOf(a.mamo) - selection_order.indexOf(b.mamo);
+                })
+                .entries(data);
+
+            var offset = 0;
+
+            nest.forEach(function(d, i, j) {
+                // console.log (d); 
+                // console.log(i); 
+                // console.log(j);
+
+                var count = 0;
+                var tempXWidth = 0;
+
+                d.values.forEach(function(d, i, j) {
+
+
+                    d.tempID = count;
+
+                    count += 1;
+
+                });
+
+                tempXWidth = Math.ceil(Math.sqrt(data.length) * count / data.length);
+
+                d.values.forEach(function(d, i, j) {
+
+
+                    d.tempXGroupSize = count;
+                    d.tempXWidth = tempXWidth;
+                    d.tempOffset = offset;
+
+
+
+                });
+
+                offset += tempXWidth * initialSquareLength + 10;
+
+
+
+            });
+
+
+
+            var max = d3.max(data, function(d) {
+                return d.tempGroupSize;
+            });
+
+            var xModulusSize = Math.floor(Math.sqrt(data.length))
+
+            svg.selectAll(".dot")
+                .data(data, function(d) {
+                    return +d.id;
+                })
+                .attr("width", initialSquareLength)
+                .attr("height", initialSquareLength)
+                .attr("rx", 0)
+                .attr("ry", 0)
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                    return (+d.tempID % (+d.tempXWidth)) * initialSquareLength;
+                })
+                .attr("y", function(d) {
+                    return height - Math.floor(+d.tempID / (+d.tempXWidth)) * initialSquareLength;
+                })
+                .style("fill", function(d) {
+                    return color(d.descriptor);
+                })
+                .attr("transform", function(d, i) {
+                    return "translate(" + (+d.tempOffset) + ",0)";
+                });
+
+
+        legend = svg.selectAll(".legend")
+            .data(color.domain())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) {
+                return "translate(0," + i * 20 + ")";
+            });
+
+
+                
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) {
+                return d;
+            });
+
+
+            break;
+
+            break;
+            ///////////////////////////////////
+            ///////////////////////////////////
+            // 18 Bayesian Reasoning Cancer Mosaic Plot - Minimum Height 
+        case '18':
+
+
+
+            xAxis.orient("bottom");
+
+            yAxis.orient("left");
+
+            d3.select(".x").call(xAxis);
+            d3.select(".y").call(yAxis);
+
+            var selection_order = ['Positive Mamo', 'Negative Mamo'];
+            var class_order = ['No Cancer', 'Cancer'];
+
+            nest = d3.nest()
+                .key(function(d) {
+                    return d.cancer;
+                })
+                .sortKeys(function(a, b) {
+                    return class_order.indexOf(a) - class_order.indexOf(b);
+                })
+                .sortValues(function(a, b) {
+                    return selection_order.indexOf(a.mamo) - selection_order.indexOf(b.mamo);
+                })
+                .entries(data);
+
+            var offset = 0;
+
+            nest.forEach(function(d, i, j) {
+                // console.log (d); 
+                // console.log(i); 
+                // console.log(j);
+
+                var count = 0;
+                var tempXWidth = 0;
+
+                d.values.forEach(function(d, i, j) {
+
+
+                    d.tempID = count;
+
+                    count += 1;
+
+                });
+
+                tempXWidth = Math.ceil(Math.sqrt(data.length) * count / data.length);
+
+                d.tempXWidth = tempXWidth;
+                d.tempYHeight = Math.ceil(count / tempXWidth);
+
+            });
+
+            var minHeight = d3.min(nest, function(d) {return d.tempYHeight; });
+
+            nest.forEach(function(d, i, j) {
+
+                var tempXWidth = Math.ceil(d.values.length / minHeight);
+
+                d.values.forEach(function(d, i, j) {
+
+
+                    d.tempXGroupSize = j.length;
+                    d.tempXWidth = tempXWidth;
+                    d.tempOffset = offset;
+
+
+
+                });
+
+                offset += tempXWidth * initialSquareLength + 10;
+
+
+
+            });
+
+
+
+            var max = d3.max(data, function(d) {
+                return d.tempGroupSize;
+            });
+
+         //   var xModulusSize = Math.floor(Math.sqrt(data.length))
+
+            svg.selectAll(".dot")
+                .data(data, function(d) {
+                    return +d.id;
+                })
+                .attr("width", initialSquareLength)
+                .attr("height", initialSquareLength)
+                .attr("rx", 0)
+                .attr("ry", 0)
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                    return (+d.tempID % (+d.tempXWidth)) * initialSquareLength;
+                })
+                .attr("y", function(d) {
+                    return height - Math.floor(+d.tempID / (+d.tempXWidth)) * initialSquareLength;
+                })
+                .style("fill", function(d) {
+                    return color(d.descriptor);
+                })
+                .attr("transform", function(d, i) {
+                    return "translate(" + (+d.tempOffset) + ",0)";
+                });
+
+
+        legend = svg.selectAll(".legend")
+            .data(color.domain())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) {
+                return "translate(0," + i * 20 + ")";
+            });
+
+
+                
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) {
+                return d;
+            });
+
+
+            break;
+
+
+            break;
+
+            ///////////////////////////////////
+            ///////////////////////////////////
+            // 19 Bayesian Reasoning Mamography Mosaic Plot - Minimum Height 
+        case '19':
+
+
+
+            xAxis.orient("bottom");
+
+            yAxis.orient("left");
+
+            d3.select(".x").call(xAxis);
+            d3.select(".y").call(yAxis);
+
+            var mamo_order = ['Positive Mamo', 'Negative Mamo'];
+            var cancer_order = ['Cancer', 'No Cancer'];
+
+            nest = d3.nest()
+                .key(function(d) {
+                    return d.mamo;
+                })
+                .sortKeys(function(a, b) {
+                    return mamo_order.indexOf(a) - mamo_order.indexOf(b);
+                })
+                .sortValues(function(a, b) {
+                    return cancer_order.indexOf(a.cancer) - cancer_order.indexOf(b.cancer);
+                })
+                .entries(data);
+
+            var offset = 0;
+
+            nest.forEach(function(d, i, j) {
+                // console.log (d); 
+                // console.log(i); 
+                // console.log(j);
+
+                var count = 0;
+                var tempXWidth = 0;
+
+                d.values.forEach(function(d, i, j) {
+
+
+                    d.tempID = count;
+
+                    count += 1;
+
+                });
+
+                tempXWidth = Math.ceil(Math.sqrt(data.length) * count / data.length);
+
+                d.tempXWidth = tempXWidth;
+                d.tempYHeight = Math.ceil(count / tempXWidth);
+
+            });
+
+            var minHeight = d3.min(nest, function(d) {return d.tempYHeight; });
+
+            nest.forEach(function(d, i, j) {
+
+                var tempXWidth = Math.ceil(d.values.length / minHeight);
+
+                d.values.forEach(function(d, i, j) {
+
+
+                    d.tempXGroupSize = j.length;
+                    d.tempXWidth = tempXWidth;
+                    d.tempOffset = offset;
+
+
+
+                });
+
+                offset += tempXWidth * initialSquareLength + 10;
+
+
+
+            });
+
+
+
+            var max = d3.max(data, function(d) {
+                return d.tempGroupSize;
+            });
+
+            var xModulusSize = Math.floor(Math.sqrt(data.length))
+
+            svg.selectAll(".dot")
+                .data(data, function(d) {
+                    return +d.id;
+                })
+                .attr("width", initialSquareLength)
+                .attr("height", initialSquareLength)
+                .transition()
+                .duration(1000)
+                .attr("x", function(d) {
+                    return (+d.tempID % (+d.tempXWidth)) * initialSquareLength;
+                })
+                .attr("y", function(d) {
+                    return height - Math.floor(+d.tempID / (+d.tempXWidth)) * initialSquareLength;
+                })
+                .style("fill", function(d) {
+                    return color(d.descriptor);
+                })
+                .attr("transform", function(d, i) {
+                    return "translate(" + (+d.tempOffset) + ",0)";
+                })
+                .transition()
+                .duration(1000)
+                .attr("rx", 0)
+                .attr("ry", 0);
+                
+
+        legend = svg.selectAll(".legend")
+            .data(color.domain())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) {
+                return "translate(0," + i * 20 + ")";
+            });
+
+
+                
+        legend.append("rect")
+            .attr("x", width - 18)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color);
+
+        legend.append("text")
+            .attr("x", width - 24)
+            .attr("y", 9)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(function(d) {
+                return d;
+            });
+
+
+            break;
+
+
     }
 });
+
+var clearSVG = function() {
+
+    if (squares != null) {
+
+        squares.remove();
+
+    }
+
+};
 
 $('#multiply').on('change', function() {
 
@@ -1592,17 +2335,20 @@ $('#multiply').on('change', function() {
 
     switch (val) {
         case '0':
-
+            clearSVG();
             break;
         case '1':
+            clearSVG();
             multiplicationfactor = 1;
             makeData();
             break;
         case '2':
+            clearSVG();
             multiplicationfactor = 10;
             makeData();
             break;
         case '3':
+            clearSVG()
             multiplicationfactor = 100;
             makeData();
             break;
