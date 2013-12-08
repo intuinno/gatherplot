@@ -123,8 +123,8 @@ var margin = {
     bottom: 30,
     left: 40
 },
-    width = 800 - margin.left - margin.right,
-    height = 700 - margin.top - margin.bottom;
+    width = 1400 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -437,7 +437,7 @@ $('#state').on('change', function() {
                 .transition()
                 .duration(1000)
                 .attr("transform", function(d, i) {
-                    return "translate(" + (+d.tempID) * initialSquareLength + ",0)";
+                    return "translate(" + (+d.tempID) * initialSquareLength + "," + (-initialSquareLength)+ ")";
                 });
             break;
 
@@ -530,7 +530,7 @@ $('#state').on('change', function() {
                 .transition()
                 .duration(1000)
                 .attr("transform", function(d, i) {
-                    return "translate(" + (-(+d.tempGroupSize / 2.0) + d.tempID) * initialSquareLength + ",0)";
+                    return "translate(" + (-(+d.tempGroupSize / 2.0) + d.tempID) * initialSquareLength + "," + (-initialSquareLength)+ ")" ;
                 });
             break;
             /////////////////////////////////////
@@ -639,7 +639,7 @@ $('#state').on('change', function() {
                 .attr("rx", 0)
                 .attr("ry", 0)
                 .attr("x", function(d) {
-                    return x(d.nominal_variable);
+                    return x(d.nominal_variable)-100;
                 })
                 .attr("y", function(d) {
                     return y(d.discrete_variable);
@@ -650,7 +650,7 @@ $('#state').on('change', function() {
                 .transition()
                 .duration(1000)
                 .attr("transform", function(d, i) {
-                    return "translate(" + (initialSquareLength * d.tempMax1 / d.tempGroupSize) * (+d.tempID) + ",0)";
+                    return "translate(" + (initialSquareLength * d.tempMax1 / d.tempGroupSize) * (+d.tempID) + "," + (-initialSquareLength)+ ")";
                 });
             break;
             ///////////////////////////////////
@@ -744,7 +744,7 @@ $('#state').on('change', function() {
                 .transition()
                 .duration(1000)
                 .attr("x", function(d) {
-                    return x(d.nominal_variable);
+                    return x(d.nominal_variable) - 200;
                 })
                 .attr("y", function(d) {
                     return y(d.discrete_variable);
@@ -753,7 +753,7 @@ $('#state').on('change', function() {
                     return color(d.selection_variable);
                 })
                 .attr("transform", function(d, i) {
-                    return "translate(" + (initialSquareLength * max / d.tempGroupSize) * (+d.tempID) + ",0)";
+                    return "translate(" + (initialSquareLength * max / d.tempGroupSize) * (+d.tempID) + "," + (-initialSquareLength)+ ")";
                 });
             break;
 
