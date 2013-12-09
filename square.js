@@ -349,7 +349,7 @@ $('#state').on('change', function() {
                     return x(d.nominal_variable);
                 })
                 .attr("y", function(d) {
-                    return y(d.discrete_variable);
+                    return y(d.discrete_variable) + (-initialSquareLength);
                 })
                 .style("fill", function(d) {
                     return color(d.selection_variable);
