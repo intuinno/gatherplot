@@ -13,7 +13,6 @@
                         border: "=",
                         round: "=",
                         test: "=",
-                        xAxis: "="
                     },
 
                     link: function(scope, iElement, iAttrs) {
@@ -92,12 +91,6 @@
                             scope.$watch('test', function(newVals, oldVals) {
                                 return scope.renderShapeRenderingChange(newVals);
                             }, true);
-
-                            scope.$watch('xAxis', function(newVals, oldVals) {
-                                return scope.changeXAxis(newVals);
-
-
-                            }, true)
 
 
 
@@ -238,39 +231,6 @@
 
                             };
 
-                            scope.changeXAxis = function(newXAxis) {
-
-                                if (!scope.data) return;
-
-                                var nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[newXAxis];
-                                    })
-                                    .entries(scope.data);
-
-                                scope.config.xDim = newXAxis;
-
-                                scope.config.xDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
-
-                                if (scope.config.xDimOrder.length > thresholdNominal) {
-
-                                    scope.config.isXNumber = true;
-
-                                } else {
-
-                                    scope.config.isXNumber = false;
-                                }
-
-                                scope.renderConfigChange(scope.data, scope.config);
-
-
-
-
-                            };
-
-
                             scope.renderBorderChange = function(isBorder) {
 
                                 svgGroup.selectAll(".dot")
@@ -320,18 +280,15 @@
 
                                 renderData = data;
 
-                                scope.xAxis = (scope.config.dims[0]);
                                 var nest = d3.nest()
                                     .key(function(d) {
-                                        return d[scope.xAxis];
+                                        return d[config.xDim];
                                     })
                                     .entries(data);
-
 
                                 config.xDimOrder = nest.map(function(d) {
                                     return d.key;
                                 });
-
 
                                 nest = d3.nest()
                                     .key(function(d) {
@@ -355,9 +312,18 @@
                                 });
 
                                 //Try automatic identification 
+                                var isYNumber, isXNumber;
 
 
 
+                                if (config.xDimOrder.length > thresholdNominal) {
+
+                                    config.isXNumber = true;
+
+                                } else {
+
+                                    config.isXNumber = false;
+                                }
 
 
                                 if (config.yDimOrder.length > thresholdNominal) {

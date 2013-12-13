@@ -81,12 +81,12 @@
                             var index = $scope.nomaConfig.dims.indexOf("id");
                             $scope.nomaConfig.dims.splice(index, 1);
 
-                            $scope.xDim = $scope.nomaConfig.dims[0];
+                            $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                             $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                             $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
 
 
-                            // $scope.$apply();
+                            $scope.$apply();
 
 
 
@@ -162,7 +162,7 @@
                     var index = $scope.nomaConfig.dims.indexOf("id");
                     $scope.nomaConfig.dims.splice(index, 1);
 
-                    $scope.xDim = $scope.nomaConfig.dims[0];
+                    $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                     $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                     $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
 
@@ -182,7 +182,7 @@
 
                     $scope.nomaConfig.isXUniformSpacing = true;
                     $scope.nomaConfig.isYUniformSpacing = true;
-                    $scope.xDim = 'cancer';
+                    $scope.nomaConfig.xDim = 'cancer';
                     $scope.nomaConfig.yDim = '';
                     $scope.nomaConfig.colorDim = 'mammo';
 
@@ -197,7 +197,7 @@
 
                     $scope.nomaConfig.isXUniformSpacing = true;
                     $scope.nomaConfig.isYUniformSpacing = true;
-                    $scope.xDim = 'mammo';
+                    $scope.nomaConfig.xDim = 'mammo';
                     $scope.nomaConfig.yDim = '';
                     $scope.nomaConfig.colorDim = 'cancer';
 
@@ -257,7 +257,7 @@
                     var index = $scope.nomaConfig.dims.indexOf("id");
                     $scope.nomaConfig.dims.splice(index, 1);
 
-                    $scope.xDim = $scope.nomaConfig.dims[0];
+                    $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                     $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                     $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
 
@@ -281,7 +281,7 @@
                     $scope.nomaConfig.isXUniformSpacing = true;
                     $scope.nomaConfig.isYUniformSpacing = true;
 
-                    $scope.xDim = 'gender';
+                    $scope.nomaConfig.xDim = 'gender';
                     $scope.nomaConfig.yDim = 'age';
                     $scope.nomaConfig.colorDim = 'mammo';
 
