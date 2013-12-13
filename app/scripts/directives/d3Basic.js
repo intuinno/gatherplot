@@ -459,7 +459,7 @@
                                         if (config.isColorNumber) {
                                             return +a - b;
                                         } else {
-                                            return config.dimOrder[config.colorDim].indexOf(a) - config.dimOrder[config.colorDim].indexOf(b);
+                                            return config.dimOrder[config.colorDim].indexOf(a[config.colorDim]) - config.dimOrder[config.colorDim].indexOf(b[config.colorDim]);
 
                                         }
 
