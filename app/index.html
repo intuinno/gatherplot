@@ -62,14 +62,14 @@
             <div class="span9">
                 <div class="hero-unit">
                     <h4 class="chart-title">{{activeData}}</h4>
-                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" test="nomaShapeRendering"></div>
+                    <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" test="nomaShapeRendering" xAxis="xDim"></div>
 
                 </div>
 
                 <div class="row-fluid">
                     <div class="span4">
                         <h3>X-axis:
-                            <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
+                            <select ng-model="xDim" ng-options="f for f in nomaConfig.dims">
                                 <option value="">-- undefined --</option>
                             </select>
                         </h3>
