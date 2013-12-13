@@ -141,8 +141,8 @@
                                 <div class="container">
 
                                     <h5>Drag and Drop for ordering</h5>
-                                    <ul ui-sortable ng-model="nomaConfig.xDimOrder" class="list">
-                                        <li ng-repeat="item in nomaConfig.xDimOrder" class="item">{{item}}</li>
+                                    <ul ui-sortable ng-model="nomaConfig.dimOrder[nomaConfig.xDim]" class="list">
+                                        <li ng-repeat="item in nomaConfig.dimOrder[nomaConfig.xDim]" class="item">{{item}}</li>
                                     </ul>
                                 </div>
                             </dd>
@@ -225,8 +225,8 @@
                                 <div class="container">
 
                                     <h5>Drag and Drop for ordering</h5>
-                                    <ul ui-sortable ng-model="nomaConfig.yDimOrder" class="list">
-                                        <li ng-repeat="item in nomaConfig.yDimOrder" class="item">{{item}}</li>
+                                    <ul ui-sortable ng-model="nomaConfig.dimOrder[nomaConfig.yDim]" class="list">
+                                        <li ng-repeat="item in nomaConfig.dimOrder[nomaConfig.yDim]" class="item">{{item}}</li>
                                     </ul>
                                 </div>
                             </dd>
@@ -369,8 +369,8 @@
                                 <div class="container">
 
                                     <h5>Drag and Drop for ordering</h5>
-                                    <ul ui-sortable ng-model="nomaConfig.colorDimOrder" class="list">
-                                        <li ng-repeat="item in nomaConfig.colorDimOrder" class="item">{{item}}</li>
+                                    <ul ui-sortable ng-model="nomaConfig.dimOrder[nomaConfig.colorDim]" class="list">
+                                        <li ng-repeat="item in nomaConfig.dimOrder[nomaConfig.colorDim]" class="item">{{item}}</li>
                                     </ul>
                                 </div>
                             </dd>

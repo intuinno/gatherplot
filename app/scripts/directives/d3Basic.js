@@ -19,8 +19,6 @@
 
                         d3Service.d3().then(function(d3) {
 
-
-
                             //Constants and Setting Environment variables 
                             var XPadding = 30;
                             var YPadding = 30;
@@ -44,9 +42,6 @@
                             scope.config.YBinSize = defaultBinSize;
                             scope.config.XBinSize = defaultBinSize;
 
-
-
-
                             var svg = d3.select(iElement[0])
                                 .append("svg:svg")
                                 .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
@@ -54,8 +49,6 @@
 
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
-
-
 
                             // on window resize, re-render d3 canvas
                             window.onresize = function() {
@@ -91,11 +84,6 @@
                             scope.$watch('test', function(newVals, oldVals) {
                                 return scope.renderShapeRenderingChange(newVals);
                             }, true);
-
-
-
-
-
 
 
                             //Returns minimumSqure length that can be fit 
@@ -166,7 +154,6 @@
                                 }
 
                             };
-
 
 
                             //Gets the optimal width of rectangle based on 
@@ -286,37 +273,32 @@
                                     })
                                     .entries(data);
 
-                                config.xDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
 
-                                nest = d3.nest()
+
+                                scope.config.dimOrder = new Object();
+
+                                for (var i=0; i < scope.config.dims.length; i++ ) {
+
+                                    nest = d3.nest()
                                     .key(function(d) {
-                                        return d[config.yDim];
+                                        return d[scope.config.dims[i]];
                                     })
                                     .entries(data);
 
+                                    config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
+                                        return d.key;
+                                    });
 
-                                config.yDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
 
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.colorDim];
-                                    })
-                                    .entries(data);
+                                }
 
-                                config.colorDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
 
                                 //Try automatic identification 
                                 var isYNumber, isXNumber;
 
 
 
-                                if (config.xDimOrder.length > thresholdNominal) {
+                                if (config.dimOrder[config.xDim].length > thresholdNominal) {
 
                                     config.isXNumber = true;
 
@@ -326,7 +308,7 @@
                                 }
 
 
-                                if (config.yDimOrder.length > thresholdNominal) {
+                                if (config.dimOrder[config.yDim].length > thresholdNominal) {
 
                                     config.isYNumber = true;
 
@@ -335,7 +317,7 @@
                                     config.isYNumber = false;
                                 }
 
-                                if (config.colorDimOrder.length > thresholdNominal) {
+                                if (config.dimOrder[config.colorDim].length > thresholdNominal) {
 
                                     config.isColorNumber = true;
 
@@ -351,7 +333,7 @@
                                     })
                                     .entries(data);
 
-                                config.colorDimOrder = nest.map(function(d) {
+                                config.dimOrder[config.colorDim] = nest.map(function(d) {
                                     return d.key;
                                 });
 
@@ -438,8 +420,6 @@
                                 }
 
 
-
-
                                 nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.colorDim];
@@ -457,7 +437,7 @@
                                         if (config.isXNumber) {
                                             return +a - b;
                                         } else {
-                                            return config.xDimOrder.indexOf(a) - config.xDimOrder.indexOf(b);
+                                            return config.dimOrder[config.xDim].indexOf(a) - config.dimOrder[config.xDim].indexOf(b);
 
                                         }
 
@@ -470,17 +450,16 @@
                                         if (config.isYNumber) {
                                             return +a - b;
                                         } else {
-                                            return config.yDimOrder.indexOf(a) - config.yDimOrder.indexOf(b);
+                                            return config.dimOrder[config.yDim].indexOf(a) - config.dimOrder[config.yDim].indexOf(b);
 
                                         }
                                     })
                                     .sortValues(function(a, b) {
-                                        // return config.colorDimOrder.indexOf(a[config.colorDim]) - config.colorDimOrder.indexOf(b[config.colorDim]);
-
+                                    
                                         if (config.isColorNumber) {
                                             return +a - b;
                                         } else {
-                                            return config.colorDimOrder.indexOf(a) - config.colorDimOrder.indexOf(b);
+                                            return config.dimOrder[config.colorDim].indexOf(a) - config.dimOrder[config.colorDim].indexOf(b);
 
                                         }
 
@@ -499,8 +478,8 @@
 
                                 var clusterWidth, clusterHeight;
 
-                                var XnumGroup = config.xDimOrder.length;
-                                var YnumGroup = config.yDimOrder.length;
+                                var XnumGroup = config.dimOrder[config.xDim].length;
+                                var YnumGroup = config.dimOrder[config.yDim].length;
 
 
                                 //Sets the clusterWidth and clusterHeight and  
@@ -755,11 +734,11 @@
 
                                 var x = d3.scale.ordinal()
                                     .rangeRoundBands([0, width], 0.2, 0.1)
-                                    .domain(config.xDimOrder);
+                                    .domain(config.dimOrder[config.xDim]);
 
                                 var y = d3.scale.ordinal()
                                     .rangeRoundBands([height, 0], 0.2, 0.1)
-                                    .domain(config.yDimOrder);
+                                    .domain(config.dimOrder[config.yDim]);
 
                                 var xAxis = d3.svg.axis()
                                     .scale(x)
@@ -884,7 +863,7 @@
 
 
                                 var legendGroup = svg.selectAll(".legend")
-                                    .data(config.colorDimOrder, function(d) {
+                                    .data(config.dimOrder[config.colorDim], function(d) {
                                         return d;
                                     });
 
