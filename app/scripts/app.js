@@ -10,7 +10,7 @@
   // setup dependency injection
   angular.module('d3', []);
   angular.module('myApp.controllers', []);
-  angular.module('myApp.directives', ['d3','ui.bootstrap']);
+  angular.module('myApp.directives', ['d3','ui.bootstrap','ui.sortable']);
 
 
 }());

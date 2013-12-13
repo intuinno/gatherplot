@@ -301,6 +301,16 @@
                                     return d.key;
                                 });
 
+                                nest = d3.nest()
+                                    .key(function(d) {
+                                        return d[config.colorDim];
+                                    })
+                                    .entries(data);
+
+                                config.colorDimOrder = nest.map(function(d) {
+                                    return d.key;
+                                });
+
                                 //Try automatic identification 
                                 var isYNumber, isXNumber;
 
@@ -323,6 +333,15 @@
                                 } else {
 
                                     config.isYNumber = false;
+                                }
+
+                                if (config.colorDimOrder.length > thresholdNominal) {
+
+                                    config.isColorNumber = true;
+
+                                } else {
+
+                                    config.isColorNumber = false;
                                 }
 
 
@@ -360,14 +379,14 @@
                                 // calculate the height
                                 var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
 
-                                outerHeight = outerWidth/config.SVGAspectRatio;
+                                outerHeight = outerWidth / config.SVGAspectRatio;
 
                                 svg.attr('height', heightSVG)
                                     .attr('width', widthSVG)
                                     .attr("viewBox", "0 0 " + (outerWidth) + " " + (outerHeight));
 
                                 // width = o - 2 * margin;
-                                height = outerHeight - 2*margin;
+                                height = outerHeight - 2 * margin;
 
                                 //Organize Data according to the dimension
 
@@ -394,9 +413,7 @@
                                         .entries(data);
                                 }
 
-                                config.xDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
+
 
                                 nest = d3.nest()
                                     .key(function(d) {
@@ -420,9 +437,6 @@
                                         .entries(data);
                                 }
 
-                                config.yDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
 
 
 
@@ -432,9 +446,7 @@
                                     })
                                     .entries(data);
 
-                                config.colorDimOrder = nest.map(function(d) {
-                                    return d.key;
-                                });
+
 
                                 nest = d3.nest()
                                     .key(function(d) {
@@ -463,7 +475,15 @@
                                         }
                                     })
                                     .sortValues(function(a, b) {
-                                        return config.colorDimOrder.indexOf(a[config.colorDim]) - config.colorDimOrder.indexOf(b[config.colorDim]);
+                                        // return config.colorDimOrder.indexOf(a[config.colorDim]) - config.colorDimOrder.indexOf(b[config.colorDim]);
+
+                                        if (config.isColorNumber) {
+                                            return +a - b;
+                                        } else {
+                                            return config.colorDimOrder.indexOf(a) - config.colorDimOrder.indexOf(b);
+
+                                        }
+
                                     })
                                     .entries(data);
 
@@ -649,7 +669,7 @@
 
                                         } else if (config.fillingDirection == "horizontal") {
 
-                                            
+
                                             d.XActualNumCluster = Math.floor(+d.values.length / YNumNodeCluster);
                                             d.YActualNumCluster = YNumNodeCluster;
 

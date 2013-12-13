@@ -6,11 +6,13 @@
     <title>NomaRect</title>
     <meta name="description" content="nomarect">
 
+    <link rel="stylesheet" href="/css/jquery-ui.css">
     <link rel="stylesheet" href="/css/bootstrap.css">
     <link rel="stylesheet" href="/css/bootstrap-responsive.css">
     <link rel="stylesheet" href="/css/nomarect.css">
 
-
+    <script type="text/javascript" src="scripts/library/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="scripts/library/jquery-ui.js"></script>
     <script src="scripts/library/angular.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/services/d3.js"></script>
@@ -18,6 +20,7 @@
     <script src="scripts/controllers/AccordionDemoCtrl.js"></script>
     <script src="scripts/directives/d3Basic.js"></script>
     <script type="text/javascript" src="scripts/services/ui-bootstrap-tpls-0.7.0.js"></script>
+    <script type="text/javascript" src="scripts/services/sortable.js"></script>
     <!-- <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet"> -->
 
 </head>
@@ -128,6 +131,22 @@
                                         Not valid number!</span>
                                 </dd>
                             </div>
+                            <dt ng-hide="nomaConfig.isXNumber">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" ng-model="isXCustomOrder" ng-init="false">Customize ordering
+                                </label>
+                            </dt>
+                            <dd ng-show="isXCustomOrder">
+
+                                <div class="container">
+
+                                    <h5>Drag and Drop for ordering</h5>
+                                    <ul ui-sortable ng-model="nomaConfig.xDimOrder" class="list">
+                                        <li ng-repeat="item in nomaConfig.xDimOrder" class="item">{{item}}</li>
+                                    </ul>
+                                </div>
+                            </dd>
+
                         </dl>
 
 
@@ -196,6 +215,21 @@
                                         Not valid number!</span>
                                 </dd>
                             </div>
+                            <dt ng-hide="nomaConfig.isYNumber">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" ng-model="isYCustomOrder" ng-init="false">Customize ordering
+                                </label>
+                            </dt>
+                            <dd ng-show="isYCustomOrder">
+
+                                <div class="container">
+
+                                    <h5>Drag and Drop for ordering</h5>
+                                    <ul ui-sortable ng-model="nomaConfig.yDimOrder" class="list">
+                                        <li ng-repeat="item in nomaConfig.yDimOrder" class="item">{{item}}</li>
+                                    </ul>
+                                </div>
+                            </dd>
                         </dl>
 
 
@@ -292,6 +326,54 @@
                                     <input type="radio" ng-model="nomaShapeRendering" ng-value="'geometricPrecision'">Geometric Precision
                                 </label>
                             </dd>
+                            <dt>
+
+                                Type of Data:
+                            </dt>
+                            <dd>
+                                <label class="radio ">
+                                    <input type="radio" ng-model="nomaConfig.isColorNumber" ng-value="false">Name or Category
+                                </label>
+                            </dd>
+                            <dd>
+                                <label class="radio ">
+
+                                    <input type="radio" ng-model="nomaConfig.isColorNumber" ng-value="true">Continuous Number
+                                </label>
+                            </dd>
+                            <div ng-show="nomaConfig.isColorNumber">
+                                <dt>
+
+                                    Data Binning:
+                                </dt>
+                                <dd>
+                                    <label class="checkbox inline">
+                                        <input type="checkbox" ng-model="nomaConfig.isColorDataBinning">Enable Data binning
+                                    </label>
+                                </dd>
+                                <dd ng-show="nomaConfig.isColorDataBinning">
+                                    Input the number of bins:
+                                    <input type="number" name="inputColorBinSize" ng-model="nomaConfig.colorBinSize" min="0" max="100">
+
+                                    <span class="error" ng-show="DemoCtrl.inputColorBinSize.$error.number">
+                                        Not valid number!</span>
+                                </dd>
+                            </div>
+                            <dt ng-hide="nomaConfig.isColorNumber">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" ng-model="isColorCustomOrder" ng-init="false">Customize ordering
+                                </label>
+                            </dt>
+                            <dd ng-show="isColorCustomOrder">
+
+                                <div class="container">
+
+                                    <h5>Drag and Drop for ordering</h5>
+                                    <ul ui-sortable ng-model="nomaConfig.colorDimOrder" class="list">
+                                        <li ng-repeat="item in nomaConfig.colorDimOrder" class="item">{{item}}</li>
+                                    </ul>
+                                </div>
+                            </dd>
 
                         </dl>
 
@@ -366,6 +448,8 @@
         <!--/row-->
 
         <hr>
+
+
 
         <footer>
             <p>&copy; Intuinno at PivotLab in Purdue University 2013</p>
