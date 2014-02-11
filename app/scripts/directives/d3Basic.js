@@ -277,13 +277,13 @@
 
                                 scope.config.dimOrder = new Object();
 
-                                for (var i=0; i < scope.config.dims.length; i++ ) {
+                                for (var i = 0; i < scope.config.dims.length; i++) {
 
                                     nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[scope.config.dims[i]];
-                                    })
-                                    .entries(data);
+                                        .key(function(d) {
+                                            return d[scope.config.dims[i]];
+                                        })
+                                        .entries(data);
 
                                     config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
                                         return d.key;
@@ -455,7 +455,7 @@
                                         }
                                     })
                                     .sortValues(function(a, b) {
-                                    
+
                                         if (config.isColorNumber) {
                                             return +a - b;
                                         } else {
@@ -478,9 +478,20 @@
 
                                 var clusterWidth, clusterHeight;
 
-                                var XnumGroup = config.dimOrder[config.xDim].length;
-                                var YnumGroup = config.dimOrder[config.yDim].length;
+                                if (!config.xDim) {
+                                    var XnumGroup = 0;
 
+                                } else {
+                                    var XnumGroup = config.dimOrder[config.xDim].length;
+
+                                }
+                                if (!config.yDim) {
+
+                                    var YnumGroup = 0;
+
+                                } else {
+                                    var YnumGroup = config.dimOrder[config.yDim].length;
+                                }
 
                                 //Sets the clusterWidth and clusterHeight and  
                                 //Affected only by the isXUniformSpacing and isYUniformSpacing 
@@ -617,7 +628,7 @@
                                             XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
                                             nodeWidth = clusterWidth / XNumNodeCluster;
 
-                                        } else {
+                                        } else { 
 
                                             nodeWidth = globalMaxLength;
                                             XNumNodeCluster = Math.floor(clusterWidth / nodeWidth);
@@ -663,6 +674,8 @@
                                             d.nodeWidth = nodeWidth;
 
                                             if (config.fillingDirection == "vertical") {
+
+                                                
 
                                                 d.nodeX = +d.clusterID % XNumNodeCluster * d.nodeWidth;
                                                 d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.clusterID / XNumNodeCluster) * d.nodeHeight;
@@ -736,17 +749,31 @@
                                     .rangeRoundBands([0, width], 0.2, 0.1)
                                     .domain(config.dimOrder[config.xDim]);
 
-                                var y = d3.scale.ordinal()
-                                    .rangeRoundBands([height, 0], 0.2, 0.1)
-                                    .domain(config.dimOrder[config.yDim]);
 
                                 var xAxis = d3.svg.axis()
                                     .scale(x)
                                     .orient("bottom");
 
-                                var yAxis = d3.svg.axis()
-                                    .scale(y)
-                                    .orient("left");
+                                if (!config.yDim) {
+
+                                    var yAxis = d3.svg.axis();
+
+
+
+
+
+                                } else {
+                                    var y = d3.scale.ordinal()
+                                        .rangeRoundBands([height, 0], 0.2, 0.1)
+                                        .domain(config.dimOrder[config.yDim]);
+
+
+                                    var yAxis = d3.svg.axis()
+                                        .scale(y)
+                                        .orient("left");
+                                }
+
+
 
                                 svg.selectAll(".axis").remove();
 
