@@ -285,10 +285,34 @@
                     $scope.nomaConfig.yDim = 'age';
                     $scope.nomaConfig.colorDim = 'mammo';
 
+                    $scope.nomaConfig.XAlign = 'left';
+                    $scope.nomaConfig.YAlign = 'left';
+
+                    $scope.nomaConfig.isYNumber = true;
+
+                };
+
+                 $scope.changeConfigContinuousBinningNor = function() {
+
+                    if ($scope.activeData != 'Continuous Variables') {
+
+                        $scope.changeActiveDataContinuous();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.isXUniformSpacing = true;
+                    $scope.nomaConfig.isYUniformSpacing = true;
+
+                    $scope.nomaConfig.xDim = 'gender';
+                    $scope.nomaConfig.yDim = 'age';
+                    $scope.nomaConfig.colorDim = 'mammo';
+
                     $scope.nomaConfig.XAlign = 'justify';
                     $scope.nomaConfig.YAlign = 'left';
 
                     $scope.nomaConfig.isYNumber = true;
+
 
                 };
 
