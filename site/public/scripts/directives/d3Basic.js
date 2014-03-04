@@ -50,6 +50,14 @@
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
 
+                            var xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + height + ")");
+
+                            var yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis");
+
+
                             // on window resize, re-render d3 canvas
                             window.onresize = function() {
                                 return scope.$apply();
@@ -276,8 +284,11 @@
 
 
                                 scope.config.dimOrder = new Object();
+                                scope.config.dimType = new Object();
 
                                 for (var i = 0; i < scope.config.dims.length; i++) {
+
+
 
                                     nest = d3.nest()
                                         .key(function(d) {
@@ -285,157 +296,131 @@
                                         })
                                         .entries(data);
 
-                                    config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
-                                        return d.key;
-                                    });
+                                    if (scope.config.dims[i]) {
+
+                                        config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
+                                            return d.key;
+                                        });
+                                    } else {
+
+                                        config.dimOrder[scope.config.dims[i]] = ""
+                                    }
+
+                                    //Try automatic identification for ordinal value
+                                    // If the number of different value is more than threshold,
+                                    // it maybe ordinal value
+                                    if (config.dimOrder[scope.config.dims[i]].length > thresholdNominal) {
+
+                                        config.dimType = "ordinal";
+
+                                        //Sort numerical way
+                                        config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
+
+                                            return +a - b;
+                                        });
+
+
+                                    } else {
+
+                                        config.dimType = "nominal";
+                                        //Sort String way
+                                        config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
+
+                                           return config.dimOrder[scope.config.dims[i]].indexOf(a) - config.dimOrder[scope.config.dims[i]].indexOf(b);
+
+                                        });
+
+                                    }
+
 
 
                                 }
-
-
-                                //Try automatic identification 
-                                var isYNumber, isXNumber;
-
-
-
-                                if (config.dimOrder[config.xDim].length > thresholdNominal) {
-
-                                    config.isXNumber = true;
-
-                                } else {
-
-                                    config.isXNumber = false;
-                                }
-
-
-                                if (config.dimOrder[config.yDim].length > thresholdNominal) {
-
-                                    config.isYNumber = true;
-
-                                } else {
-
-                                    config.isYNumber = false;
-                                }
-
-                                if (config.dimOrder[config.colorDim].length > thresholdNominal) {
-
-                                    config.isColorNumber = true;
-
-                                } else {
-
-                                    config.isColorNumber = false;
-                                }
-
-
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.colorDim];
-                                    })
-                                    .entries(data);
-
-                                config.dimOrder[config.colorDim] = nest.map(function(d) {
-                                    return d.key;
-                                });
-
 
                                 scope.renderConfigChange(renderData, config);
-
 
                             }; //End Data change renderer
 
 
+                            var renderScatterplot = function(data, config) {
 
 
-                            // define render function
-                            scope.renderConfigChange = function(data, config) {
+                                var xValue = function(d) {
+                                    return +d[config.xDim];
+                                };
+                                var xScale = d3.scale.linear().range([0, width]);
+                                var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+                                xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
+
+                                var yValue = function(d) {
+                                    return +d[config.yDim];
+                                };
+                                var yScale = d3.scale.linear().range([height, 0]);
+                                var yAxis = d3.svg.axis().scale(yScale).orient("left");
+                                yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
+
+                                //Remove previous axis
+                                svg.selectAll(".axis").remove();
+
+                                //Setup X axis
+                                xAxisNodes = svgGroup.append("g")
+                                    .attr("class", "x axis")
+                                    .attr("transform", "translate(0," + height + ")")
+                                    .call(xAxis);
+
+                                //Setup Y axis
+                                yAxisNodes = svgGroup.append("g")
+                                    .attr("class", "y axis")
+                                    .call(yAxis);
+
+                                svgGroup.selectAll(".dot")
+                                    .data(data, function(d) {
+                                        return +d.id;
+                                    })
+                                    .style("fill", function(d) {
+                                        return color(d[config.colorDim]);
+                                    })
+                                    .attr("width", function(d) {
+                                        // console.log(initialSquareLenth);
+                                        return initialSquareLenth;
+                                    })
+                                    .attr("height", function(d) {
+                                        return initialSquareLenth;
+                                    })
+                                    .attr("rx", function(d) {
+                                        return +initialSquareLenth / 2;
+                                    })
+                                    .attr("ry", function(d) {
+                                        return +initialSquareLenth / 2;
+                                    })
+                                    .transition()
+                                    .duration(1200)
+                                    .attr("x", function(d) {
+                                        return xScale(xValue(d));
+                                    })
+                                    .attr("y", function(d) {
+                                        return yScale(yValue(d));
+                                    })
+                                    .attr("transform", "translate(0,0)")
+                                    .style("stroke", function(d) {
+                                        return scope.border ? 'black' : 'none';
+                                    })
+                                    .style("stroke-width", "1px")
+                                    .style("shape-rendering", scope.test);
+
+                            }; //end renderScatterplot
 
 
-
-                                if (!data) return;
-
-
-                                // XPadding = 60;
-                                // YPadding = 30;
-                                //Update size of SVG
-                                var widthSVG = d3.select(iElement[0]).node().offsetWidth;
-                                // calculate the height
-                                var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
-
-                                outerHeight = outerWidth / config.SVGAspectRatio;
-
-                                svg.attr('height', heightSVG)
-                                    .attr('width', widthSVG)
-                                    .attr("viewBox", "0 0 " + (outerWidth) + " " + (outerHeight));
-
-                                // width = o - 2 * margin;
-                                height = outerHeight - 2 * margin;
+                            var renderGatherplot = function(data, config) {
 
                                 //Organize Data according to the dimension
-
-
                                 var nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.xDim];
-                                    })
-                                    .entries(data);
-
-                                if (config.isXNumber) {
-
-                                    nest = d3.nest()
-                                        .key(function(d) {
-                                            return d[config.xDim];
-                                        })
-                                        .sortKeys(function(a, b) {
-
-
-                                            return +a - b;
-
-
-                                        })
-                                        .entries(data);
-                                }
-
-
-
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.yDim];
-                                    })
-                                    .entries(data);
-
-                                if (config.isYNumber) {
-
-                                    nest = d3.nest()
-                                        .key(function(d) {
-                                            return d[config.yDim];
-                                        })
-                                        .sortKeys(function(a, b) {
-
-
-                                            return +a - b;
-
-
-                                        })
-                                        .entries(data);
-                                }
-
-
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.colorDim];
-                                    })
-                                    .entries(data);
-
-
-
-                                nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.xDim];
                                     })
                                     .sortKeys(function(a, b) {
 
-                                        if (config.isXNumber) {
-                                            return +a - b;
+                                        if (!config.xDim) {
+                                            return a;
                                         } else {
                                             return config.dimOrder[config.xDim].indexOf(a) - config.dimOrder[config.xDim].indexOf(b);
 
@@ -447,8 +432,8 @@
                                     })
                                     .sortKeys(function(a, b) {
 
-                                        if (config.isYNumber) {
-                                            return +a - b;
+                                        if (!config.yDim) {
+                                            return a;
                                         } else {
                                             return config.dimOrder[config.yDim].indexOf(a) - config.dimOrder[config.yDim].indexOf(b);
 
@@ -456,8 +441,8 @@
                                     })
                                     .sortValues(function(a, b) {
 
-                                        if (config.isColorNumber) {
-                                            return +a - b;
+                                        if (!config.colorDim) {
+                                            return a;
                                         } else {
                                             return config.dimOrder[config.colorDim].indexOf(a[config.colorDim]) - config.dimOrder[config.colorDim].indexOf(b[config.colorDim]);
 
@@ -628,7 +613,7 @@
                                             XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
                                             nodeWidth = clusterWidth / XNumNodeCluster;
 
-                                        } else { 
+                                        } else {
 
                                             nodeWidth = globalMaxLength;
                                             XNumNodeCluster = Math.floor(clusterWidth / nodeWidth);
@@ -675,7 +660,7 @@
 
                                             if (config.fillingDirection == "vertical") {
 
-                                                
+
 
                                                 d.nodeX = +d.clusterID % XNumNodeCluster * d.nodeWidth;
                                                 d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.clusterID / XNumNodeCluster) * d.nodeHeight;
@@ -700,11 +685,20 @@
                                 XOffset = tempXPadding;
                                 nest.forEach(function(d, i, j) {
 
-                                    YOffset = tempYPadding;
+                                    YOffset = 0;
 
                                     d.values.forEach(function(d, i, j) {
 
 
+                                        if (config.isYUniformSpacing == true) {
+
+                                            YOffset = (d.clusterHeight + tempYPadding) * config.dimOrder[config.yDim].indexOf(d.key) + tempYPadding;
+
+                                        } else {
+
+                                            YOffset += d.nodeHeight * d.YActualNumCluster + tempYPadding;
+
+                                        }
 
                                         d.values.forEach(function(d, i, j) {
 
@@ -714,15 +708,7 @@
                                         });
 
                                         // If uniform Scaling  Y Height 
-                                        if (config.isYUniformSpacing == true) {
 
-                                            YOffset += d.clusterHeight + tempYPadding;
-
-                                        } else {
-
-                                            YOffset += d.nodeHeight * d.YActualNumCluster + tempYPadding;
-
-                                        }
 
 
 
@@ -744,7 +730,7 @@
 
 
 
-
+                                //Drawing begin here!
                                 var x = d3.scale.ordinal()
                                     .rangeRoundBands([0, width], 0.2, 0.1)
                                     .domain(config.dimOrder[config.xDim]);
@@ -757,9 +743,6 @@
                                 if (!config.yDim) {
 
                                     var yAxis = d3.svg.axis();
-
-
-
 
 
                                 } else {
@@ -777,52 +760,16 @@
 
                                 svg.selectAll(".axis").remove();
 
-                                var xAxisNodes = svgGroup.append("g")
+                                xAxisNodes = svgGroup.append("g")
                                     .attr("class", "x axis")
                                     .attr("transform", "translate(0," + height + ")")
                                     .call(xAxis);
 
-                                xAxisNodes.selectAll('text')
-                                    .style("font-size", 12);
 
-                                xAxisNodes
-                                    .append("text")
-                                    .attr("class", "axislabel")
-                                    .attr("x", width / 2)
-                                    .attr("y", 56)
-                                    .style("text-anchor", "end")
-                                    .text(config.xDim);
-
-
-
-                                var yAxisNodes = svgGroup.append("g")
+                                yAxisNodes = svgGroup.append("g")
                                     .attr("class", "y axis")
                                     .call(yAxis);
 
-                                yAxisNodes.selectAll('text')
-                                    .style("font-size", 12)
-                                    .attr("y", -15)
-                                    .attr("transform", "rotate(-90)")
-                                    .attr("dx", function(d) {
-                                        return (d.length - 1) * 12 / 2;
-                                    });
-
-                                yAxisNodes
-                                    .append("text")
-                                    .attr("class", "axislabel")
-                                    .attr("transform", "rotate(-90)")
-                                    .attr("x", -height / 2)
-                                    .attr("y", -50)
-                                    .attr("dy", ".71em")
-                                    .style("text-anchor", "end")
-                                    .text(config.yDim);
-
-                                svg.selectAll('.axis line, .axis path').style({
-                                    'stroke': 'Black',
-                                    'fill': 'none',
-                                    'stroke-width': '1px',
-                                    "shape-rendering": "crispEdges"
-                                });
 
 
                                 svgGroup.selectAll(".dot")
@@ -850,8 +797,6 @@
                                     .attr("ry", function(d) {
                                         return +d.nodeHeight / 2;
                                     })
-                                    .transition()
-                                    .duration(1200)
                                     .attr("transform", function(d, i) {
 
                                         // if (d.cancer== "Cancer") {
@@ -881,6 +826,98 @@
                                     })
                                     .attr("ry", function(d) {
                                         return scope.round ? +d.nodeWidth / 2 : 0;
+                                    })
+                                    .style("stroke", function(d) {
+                                        return scope.border ? 'black' : 'none';
+                                    })
+                                    .style("stroke-width", "1px")
+                                    .style("shape-rendering", scope.test);
+
+
+
+
+
+                            };
+
+
+
+
+                            // define render function
+                            scope.renderConfigChange = function(data, config) {
+
+                                if (!data) return;
+
+                                // XPadding = 60;
+                                // YPadding = 30;
+                                //Update size of SVG
+                                var widthSVG = d3.select(iElement[0]).node().offsetWidth;
+                                // calculate the height
+                                var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
+
+                                outerHeight = outerWidth / config.SVGAspectRatio;
+
+                                svg.attr('height', heightSVG)
+                                    .attr('width', widthSVG)
+                                    .attr("viewBox", "0 0 " + (outerWidth) + " " + (outerHeight));
+
+                                // width = o - 2 * margin;
+                                height = outerHeight - 2 * margin;
+
+                                //Call separate render for the rendering
+
+                                if (config.isGather == "gather") {
+
+                                    renderGatherplot(data, config);
+
+                                } else {
+
+                                    renderScatterplot(data, config);
+
+                                }
+
+                                //Common Axis formating between scatterplot and gatherplot
+                                //Setup X axis
+                                xAxisNodes.selectAll('text')
+                                    .style("font-size", 12);
+
+                                xAxisNodes
+                                    .append("text")
+                                    .attr("class", "axislabel")
+                                    .attr("x", width / 2)
+                                    .attr("y", 56)
+                                    .style("text-anchor", "end")
+                                    .text(config.xDim);
+
+                                //Setup Y axis
+                                yAxisNodes.selectAll('text')
+                                    .style("font-size", 12)
+                                    .attr("y", -15)
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("dx", function(d) {
+                                        return (String(d).length - 1) * 12 / 2;
+                                    });
+
+                                yAxisNodes
+                                    .append("text")
+                                    .attr("class", "axislabel")
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("x", -height / 2)
+                                    .attr("y", -50)
+                                    .attr("dy", ".71em")
+                                    .style("text-anchor", "end")
+                                    .text(config.yDim);
+
+                                svg.selectAll('.axis line, .axis path').style({
+                                    'stroke': 'Black',
+                                    'fill': 'none',
+                                    'stroke-width': '1px',
+                                    "shape-rendering": "crispEdges"
+                                });
+
+
+                                svgGroup.selectAll(".dot")
+                                    .style("fill", function(d) {
+                                        return color(d[config.colorDim]);
                                     })
                                     .style("stroke", function(d) {
                                         return scope.border ? 'black' : 'none';
@@ -923,7 +960,6 @@
 
 
                             }; //End renderer
-
 
                         }); //End Service
                     }
