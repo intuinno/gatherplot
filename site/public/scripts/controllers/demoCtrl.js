@@ -48,17 +48,8 @@
                 $scope.nomaRound = true;
                 $scope.nomaBorder = true;
                 $scope.nomaShapeRendering = "auto";
+                $scope.nomaConfig.isGather = 'gather';
 
-
-
-
-                $scope.onClick = function(item) {
-                    $scope.$apply(function() {
-                        if (!$scope.showDetailPanel)
-                            $scope.showDetailPanel = true;
-                        $scope.detailItem = item;
-                    });
-                };
 
                 $scope.changeActiveDataTitanic = function() {
 
@@ -86,6 +77,8 @@
                             $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
 
 
+
+
                             $scope.$apply();
 
 
@@ -98,6 +91,7 @@
                 }; //End  $scope.changeActiveDataTitanic()
 
                 $scope.changeActiveDataTitanic();
+
 
 
 
@@ -315,6 +309,46 @@
 
 
                 };
+
+                 $scope.changeActiveDataCars = function() {
+
+
+                    $scope.activeData = 'Cars Data';
+                    
+
+
+                    d3Service.d3().then(function(d3) {
+                        d3.csv("data/cars.csv", function(error, tdata) {
+                            var count = 0;
+
+                            tdata.map(function(d) {
+                                d.id = count;
+                                count += 1;
+                            })
+
+                            $scope.nomaData = tdata;
+                            $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                            var index = $scope.nomaConfig.dims.indexOf("id");
+                            $scope.nomaConfig.dims.splice(index, 1);
+
+
+                            $scope.nomaConfig.xDim = $scope.nomaConfig.dims[1];
+                            $scope.nomaConfig.yDim = $scope.nomaConfig.dims[2];
+                            $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[8];
+                            
+$scope.nomaConfig.isGather = "scatter";
+
+                            //$scope.$apply();
+
+
+
+                        });
+                    });
+
+
+
+                }; 
 
 
             }

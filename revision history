@@ -1,10 +1,12 @@
 [Done]
- - 
+ - Implement scale change for scatterplot mode
 
 [To Do]
- - Load cars dataset
+ - Color dimension
+ - Legend 
  - Integrate visdock 
- - Interface simplication 
+ - Interface simplification 
  - Add axis subdivision
  - Direct manipulation
  - Icon refinement (aggregate)
+ - When the nomaRound and noma

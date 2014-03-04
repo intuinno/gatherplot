@@ -5,7 +5,7 @@
 
   app = express();
 
-  app.use(express["static"](__dirname + '/app'));
+  app.use(express["static"](__dirname + '/public'));
 
   app.listen("8001");
 

@@ -61,7 +61,15 @@
 
             <div class="span9">
                 <div class="hero-unit">
+                    <h5>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'scatter'">Scatterplot</button>
+                            <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'">Gatherplot</button>
+                        </div>
+                    </h5>
+
                     <h4 class="chart-title">{{activeData}}</h4>
+                    
                     <div nomarect class="nomarect" margin='0' on-click="onClick(item)" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" test="nomaShapeRendering"></div>
 
                 </div>
@@ -434,6 +442,24 @@
 
                         </accordion-group>
 
+                        <accordion-group is-open="isCarsOpen">
+                            <accordion-heading>
+                                <i class="pull-left" ng-class="{'icon-chevron-down': isContinuousOpen, 'icon-chevron-right': !isCarsOpen}"></i>
+                                Cars Dataset
+
+                                <a href="" class="pull-right btn btn-mini" ng-click="changeActiveDataCars()">Load</a>
+                            </accordion-heading>
+                            <p>This example shows how to handle continuous variables.</p>
+
+                            <p>Binning continuous variables
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigContinuousBinning()">Visualize</a>
+                            </p>
+
+                            <p>Normalization Applied to Binning continuous variables
+                                <a href="" class="pull-right btn btn-link" ng-click="changeConfigContinuousBinningNor()">Visualize</a>
+                            </p>
+
+                        </accordion-group>
 
                     </accordion>
 
