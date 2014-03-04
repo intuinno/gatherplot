@@ -1,12 +1,13 @@
 [Done]
- - Implement scale change for scatterplot mode
-
-[To Do]
  - Color dimension
  - Legend 
+
+[To Do]
+ - Fix gatherplot axis ordering
  - Integrate visdock 
  - Interface simplification 
  - Add axis subdivision
  - Direct manipulation
  - Icon refinement (aggregate)
  - When the nomaRound and noma
+ - Continuous color dimension

@@ -50,6 +50,14 @@
                             var svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
 
+                            var xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + height + ")");
+
+                            var yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis");
+
+
                             // on window resize, re-render d3 canvas
                             window.onresize = function() {
                                 return scope.$apply();
@@ -365,61 +373,26 @@
                                 svg.selectAll(".axis").remove();
 
                                 //Setup X axis
-                                var xAxisNodes = svgGroup.append("g")
+                                xAxisNodes = svgGroup.append("g")
                                     .attr("class", "x axis")
                                     .attr("transform", "translate(0," + height + ")")
                                     .call(xAxis);
 
-                                xAxisNodes.selectAll('text')
-                                    .style("font-size", 12);
-
-                                xAxisNodes
-                                    .append("text")
-                                    .attr("class", "axislabel")
-                                    .attr("x", width / 2)
-                                    .attr("y", 56)
-                                    .style("text-anchor", "end")
-                                    .text(config.xDim);
+                               
 
                                 //Setup Y axis
-                                var yAxisNodes = svgGroup.append("g")
+                                yAxisNodes = svgGroup.append("g")
                                     .attr("class", "y axis")
                                     .call(yAxis);
 
-                                yAxisNodes.selectAll('text')
-                                    .style("font-size", 12)
-                                    .attr("y", -15)
-                                    .attr("transform", "rotate(-90)")
-                                    .attr("dx", function(d) {
-                                        return (d.length - 1) * 12 / 2;
-                                    });
-
-                                yAxisNodes
-                                    .append("text")
-                                    .attr("class", "axislabel")
-                                    .attr("transform", "rotate(-90)")
-                                    .attr("x", -height / 2)
-                                    .attr("y", -50)
-                                    .attr("dy", ".71em")
-                                    .style("text-anchor", "end")
-                                    .text(config.yDim);
-
-                                svg.selectAll('.axis line, .axis path').style({
-                                    'stroke': 'Black',
-                                    'fill': 'none',
-                                    'stroke-width': '1px',
-                                    "shape-rendering": "crispEdges"
-                                });
-
+                               
 
                                 svgGroup.selectAll(".dot")
                                     .data(data, function(d) {
                                         return +d.id;
                                     })
-                                    .transition()
-                                    .duration(500)
-                                    .style("stroke", function(d) {
-                                        return 'black';
+                                    .style("fill", function(d) {
+                                        return color(d[config.colorDim]);
                                     })
                                     .attr("width", function(d) {
                                         // console.log(initialSquareLenth);
@@ -448,7 +421,6 @@
                                     })
                                     .style("stroke-width", "1px")
                                     .style("shape-rendering", scope.test);
-
 
 
 
@@ -848,9 +820,6 @@
                                     var yAxis = d3.svg.axis();
 
 
-
-
-
                                 } else {
                                     var y = d3.scale.ordinal()
                                         .rangeRoundBands([height, 0], 0.2, 0.1)
@@ -866,52 +835,16 @@
 
                                 svg.selectAll(".axis").remove();
 
-                                var xAxisNodes = svgGroup.append("g")
+                                xAxisNodes = svgGroup.append("g")
                                     .attr("class", "x axis")
                                     .attr("transform", "translate(0," + height + ")")
                                     .call(xAxis);
 
-                                xAxisNodes.selectAll('text')
-                                    .style("font-size", 12);
 
-                                xAxisNodes
-                                    .append("text")
-                                    .attr("class", "axislabel")
-                                    .attr("x", width / 2)
-                                    .attr("y", 56)
-                                    .style("text-anchor", "end")
-                                    .text(config.xDim);
-
-
-
-                                var yAxisNodes = svgGroup.append("g")
+                                yAxisNodes = svgGroup.append("g")
                                     .attr("class", "y axis")
                                     .call(yAxis);
 
-                                yAxisNodes.selectAll('text')
-                                    .style("font-size", 12)
-                                    .attr("y", -15)
-                                    .attr("transform", "rotate(-90)")
-                                    .attr("dx", function(d) {
-                                        return (d.length - 1) * 12 / 2;
-                                    });
-
-                                yAxisNodes
-                                    .append("text")
-                                    .attr("class", "axislabel")
-                                    .attr("transform", "rotate(-90)")
-                                    .attr("x", -height / 2)
-                                    .attr("y", -50)
-                                    .attr("dy", ".71em")
-                                    .style("text-anchor", "end")
-                                    .text(config.yDim);
-
-                                svg.selectAll('.axis line, .axis path').style({
-                                    'stroke': 'Black',
-                                    'fill': 'none',
-                                    'stroke-width': '1px',
-                                    "shape-rendering": "crispEdges"
-                                });
 
 
                                 svgGroup.selectAll(".dot")
@@ -978,36 +911,6 @@
                                     .style("shape-rendering", scope.test);
 
 
-                                var legendGroup = svg.selectAll(".legend")
-                                    .data(config.dimOrder[config.colorDim], function(d) {
-                                        return d;
-                                    });
-
-                                legendGroup.exit().remove();
-
-
-                                var legend = legendGroup.enter().append("g")
-                                    .attr("class", "legend")
-                                    .attr("transform", function(d, i) {
-                                        return "translate(0," + i * 20 + ")";
-                                    });
-
-                                legend.append("rect")
-                                    .attr("x", width - 18)
-                                    .attr("width", 18)
-                                    .attr("height", 18)
-                                    .style("fill", function(d) {
-                                        return color(d);
-                                    });
-
-                                legend.append("text")
-                                    .attr("x", width - 24)
-                                    .attr("y", 9)
-                                    .attr("dy", ".35em")
-                                    .style("text-anchor", "end")
-                                    .text(function(d) {
-                                        return d;
-                                    });
 
 
 
@@ -1042,12 +945,96 @@
                                 if (config.isGather == "gather") {
 
                                     renderGatherplot(data, config);
-                         
+
                                 } else {
 
                                     renderScatterplot(data, config);
 
                                 }
+
+                                //Common Axis formating between scatterplot and gatherplot
+                                //Setup X axis
+                                xAxisNodes.selectAll('text')
+                                    .style("font-size", 12);
+
+                                xAxisNodes
+                                    .append("text")
+                                    .attr("class", "axislabel")
+                                    .attr("x", width / 2)
+                                    .attr("y", 56)
+                                    .style("text-anchor", "end")
+                                    .text(config.xDim);
+
+                                //Setup Y axis
+                                yAxisNodes.selectAll('text')
+                                    .style("font-size", 12)
+                                    .attr("y", -15)
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("dx", function(d) {
+                                        return (String(d).length - 1) * 12 / 2;
+                                    });
+
+                                yAxisNodes
+                                    .append("text")
+                                    .attr("class", "axislabel")
+                                    .attr("transform", "rotate(-90)")
+                                    .attr("x", -height / 2)
+                                    .attr("y", -50)
+                                    .attr("dy", ".71em")
+                                    .style("text-anchor", "end")
+                                    .text(config.yDim);
+
+                                svg.selectAll('.axis line, .axis path').style({
+                                    'stroke': 'Black',
+                                    'fill': 'none',
+                                    'stroke-width': '1px',
+                                    "shape-rendering": "crispEdges"
+                                });
+
+
+                                svgGroup.selectAll(".dot")
+                                    .style("fill", function(d) {
+                                        return color(d[config.colorDim]);
+                                    })
+                                    .style("stroke", function(d) {
+                                        return scope.border ? 'black' : 'none';
+                                    })
+                                    .style("stroke-width", "1px")
+                                    .style("shape-rendering", scope.test);
+
+
+                                var legendGroup = svg.selectAll(".legend")
+                                    .data(config.dimOrder[config.colorDim], function(d) {
+                                        return d;
+                                    });
+
+                                legendGroup.exit().remove();
+
+
+                                var legend = legendGroup.enter().append("g")
+                                    .attr("class", "legend")
+                                    .attr("transform", function(d, i) {
+                                        return "translate(0," + i * 20 + ")";
+                                    });
+
+                                legend.append("rect")
+                                    .attr("x", width - 18)
+                                    .attr("width", 18)
+                                    .attr("height", 18)
+                                    .style("fill", function(d) {
+                                        return color(d);
+                                    });
+
+                                legend.append("text")
+                                    .attr("x", width - 24)
+                                    .attr("y", 9)
+                                    .attr("dy", ".35em")
+                                    .style("text-anchor", "end")
+                                    .text(function(d) {
+                                        return d;
+                                    });
+
+
 
                             }; //End renderer
 
