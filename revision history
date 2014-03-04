@@ -1,8 +1,8 @@
 [Done]
- - Fix gatherplot axis ordering
+ - Fix when X-origin Y-cylinder bug
 
 [To Do]
- - Fix when X-origin Y-cylinder bug
+ - Fix for non-uniform spacing Y
  - Integrate visdock 
  - Interface simplification 
  - Add axis subdivision

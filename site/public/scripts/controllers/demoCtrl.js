@@ -37,6 +37,8 @@
                         // $scope.sortingLog.push(logEntry);
                     }
                 };
+                $scope.nomaConfig.isXUniformSpacing = true;
+                $scope.nomaConfig.isYUniformSpacing = true;
 
                 $scope.loadedData = 'titanic';
                 $scope.nomaConfig.optimizeAspect = "true";
@@ -286,7 +288,7 @@
 
                 };
 
-                 $scope.changeConfigContinuousBinningNor = function() {
+                $scope.changeConfigContinuousBinningNor = function() {
 
                     if ($scope.activeData != 'Continuous Variables') {
 
@@ -310,11 +312,11 @@
 
                 };
 
-                 $scope.changeActiveDataCars = function() {
+                $scope.changeActiveDataCars = function() {
 
 
                     $scope.activeData = 'Cars Data';
-                    
+
 
 
                     d3Service.d3().then(function(d3) {
@@ -336,8 +338,8 @@
                             $scope.nomaConfig.xDim = $scope.nomaConfig.dims[1];
                             $scope.nomaConfig.yDim = $scope.nomaConfig.dims[2];
                             $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[8];
-                            
-$scope.nomaConfig.isGather = "scatter";
+
+                            $scope.nomaConfig.isGather = "scatter";
 
                             //$scope.$apply();
 
@@ -348,7 +350,7 @@ $scope.nomaConfig.isGather = "scatter";
 
 
 
-                }; 
+                };
 
 
             }

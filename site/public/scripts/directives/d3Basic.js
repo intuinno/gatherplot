@@ -315,7 +315,7 @@
                                     } else {
 
                                         config.dimType = "nominal";
-                                         //Sort numerical way
+                                        //Sort numerical way
                                         config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
 
                                             return +a - b;
@@ -676,11 +676,20 @@
                                 XOffset = tempXPadding;
                                 nest.forEach(function(d, i, j) {
 
-                                    YOffset = tempYPadding;
+                                    YOffset = 0;
 
                                     d.values.forEach(function(d, i, j) {
 
 
+                                        if (config.isYUniformSpacing == true) {
+
+                                            YOffset = (d.clusterHeight + tempYPadding) * config.dimOrder[config.yDim].indexOf(d.key) + tempYPadding;
+
+                                        } else {
+
+                                            YOffset += d.nodeHeight * d.YActualNumCluster + tempYPadding;
+
+                                        }
 
                                         d.values.forEach(function(d, i, j) {
 
@@ -690,15 +699,7 @@
                                         });
 
                                         // If uniform Scaling  Y Height 
-                                        if (config.isYUniformSpacing == true) {
 
-                                            YOffset += d.clusterHeight + tempYPadding;
-
-                                        } else {
-
-                                            YOffset += d.nodeHeight * d.YActualNumCluster + tempYPadding;
-
-                                        }
 
 
 
