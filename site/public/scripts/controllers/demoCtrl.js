@@ -176,8 +176,7 @@
                     }
 
 
-                    $scope.nomaConfig.isXUniformSpacing = true;
-                    $scope.nomaConfig.isYUniformSpacing = true;
+                    
                     $scope.nomaConfig.xDim = 'cancer';
                     $scope.nomaConfig.yDim = '';
                     $scope.nomaConfig.colorDim = 'mammo';
@@ -191,8 +190,7 @@
                         $scope.changeActiveDataMammo();
                     }
 
-                    $scope.nomaConfig.isXUniformSpacing = true;
-                    $scope.nomaConfig.isYUniformSpacing = true;
+                  
                     $scope.nomaConfig.xDim = 'mammo';
                     $scope.nomaConfig.yDim = '';
                     $scope.nomaConfig.colorDim = 'cancer';

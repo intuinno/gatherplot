@@ -410,8 +410,8 @@
                                     })
                                     .sortKeys(function(a, b) {
 
-                                        if (config.isXNumber) {
-                                            return +a - b;
+                                        if (!config.xDim) {
+                                            return a;
                                         } else {
                                             return config.dimOrder[config.xDim].indexOf(a) - config.dimOrder[config.xDim].indexOf(b);
 
@@ -423,8 +423,8 @@
                                     })
                                     .sortKeys(function(a, b) {
 
-                                        if (config.isYNumber) {
-                                            return +a - b;
+                                        if (!config.yDim) {
+                                            return a;
                                         } else {
                                             return config.dimOrder[config.yDim].indexOf(a) - config.dimOrder[config.yDim].indexOf(b);
 
@@ -432,8 +432,8 @@
                                     })
                                     .sortValues(function(a, b) {
 
-                                        if (config.isColorNumber) {
-                                            return +a - b;
+                                        if (!config.colorDim) {
+                                            return a;
                                         } else {
                                             return config.dimOrder[config.colorDim].indexOf(a[config.colorDim]) - config.dimOrder[config.colorDim].indexOf(b[config.colorDim]);
 
@@ -788,8 +788,6 @@
                                     .attr("ry", function(d) {
                                         return +d.nodeHeight / 2;
                                     })
-                                    .transition()
-                                    .duration(1200)
                                     .attr("transform", function(d, i) {
 
                                         // if (d.cancer== "Cancer") {

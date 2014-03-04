@@ -1,8 +1,9 @@
 [Done]
- - Fix when X-origin Y-cylinder bug
+ - Remove non-uniform spacing
 
 [To Do]
- - Fix for non-uniform spacing Y
+ - Implement data binning 
+ - Grid line for scatterplot and Gatherplot (One line becomes rectangle)
  - Integrate visdock 
  - Interface simplification 
  - Add axis subdivision
