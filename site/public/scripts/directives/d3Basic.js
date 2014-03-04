@@ -288,15 +288,23 @@
 
                                 for (var i = 0; i < scope.config.dims.length; i++) {
 
+
+
                                     nest = d3.nest()
                                         .key(function(d) {
                                             return d[scope.config.dims[i]];
                                         })
                                         .entries(data);
 
-                                    config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
-                                        return d.key;
-                                    });
+                                    if (scope.config.dims[i]) {
+
+                                        config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
+                                            return d.key;
+                                        });
+                                    } else {
+
+                                        config.dimOrder[scope.config.dims[i]] = ""
+                                    }
 
                                     //Try automatic identification for ordinal value
                                     // If the number of different value is more than threshold,
@@ -315,10 +323,11 @@
                                     } else {
 
                                         config.dimType = "nominal";
-                                        //Sort numerical way
+                                        //Sort String way
                                         config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
 
-                                            return +a - b;
+                                           return config.dimOrder[scope.config.dims[i]].indexOf(a) - config.dimOrder[scope.config.dims[i]].indexOf(b);
+
                                         });
 
                                     }
