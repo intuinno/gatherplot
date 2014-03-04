@@ -1,9 +1,8 @@
 [Done]
- - Color dimension
- - Legend 
+ - Fix gatherplot axis ordering
 
 [To Do]
- - Fix gatherplot axis ordering
+ - Fix when X-origin Y-cylinder bug
  - Integrate visdock 
  - Interface simplification 
  - Add axis subdivision

@@ -284,6 +284,7 @@
 
 
                                 scope.config.dimOrder = new Object();
+                                scope.config.dimType = new Object();
 
                                 for (var i = 0; i < scope.config.dims.length; i++) {
 
@@ -297,57 +298,36 @@
                                         return d.key;
                                     });
 
+                                    //Try automatic identification for ordinal value
+                                    // If the number of different value is more than threshold,
+                                    // it maybe ordinal value
+                                    if (config.dimOrder[scope.config.dims[i]].length > thresholdNominal) {
+
+                                        config.dimType = "ordinal";
+
+                                        //Sort numerical way
+                                        config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
+
+                                            return +a - b;
+                                        });
+
+
+                                    } else {
+
+                                        config.dimType = "nominal";
+                                         //Sort numerical way
+                                        config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
+
+                                            return +a - b;
+                                        });
+
+                                    }
+
+
 
                                 }
-
-
-                                //Try automatic identification 
-                                var isYNumber, isXNumber;
-
-
-
-                                if (config.dimOrder[config.xDim].length > thresholdNominal) {
-
-                                    config.isXNumber = true;
-
-                                } else {
-
-                                    config.isXNumber = false;
-                                }
-
-
-                                if (config.dimOrder[config.yDim].length > thresholdNominal) {
-
-                                    config.isYNumber = true;
-
-                                } else {
-
-                                    config.isYNumber = false;
-                                }
-
-                                if (config.dimOrder[config.colorDim].length > thresholdNominal) {
-
-                                    config.isColorNumber = true;
-
-                                } else {
-
-                                    config.isColorNumber = false;
-                                }
-
-
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.colorDim];
-                                    })
-                                    .entries(data);
-
-                                config.dimOrder[config.colorDim] = nest.map(function(d) {
-                                    return d.key;
-                                });
-
 
                                 scope.renderConfigChange(renderData, config);
-
 
                             }; //End Data change renderer
 
@@ -378,14 +358,10 @@
                                     .attr("transform", "translate(0," + height + ")")
                                     .call(xAxis);
 
-                               
-
                                 //Setup Y axis
                                 yAxisNodes = svgGroup.append("g")
                                     .attr("class", "y axis")
                                     .call(yAxis);
-
-                               
 
                                 svgGroup.selectAll(".dot")
                                     .data(data, function(d) {
@@ -422,74 +398,13 @@
                                     .style("stroke-width", "1px")
                                     .style("shape-rendering", scope.test);
 
-
-
-
-                            };
+                            }; //end renderScatterplot
 
 
                             var renderGatherplot = function(data, config) {
 
-
                                 //Organize Data according to the dimension
-
-
                                 var nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.xDim];
-                                    })
-                                    .entries(data);
-
-                                if (config.isXNumber) {
-
-                                    nest = d3.nest()
-                                        .key(function(d) {
-                                            return d[config.xDim];
-                                        })
-                                        .sortKeys(function(a, b) {
-
-
-                                            return +a - b;
-
-
-                                        })
-                                        .entries(data);
-                                }
-
-
-
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.yDim];
-                                    })
-                                    .entries(data);
-
-                                if (config.isYNumber) {
-
-                                    nest = d3.nest()
-                                        .key(function(d) {
-                                            return d[config.yDim];
-                                        })
-                                        .sortKeys(function(a, b) {
-
-
-                                            return +a - b;
-
-
-                                        })
-                                        .entries(data);
-                                }
-
-
-                                nest = d3.nest()
-                                    .key(function(d) {
-                                        return d[config.colorDim];
-                                    })
-                                    .entries(data);
-
-
-
-                                nest = d3.nest()
                                     .key(function(d) {
                                         return d[config.xDim];
                                     })
