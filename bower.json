@@ -1,0 +1,16 @@
+{
+  "name": "yearofmoo-angularjs-seed-repo",
+  "version": "0.0.1",
+  "dependencies": {
+    "bootstrap": "latest",
+    "angular-bootstrap": "0.10.0",
+    "jquery": "~2.0.3",
+    "angular": "1.2.5",
+    "angular-route": "1.2.5",
+    "angular-animate": "1.2.5",
+    "angular-mocks": "1.2.5",
+    "jquery-ui": "~1.10.4",
+    "d3": "~3.4.3",
+    "angular-ui-sortable": "~0.12.1"
+  }
+}
