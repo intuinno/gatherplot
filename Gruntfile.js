@@ -24,7 +24,7 @@ module.exports = function(grunt) {
         command: 'bower install'
       },
       bootstrap_font_copy: {
-        command: 'cp -R bower_components/bootstrap/dist/fonts app/font'
+        command: 'cp -R bower_components/bootstrap/dist/fonts app/fonts'
       }
     },
 
