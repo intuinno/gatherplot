@@ -1,0 +1,23 @@
+{
+    "-W015": false, // disable: Expected 'X' to have an indentation at Y instead at Z.
+    "-W110": false, //Mixed double and single quotes
+    "node": true,
+    "browser": true,
+    "esnext": true,
+    "bitwise": true,
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "indent": 2,
+    "latedef": true,
+    "newcap": true,
+    "noarg": true,
+    "regexp": true,
+    "undef": true,
+    "unused": false,
+    "trailing": true,
+    "smarttabs": true,
+    "globals": {
+        "angular": false
+    }
+}

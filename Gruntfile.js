@@ -99,6 +99,7 @@ module.exports = function(grunt) {
         },
         dest: './app/assets/app.js',
         src: [
+          'bower_components/d3/d3.js',
           'bower_components/jquery/jquery.js',
           'bower_components/jquery-ui/ui/jquery-ui.js',
           'bower_components/angular/angular.js',

@@ -1,4 +1,4 @@
-describe('Home Pages', function() {
+describe('Gatherplot Unit test', function() {
 
   beforeEach(module('app.homePages'));
 

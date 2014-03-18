@@ -2,8 +2,8 @@
     'use strict';
 
     angular.module('myApp.directives')
-        .directive('nomarect', ['d3Service',
-            function(d3Service) {
+        .directive('nomarect',
+            function() {
                 return {
                     restrict: 'EA',
                     scope: {
@@ -16,7 +16,7 @@
 
                     link: function(scope, iElement, iAttrs) {
 
-                        d3Service.d3().then(function(d3) {
+                        
 
                             //Constants and Setting Environment variables 
                             var XPadding = 30;
@@ -144,16 +144,16 @@
 
                             var optimalNumElementHorizontal = function(width, height, n, isAspect, fillingDirection) {
 
-                                if (isAspect == "true") {
+                                if (isAspect === "true") {
 
-                                    if (fillingDirection == "horizontal") {
+                                    if (fillingDirection === "horizontal") {
                                         return optimalNumElementWidthAspect(width, height, n);
                                     } else {
                                         return optimalNumElementHeightAspect(width, height, n);
                                     }
                                 } else {
 
-                                    if (fillingDirection == "horizontal") {
+                                    if (fillingDirection === "horizontal") {
                                         return n;
                                     } else {
                                         return 1;
@@ -247,7 +247,7 @@
                                     })
                                     .attr("ry", function(d) {
                                         return isRound ? +d.nodeWidth / 2 : 0;
-                                    })
+                                    });
 
                             };
 
@@ -256,13 +256,15 @@
                                 svgGroup.selectAll(".dot")
                                     .style("shape-rendering", newShapeRendering);
 
-                            }
+                            };
 
 
                             scope.renderDataChange = function(data, config) {
 
 
-                                if (!data) return;
+                                if (!data) {
+                                    return;
+                                }
 
                                 svgGroup.selectAll("*").remove();
 
@@ -282,27 +284,41 @@
 
 
 
-                                scope.config.dimOrder = new Object();
-                                scope.config.dimType = new Object();
+                                scope.config.dimOrder = {};
+                                scope.config.dimType = {};
+
+
+                                var getConfigDim = function(d) {
+                                    return d[scope.config.dims[i]];
+                                };
+
+                                var getkey = function(d) {
+                                    return d.key;
+                                };
+
+                                var compareOrdinal = function(a, b) {
+                                    return +a - b;
+                                };
+
+                                var compareNominal = function(a, b) {
+                                    return config.dimOrder[scope.config.dims[i]].indexOf(a) - config.dimOrder[scope.config.dims[i]].indexOf(b);
+                                };
+
 
                                 for (var i = 0; i < scope.config.dims.length; i++) {
 
 
 
                                     nest = d3.nest()
-                                        .key(function(d) {
-                                            return d[scope.config.dims[i]];
-                                        })
+                                        .key(getConfigDim)
                                         .entries(data);
 
                                     if (scope.config.dims[i]) {
 
-                                        config.dimOrder[scope.config.dims[i]] = nest.map(function(d) {
-                                            return d.key;
-                                        });
+                                        config.dimOrder[scope.config.dims[i]] = nest.map(getkey);
                                     } else {
 
-                                        config.dimOrder[scope.config.dims[i]] = ""
+                                        config.dimOrder[scope.config.dims[i]] = "";
                                     }
 
                                     //Try automatic identification for ordinal value
@@ -313,21 +329,14 @@
                                         config.dimType = "ordinal";
 
                                         //Sort numerical way
-                                        config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
-
-                                            return +a - b;
-                                        });
+                                        config.dimOrder[scope.config.dims[i]].sort(compareOrdinal);
 
 
                                     } else {
 
                                         config.dimType = "nominal";
                                         //Sort String way
-                                        config.dimOrder[scope.config.dims[i]].sort(function(a, b) {
-
-                                           return config.dimOrder[scope.config.dims[i]].indexOf(a) - config.dimOrder[scope.config.dims[i]].indexOf(b);
-
-                                        });
+                                        config.dimOrder[scope.config.dims[i]].sort(compareNominal);
 
                                     }
 
@@ -462,19 +471,21 @@
 
                                 var clusterWidth, clusterHeight;
 
+                                var XnumGroup, YnumGroup;
+
                                 if (!config.xDim) {
-                                    var XnumGroup = 0;
+                                    XnumGroup = 0;
 
                                 } else {
-                                    var XnumGroup = config.dimOrder[config.xDim].length;
+                                    XnumGroup = config.dimOrder[config.xDim].length;
 
                                 }
                                 if (!config.yDim) {
 
-                                    var YnumGroup = 0;
+                                    YnumGroup = 0;
 
                                 } else {
-                                    var YnumGroup = config.dimOrder[config.yDim].length;
+                                    YnumGroup = config.dimOrder[config.yDim].length;
                                 }
 
                                 //Sets the clusterWidth and clusterHeight and  
@@ -499,7 +510,7 @@
                                         //clusterWidth, clusterHeight is for the region 
                                         // If uniform Scaling X width 
 
-                                        if (config.isXUniformSpacing == true) {
+                                        if (config.isXUniformSpacing === true) {
                                             tempClusterWidth = (width - (XnumGroup + 1) * tempXPadding) / XnumGroup;
                                             if (tempClusterWidth <= 0) {
                                                 tempXPadding = thresholdNominal / (XnumGroup + 1);
@@ -515,7 +526,7 @@
                                         }
 
                                         // If uniform Scaling  Y Height 
-                                        if (config.isYUniformSpacing == true) {
+                                        if (config.isYUniformSpacing === true) {
                                             tempClusterHeight = (height - (YnumGroup + 1) * tempYPadding) / YnumGroup;
                                             if (tempClusterHeight <= 0) {
                                                 tempYPadding = thresholdNominal / (YnumGroup + 1);
@@ -548,7 +559,7 @@
                                 //To do that first we get the minHeight and minWidth for Every cluster
                                 //And we select minimum one as minHeight 
 
-                                if (config.XAlign != 'justify' || config.YAlign != 'justify') {
+                                if (config.XAlign !== 'justify' || config.YAlign !== 'justify') {
 
                                     //First we get the minHeight and minWidth for Every cluster
                                     nest.forEach(function(d, i, j) {
@@ -607,7 +618,7 @@
 
                                         var nodeWidth, nodeHeight;
 
-                                        if (config.XAlign == 'justify') {
+                                        if (config.XAlign === 'justify') {
 
                                             XNumNodeCluster = optimalNumElementHorizontal(d.clusterWidth, d.clusterHeight, d.values.length, config.optimizeAspect, config.fillingDirection);
                                             nodeWidth = clusterWidth / XNumNodeCluster;
@@ -619,7 +630,7 @@
 
                                         }
 
-                                        if (config.YAlign == 'justify') {
+                                        if (config.YAlign === 'justify') {
 
                                             YNumNodeCluster = Math.ceil(d.values.length / XNumNodeCluster);
                                             nodeHeight = clusterHeight / YNumNodeCluster;
@@ -636,12 +647,12 @@
                                         d.nodeHeight = nodeHeight;
                                         d.nodeWidth = nodeWidth;
 
-                                        if (config.fillingDirection == "vertical") {
+                                        if (config.fillingDirection === "vertical") {
 
                                             d.YActualNumCluster = Math.floor(+d.values.length / XNumNodeCluster);
                                             d.XActualNumCluster = XNumNodeCluster;
 
-                                        } else if (config.fillingDirection == "horizontal") {
+                                        } else if (config.fillingDirection === "horizontal") {
 
 
                                             d.XActualNumCluster = Math.floor(+d.values.length / YNumNodeCluster);
@@ -657,14 +668,14 @@
                                             d.nodeHeight = nodeHeight;
                                             d.nodeWidth = nodeWidth;
 
-                                            if (config.fillingDirection == "vertical") {
+                                            if (config.fillingDirection === "vertical") {
 
 
 
                                                 d.nodeX = +d.clusterID % XNumNodeCluster * d.nodeWidth;
                                                 d.nodeY = -d.nodeHeight - 1 * Math.floor(+d.clusterID / XNumNodeCluster) * d.nodeHeight;
 
-                                            } else if (config.fillingDirection == "horizontal") {
+                                            } else if (config.fillingDirection === "horizontal") {
 
                                                 d.nodeX = +Math.floor(d.clusterID / YNumNodeCluster) * d.nodeWidth;
                                                 d.nodeY = -d.nodeHeight - 1 * (+d.clusterID % YNumNodeCluster) * d.nodeHeight;
@@ -689,7 +700,7 @@
                                     d.values.forEach(function(d, i, j) {
 
 
-                                        if (config.isYUniformSpacing == true) {
+                                        if (config.isYUniformSpacing === true) {
 
                                             YOffset = (d.clusterHeight + tempYPadding) * config.dimOrder[config.yDim].indexOf(d.key) + tempYPadding;
 
@@ -714,7 +725,7 @@
                                     });
 
 
-                                    if (config.isXUniformSpacing == true) {
+                                    if (config.isXUniformSpacing === true) {
 
                                         XOffset += d.values[0].clusterWidth + tempYPadding;
 
@@ -739,18 +750,20 @@
                                     .scale(x)
                                     .orient("bottom");
 
+                                var yAxis, y;
+
                                 if (!config.yDim) {
 
-                                    var yAxis = d3.svg.axis();
+                                    yAxis = d3.svg.axis();
 
 
                                 } else {
-                                    var y = d3.scale.ordinal()
+                                    y = d3.scale.ordinal()
                                         .rangeRoundBands([height, 0], 0.2, 0.1)
                                         .domain(config.dimOrder[config.yDim]);
 
 
-                                    var yAxis = d3.svg.axis()
+                                    yAxis = d3.svg.axis()
                                         .scale(y)
                                         .orient("left");
                                 }
@@ -844,7 +857,10 @@
                             // define render function
                             scope.renderConfigChange = function(data, config) {
 
-                                if (!data) return;
+                                if (!data) {
+                                    return;
+
+                                }
 
                                 // XPadding = 60;
                                 // YPadding = 30;
@@ -864,7 +880,7 @@
 
                                 //Call separate render for the rendering
 
-                                if (config.isGather == "gather") {
+                                if (config.isGather === "gather") {
 
                                     renderGatherplot(data, config);
 
@@ -960,13 +976,13 @@
 
                             }; //End renderer
 
-                        }); //End Service
+                        
                     }
 
-                } //End return 
+                }; //End return 
 
             } // End function (d3Service)
 
-        ]);
+        );
 
 }());
