@@ -61,34 +61,28 @@
                     $scope.activeData = 'Survivor of Titanic';
 
 
-                    
-                        d3.tsv('data/Titanic.txt', function(error, tdata) {
-                            var count = 0;
+                    d3.tsv('data/Titanic.txt', function(error, tdata) {
+                        var count = 0;
 
-                            tdata.map(function(d) {
-                                d.id = count;
-                                count += 1;
-                            });
-
-                            $scope.nomaData = tdata;
-                            $scope.nomaConfig.dims = d3.keys(tdata[0]);
-
-                            var index = $scope.nomaConfig.dims.indexOf('id');
-                            $scope.nomaConfig.dims.splice(index, 1);
-
-                            $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
-                            $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
-                            $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
-
-
-
-
-                            $scope.$apply();
-
-
-
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
                         });
-                  
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+                        $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
+                        $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
+                        $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+
+                        $scope.$apply();
+
+                    });
+
 
 
 
@@ -208,51 +202,51 @@
                     $scope.activeData = 'Continuous Variables';
                     var data = [];
 
-                
-
-                        for (var count = 0; count < numberOfEntity; count++) {
-
-                            var temp = {};
-
-                            temp.id = count;
 
 
-                            if (Math.random() > 0.3) {
-                                temp.gender = 'Male';
-                            } else {
-                                temp.gender = 'Female';
-                            }
+                    for (var count = 0; count < numberOfEntity; count++) {
 
-                            if (Math.random() > 0.99) {
-                                temp.cancer = 'Cancer';
+                        var temp = {};
 
-                                if (Math.random() > 0.8) {
-                                    temp.mammo = 'Negative Mamo';
-                                } else {
-                                    temp.mammo = 'Positive Mamo';
-                                }
-
-                            } else {
-                                temp.cancer = 'No Cancer';
-
-                                if (Math.random() > 0.096) {
-                                    temp.mammo = 'Negative Mamo';
-                                } else {
-                                    temp.mammo = 'Positive Mamo';
-                                }
-                            }
+                        temp.id = count;
 
 
-                            temp.continous_variable1 = d3.random.normal([0.3, 2]);
-                            temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
-                            temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
-
-                            data.push(temp);
+                        if (Math.random() > 0.3) {
+                            temp.gender = 'Male';
+                        } else {
+                            temp.gender = 'Female';
                         }
 
-                        $scope.nomaData = data;
-                        $scope.nomaConfig.dims = d3.keys(data[0]);
-                  
+                        if (Math.random() > 0.99) {
+                            temp.cancer = 'Cancer';
+
+                            if (Math.random() > 0.8) {
+                                temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
+                            }
+
+                        } else {
+                            temp.cancer = 'No Cancer';
+
+                            if (Math.random() > 0.096) {
+                                temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
+                            }
+                        }
+
+
+                        temp.continous_variable1 = d3.random.normal([0.3, 2]);
+                        temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
+                        temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
+
+                        data.push(temp);
+                    }
+
+                    $scope.nomaData = data;
+                    $scope.nomaConfig.dims = d3.keys(data[0]);
+
                     var index = $scope.nomaConfig.dims.indexOf('id');
                     $scope.nomaConfig.dims.splice(index, 1);
 

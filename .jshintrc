@@ -13,7 +13,7 @@
     "newcap": true,
     "noarg": true,
     "regexp": true,
-    "undef": true,
+    "undef": false,
     "unused": false,
     "trailing": true,
     "smarttabs": true,

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(config) {
     config.set({
         files: [
@@ -8,6 +10,7 @@ module.exports = function(config) {
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
             'bower_components/angular-ui-sortable/sortable.js',
+            'bower_components/d3/d3.js',
             'app/scripts/app.js',
             'app/scripts/services/**/*.js',
             'app/scripts/directives/**/*.js',
