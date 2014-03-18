@@ -1,4 +1,15 @@
+.panel-default > .panel-heading {
+  background-color: #FFF;
+}
 
+.well {
+  background-color: #FFF;
+  border: none;
+}
+
+.jumbotron {
+  background-color: #FFF;
+}
 
 body {
         padding-top: 60px;
