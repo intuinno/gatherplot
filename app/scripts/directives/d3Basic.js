@@ -799,8 +799,6 @@
                                     .orient("left");
                             }
 
-
-
                             svg.selectAll(".axis").remove();
 
                             xAxisNodes = svgGroup.append("g")
@@ -908,8 +906,6 @@
 
                         };
 
-
-
                         var renderConfigChange = function(data, config) {
 
 
@@ -917,15 +913,45 @@
 
                             //Call separate render for the rendering
 
-                            if (config.isGather === "gather") {
+                            drawPlot();
 
-                                renderGatherplot(data, config);
+                        };
 
-                            } else {
+                        var drawPlot = function() {
 
-                                renderScatterplot(data, config);
+                            drawNodes();
+                            drawAxes();
+                            drawLegends();
 
-                            }
+                        };
+
+                        var drawNodes = function() {
+
+                            calculateParametersOfNodes();
+                            prepareScale();
+                            drawNodesInSVG();
+
+                        };
+
+                        var calculateParametersOfNodes = function() {
+
+                            calculatePositionOfNodes();
+                            calculateOffsetOfNodes();
+
+                        };
+
+                        var drawNodesInSVG = function() {
+
+                            getColorOfNodes();
+                            getShapeOfNodes();
+                            writeNodesInSVG();
+
+
+                        };
+
+
+
+                        var drawAxes = function() {
 
                             //Common Axis formating between scatterplot and gatherplot
                             //Setup X axis
@@ -976,8 +1002,9 @@
                                 })
                                 .style("stroke-width", "1px")
                                 .style("shape-rendering", scope.shapeRenderingMode);
+                        };
 
-
+                        var drawLegends = function() {
                             var legendGroup = svg.selectAll(".legend")
                                 .data(config.dimOrder[config.colorDim], function(d) {
                                     return d;

@@ -58137,8 +58137,6 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                     .orient("left");
                             }
 
-
-
                             svg.selectAll(".axis").remove();
 
                             xAxisNodes = svgGroup.append("g")
@@ -58246,8 +58244,6 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-
-
                         var renderConfigChange = function(data, config) {
 
 
@@ -58255,15 +58251,45 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             //Call separate render for the rendering
 
-                            if (config.isGather === "gather") {
+                            drawPlot();
 
-                                renderGatherplot(data, config);
+                        };
 
-                            } else {
+                        var drawPlot = function() {
 
-                                renderScatterplot(data, config);
+                            drawNodes();
+                            drawAxes();
+                            drawLegends();
 
-                            }
+                        };
+
+                        var drawNodes = function() {
+
+                            calculateParametersOfNodes();
+                            prepareScale();
+                            drawNodesInSVG();
+
+                        };
+
+                        var calculateParametersOfNodes = function() {
+
+                            calculatePositionOfNodes();
+                            calculateOffsetOfNodes();
+
+                        };
+
+                        var drawNodesInSVG = function() {
+
+                            getColorOfNodes();
+                            getShapeOfNodes();
+                            writeNodesInSVG();
+
+
+                        };
+
+
+
+                        var drawAxes = function() {
 
                             //Common Axis formating between scatterplot and gatherplot
                             //Setup X axis
@@ -58314,8 +58340,9 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                 })
                                 .style("stroke-width", "1px")
                                 .style("shape-rendering", scope.shapeRenderingMode);
+                        };
 
-
+                        var drawLegends = function() {
                             var legendGroup = svg.selectAll(".legend")
                                 .data(config.dimOrder[config.colorDim], function(d) {
                                     return d;
