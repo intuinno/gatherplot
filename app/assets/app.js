@@ -57595,34 +57595,101 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-
-                        scope.renderDataChange = function(data, config) {
-
-
-                            if (!data) {
-                                return;
-                            }
+                        scope.reloadDataToSVG = function(data) {
 
                             svgGroup.selectAll("*").remove();
-
 
                             svgGroup.selectAll(".dot")
                                 .data(data)
                                 .enter().append("rect")
                                 .attr("class", "dot");
 
-                            renderData = data;
 
+                            scope.config.dimOrder = {};
+                            scope.config.dimType = {};
+
+                        };
+
+                        scope.identifyAndUpdateDimDataType = function() {
+
+                            for (var i = 0; i < scope.config.dims.length; i++) {
+
+                                scope.config.dimType = this.identifyDimDataType(scope.config.dims[i]);
+
+                                this.updateDimKey(scope.config.dims[i]);
+
+
+                            }
+
+                        };
+
+
+                        scope.identifyDimDataType = function(dim) {
+
+                            if (this.isFirstSampleNumber(dim)) {
+
+                                return this.identifyOrdinalDimDataType(dim);
+                            } else {
+
+                                return "nominal";
+                            }
+
+                        };
+
+                        scope.identifyOrdinalDimDataType = function(dim) {
+
+                            if (this.isSemiOrdinalDim(dim)) {
+
+                                return "semiOrdinal";
+                            } else {
+
+                                return "ordinal";
+                            }
+
+                        };
+
+                        scope.isSemiOrdinalDim = function(dim) {
+
+debugger;
+                            if (this.getNumberOfKeys(dim) > thresholdNominal) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+
+
+                        };
+
+                        scope.getNumberOfKeys = function(dim) {
+
+                            return getKeys().length;
+                        };
+
+                        scope.getKeys = function(dim) {
+
+                            var nest = d3.nest()
+                                .key(function(d) {
+                                    return d[dim];
+                                })
+                                .entries(scope.data);
+
+                            return nest.map(function(d) {
+                                return d.key;
+                            });
+                        };
+
+                        scope.isFirstSampleNumber = function(dim) {
+
+                            return !isNaN(this.getKeys(dim)[0]);
+
+                        };
+
+                        scope.temp = function(data, dim) {
                             var nest = d3.nest()
                                 .key(function(d) {
                                     return d[config.xDim];
                                 })
                                 .entries(data);
-
-
-
-                            scope.config.dimOrder = {};
-                            scope.config.dimType = {};
 
 
                             var getConfigDim = function(d) {
@@ -57662,26 +57729,32 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                 // If the number of different value is more than threshold,
                                 // it maybe ordinal value
                                 if (config.dimOrder[scope.config.dims[i]].length > thresholdNominal) {
-
                                     config.dimType = "ordinal";
-
                                     //Sort numerical way
                                     config.dimOrder[scope.config.dims[i]].sort(compareOrdinal);
 
-
                                 } else {
-
-                                    config.dimType = "nominal";
+                                    config.dimType = "semiNominal";
                                     //Sort String way
                                     config.dimOrder[scope.config.dims[i]].sort(compareNominal);
 
                                 }
 
-
-
                             }
 
-                            scope.handleConfigChange(renderData, config);
+                        };
+
+                        scope.renderDataChange = function(data, config) {
+
+                            if (!data) {
+                                return;
+                            }
+
+                            this.reloadDataToSVG(data);
+
+                            this.identifyAndUpdateDimDataType(data, config);
+
+                            scope.handleConfigChange(data, config);
 
                         }; //End Data change renderer
 
@@ -57692,6 +57765,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             var xValue = function(d) {
                                 return +d[config.xDim];
                             };
+
                             var xScale = d3.scale.linear().range([0, width]);
                             var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
                             xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
@@ -58182,7 +58256,6 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                 .style("stroke-width", "1px")
                                 .style("shape-rendering", scope.shapeRenderingMode);
 
-
                         };
 
                         // define render function
@@ -58196,11 +58269,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-
-                        var renderConfigChange = function (data, config) {
-
-
-
+                        var updateSizeSVG = function(config) {
                             // XPadding = 60;
                             // YPadding = 30;
                             //Update size of SVG
@@ -58216,6 +58285,13 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             // width = o - 2 * margin;
                             height = outerHeight - 2 * margin;
+
+                        };
+
+                        var renderConfigChange = function(data, config) {
+
+
+                            updateSizeSVG(config);
 
                             //Call separate render for the rendering
 
@@ -58311,10 +58387,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                     return d;
                                 });
 
-
-
                         }; //End renderer
-
 
                     }
 
