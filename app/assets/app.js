@@ -57377,6 +57377,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         scope.config.YBinSize = defaultBinSize;
                         scope.config.XBinSize = defaultBinSize;
 
+                        scope.config.dimSetting = {};
+
                         var svg, svgGroup, xAxisNodes, yAxisNodes;
 
                         var initializeSVG = function() {
@@ -57595,12 +57597,12 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-                        scope.reloadDataToSVG = function(data) {
+                        var reloadDataToSVG = function() {
 
                             svgGroup.selectAll("*").remove();
 
                             svgGroup.selectAll(".dot")
-                                .data(data)
+                                .data(scope.data)
                                 .enter().append("rect")
                                 .attr("class", "dot");
 
@@ -57610,25 +57612,42 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-                        scope.identifyAndUpdateDimDataType = function() {
+                        var identifyAndUpdateDimDataType = function() {
 
                             for (var i = 0; i < scope.config.dims.length; i++) {
 
-                                scope.config.dimType = this.identifyDimDataType(scope.config.dims[i]);
+                                scope.config.dimSetting[scope.config.dims[i]] = {};
 
-                                this.updateDimKey(scope.config.dims[i]);
-
-
+                                scope.config.dimSetting[scope.config.dims[i]].dimType = identifyDimDataType(scope.config.dims[i]);
+                                setDimSettingKeyEquivalentNumber(scope.config.dims[i]);
                             }
 
                         };
 
+                        var setDimSettingKeyEquivalentNumber = function(dim) {
 
-                        scope.identifyDimDataType = function(dim) {
+                            var currentDimSetting = scope.config.dimSetting[dim];
 
-                            if (this.isFirstSampleNumber(dim)) {
+                            if (currentDimSetting.dimType === 'nominal') {
+                                //For Nominal variable
+                                currentDimSetting.keyEquivalentNumber = getNominalKeyEquivalentNumber(dim);
+                            }
+                        };
 
-                                return this.identifyOrdinalDimDataType(dim);
+                        var getNominalKeyEquivalentNumber = function(dim) {
+
+                            var keys = getKeys(dim);
+
+                            return d3.range(keys.length);
+
+                        };
+
+
+                        var identifyDimDataType = function(dim) {
+
+                            if (isFirstSampleNumber(dim)) {
+
+                                return identifyOrdinalDimDataType(dim);
                             } else {
 
                                 return "nominal";
@@ -57636,9 +57655,9 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-                        scope.identifyOrdinalDimDataType = function(dim) {
+                        var identifyOrdinalDimDataType = function(dim) {
 
-                            if (this.isSemiOrdinalDim(dim)) {
+                            if (isSemiOrdinalDim(dim)) {
 
                                 return "semiOrdinal";
                             } else {
@@ -57648,10 +57667,9 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-                        scope.isSemiOrdinalDim = function(dim) {
+                        var isSemiOrdinalDim = function(dim) {
 
-debugger;
-                            if (this.getNumberOfKeys(dim) > thresholdNominal) {
+                            if (getNumberOfKeys(dim) > thresholdNominal) {
                                 return true;
                             } else {
                                 return false;
@@ -57660,12 +57678,12 @@ debugger;
 
                         };
 
-                        scope.getNumberOfKeys = function(dim) {
+                        var getNumberOfKeys = function(dim) {
 
                             return getKeys().length;
                         };
 
-                        scope.getKeys = function(dim) {
+                        var getKeys = function(dim) {
 
                             var nest = d3.nest()
                                 .key(function(d) {
@@ -57678,69 +57696,9 @@ debugger;
                             });
                         };
 
-                        scope.isFirstSampleNumber = function(dim) {
+                        var isFirstSampleNumber = function(dim) {
 
-                            return !isNaN(this.getKeys(dim)[0]);
-
-                        };
-
-                        scope.temp = function(data, dim) {
-                            var nest = d3.nest()
-                                .key(function(d) {
-                                    return d[config.xDim];
-                                })
-                                .entries(data);
-
-
-                            var getConfigDim = function(d) {
-                                return d[scope.config.dims[i]];
-                            };
-
-                            var getkey = function(d) {
-                                return d.key;
-                            };
-
-                            var compareOrdinal = function(a, b) {
-                                return +a - b;
-                            };
-
-                            var compareNominal = function(a, b) {
-                                return config.dimOrder[scope.config.dims[i]].indexOf(a) - config.dimOrder[scope.config.dims[i]].indexOf(b);
-                            };
-
-
-                            for (var i = 0; i < scope.config.dims.length; i++) {
-
-
-
-                                nest = d3.nest()
-                                    .key(getConfigDim)
-                                    .entries(data);
-
-                                if (scope.config.dims[i]) {
-
-                                    config.dimOrder[scope.config.dims[i]] = nest.map(getkey);
-                                } else {
-
-                                    config.dimOrder[scope.config.dims[i]] = "";
-                                }
-
-                                //Try automatic identification for ordinal value
-                                // If the number of different value is more than threshold,
-                                // it maybe ordinal value
-                                if (config.dimOrder[scope.config.dims[i]].length > thresholdNominal) {
-                                    config.dimType = "ordinal";
-                                    //Sort numerical way
-                                    config.dimOrder[scope.config.dims[i]].sort(compareOrdinal);
-
-                                } else {
-                                    config.dimType = "semiNominal";
-                                    //Sort String way
-                                    config.dimOrder[scope.config.dims[i]].sort(compareNominal);
-
-                                }
-
-                            }
+                            return !isNaN(getKeys(dim)[0]);
 
                         };
 
@@ -57750,9 +57708,9 @@ debugger;
                                 return;
                             }
 
-                            this.reloadDataToSVG(data);
+                            reloadDataToSVG();
 
-                            this.identifyAndUpdateDimDataType(data, config);
+                            identifyAndUpdateDimDataType();
 
                             scope.handleConfigChange(data, config);
 
@@ -58287,6 +58245,8 @@ debugger;
                             height = outerHeight - 2 * margin;
 
                         };
+
+
 
                         var renderConfigChange = function(data, config) {
 
