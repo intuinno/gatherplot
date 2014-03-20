@@ -57371,6 +57371,9 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var defaultBinSize = 10;
                         var minWidth = 12;
                         var minHeight = 6;
+                        var xValue, yValue; //Function for getting value of X,Y position 
+                        var xScale, yScale;
+                        var xMap, yMap;
 
                         var globalMaxLength;
 
@@ -57422,6 +57425,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         // watch for Config changes and re-render
 
                         scope.$watch('config', function(newVals, oldVals) {
+                           // debugger;
                             return scope.handleConfigChange(renderData, newVals);
                         }, true);
 
@@ -57610,6 +57614,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             scope.config.dimOrder = {};
                             scope.config.dimType = {};
 
+
                         };
 
                         var identifyAndUpdateDimDataType = function() {
@@ -57638,7 +57643,15 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             var keys = getKeys(dim);
 
-                            return d3.range(keys.length);
+                            var keyNumberDict = {};
+
+                            for (var i = 0; i < keys.length; i++) {
+
+                                keyNumberDict[keys[i]] = i;
+
+                            }
+
+                            return keyNumberDict;
 
                         };
 
@@ -57707,6 +57720,9 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             if (!data) {
                                 return;
                             }
+
+                            renderData = data;
+
 
                             reloadDataToSVG();
 
@@ -58258,8 +58274,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var drawPlot = function() {
 
                             drawNodes();
-                            drawAxes();
-                            drawLegends();
+                            //   drawAxes();
+                            //   drawLegends();
 
                         };
 
@@ -58278,6 +58294,133 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
+                        var prepareScale = function() {
+                            //debugger;
+                            var nominalBox = getNominalBox();
+
+                            xScale = d3.scale.linear().range([0, width]);
+                            xScale.domain([d3.min(scope.data, xValue) - 1, d3.max(scope.data, xValue) + 1]);
+                            xMap = function(d) {
+                                return xScale(xValue(d));
+                            };
+
+                            yScale = d3.scale.linear().range([height, 0]);
+                            yScale.domain([d3.min(scope.data, yValue) - 1, d3.max(scope.data, yValue) + 1]);
+                            yMap = function(d) {
+                                return yScale(yValue(d));
+                            };
+
+                        };
+
+                        var calculatePositionOfNodes = function() {
+                            //debugger;
+                            xValue = getDimValueFunc(scope.config.xDim);
+                            yValue = getDimValueFunc(scope.config.yDim);
+
+                            xValue(scope.data[0]);
+
+                        };
+
+                        var getDimValueFunc = function(dimName) {
+
+                            var dimType = scope.config.dimSetting[dimName].dimType;
+                            var dimNameClosure = dimName;
+
+                            if (dimType === 'ordnial' || dimType === 'semiOrdinal') {
+
+                                return function(d) {
+                                    return +d.dimNameClosure;
+                                };
+                            } else if (dimType === 'nominal') {
+
+                                return function(d) {
+                                    return scope.config.dimSetting[dimNameClosure].keyEquivalentNumber[d[dimNameClosure]];
+                                };
+                            }
+
+                        };
+
+                        var calculateOffsetOfNodes = function() {
+
+                            if (scope.config.isGather === 'scatter') {
+
+                                setOffsetOfNodesForScatter();
+
+                            } else if (scope.config.isGather === 'jitter') {
+
+                                setOffsetOfNodesForJitter();
+
+                            } else if (scope.config.isGather === 'gather') {
+
+                                setOffsetOfNodesForGather();
+
+                            }
+
+                        };
+
+                        var setOffsetOfNodesForScatter = function() {
+
+                            scope.data.forEach(function(d) {
+
+                                d.XOffset = 0;
+                                d.YOffset = 0;
+
+                            });
+
+                        };
+
+                        var setOffsetOfNodesForJitter = function() {
+
+
+                            var SDforJitter = getSDforJitter();
+
+                            scope.data.forEach(function(d) {
+
+                                d.XOffset = d3.random.normal([0, SDforJitter.xSD]);
+                                d.YOffset = d3.random.normal([0, SDforJitter.ySD]);
+
+                            });
+
+                        };
+
+                        var setOffsetOfNodesForGather = function() {
+
+
+                            var SDforJitter = getSDforJitter();
+
+                            scope.data.forEach(function(d) {
+
+                                d.XOffset = d3.math.random.normal([0, SDforJitter.xSD]);
+                                d.YOffset = d3.math.random.normal([0, SDforJitter.ySD]);
+
+                            });
+
+                        };
+
+                        var getSDforJitter = function() {
+
+                            var nominalBox = getNominalBox();
+                            var probFactor = 0.3;
+
+                            var xSD = nominalBox.widthOfBox * probFactor;
+                            var ySD = nominalBox.heightOfBox * probFactor;
+
+                            return {
+                                xSD: xSD,
+                                ySD: ySD
+                            };
+
+                        };
+
+                        var getNominalBox = function() {
+
+                            return {
+                                widthOfBox: d3.min(scope.data, xValue),
+                                heightOfBox: d3.min(scope.data, yValue)
+                            };
+
+                        };
+
                         var drawNodesInSVG = function() {
 
                             getColorOfNodes();
@@ -58287,7 +58430,44 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
+                        var getColorOfNodes = function() {
 
+                        };
+
+                        var getShapeOfNodes = function() {
+
+                        };
+
+                        var writeNodesInSVG = function() {
+                           // debugger;
+                            svgGroup.selectAll(".dot")
+                                .data(scope.data, function(d) {
+                                    return +d.id;
+                                })
+                                .attr("transform", function(d, i) {
+
+                                    // if (d.cancer== "Cancer") {
+                                    //     console.log(height);
+                                    // }
+                                    return "translate(" + (d.XOffset) + "," + (- (d.YOffset)) + ")";
+                                })
+                                .attr("x", xMap)
+                                .attr("y", yMap)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +10;
+                                })
+                                .attr("height", function(d) {
+                                    return +10;
+                                })
+                                .attr("rx", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("ry", function(d) {
+                                    return scope.round ? +5 : 0;
+                                });
+
+                        };
 
                         var drawAxes = function() {
 
@@ -58302,7 +58482,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                 .attr("x", width / 2)
                                 .attr("y", 56)
                                 .style("text-anchor", "end")
-                                .text(config.xDim);
+                                .text(scope.config.xDim);
 
                             //Setup Y axis
                             yAxisNodes.selectAll('text')
@@ -58321,7 +58501,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                 .attr("y", -50)
                                 .attr("dy", ".71em")
                                 .style("text-anchor", "end")
-                                .text(config.yDim);
+                                .text(scope.config.yDim);
 
                             svg.selectAll('.axis line, .axis path').style({
                                 'stroke': 'Black',
@@ -58333,7 +58513,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             svgGroup.selectAll(".dot")
                                 .style("fill", function(d) {
-                                    return color(d[config.colorDim]);
+                                    return color(d[scope.config.colorDim]);
                                 })
                                 .style("stroke", function(d) {
                                     return scope.border ? 'black' : 'none';
@@ -58344,7 +58524,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         var drawLegends = function() {
                             var legendGroup = svg.selectAll(".legend")
-                                .data(config.dimOrder[config.colorDim], function(d) {
+                                .data(scope.config.dimOrder[scope.config.colorDim], function(d) {
                                     return d;
                                 });
 
@@ -58464,7 +58644,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 $scope.nomaRound = true;
                 $scope.nomaBorder = true;
                 $scope.nomaShapeRendering = 'auto';
-                $scope.nomaConfig.isGather = 'gather';
+                $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
                 $scope.nomaConfig.relativeMode = 'relative';
 

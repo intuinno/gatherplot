@@ -50,7 +50,7 @@
                 $scope.nomaRound = true;
                 $scope.nomaBorder = true;
                 $scope.nomaShapeRendering = 'auto';
-                $scope.nomaConfig.isGather = 'gather';
+                $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
                 $scope.nomaConfig.relativeMode = 'relative';
 
