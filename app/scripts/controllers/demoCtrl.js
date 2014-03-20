@@ -52,7 +52,7 @@
                 $scope.nomaShapeRendering = 'auto';
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
-                $scope.nomaConfig.relativeMode = 'relative';
+                $scope.nomaConfig.relativeMode = 'absolute';
 
 
                 $scope.changeActiveDataTitanic = function() {

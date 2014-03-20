@@ -57374,6 +57374,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var xValue, yValue; //Function for getting value of X,Y position 
                         var xScale, yScale;
                         var xMap, yMap;
+                        var nest = {};
 
                         var globalMaxLength;
 
@@ -57425,7 +57426,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         // watch for Config changes and re-render
 
                         scope.$watch('config', function(newVals, oldVals) {
-                           // debugger;
+                            // debugger;
                             return scope.handleConfigChange(renderData, newVals);
                         }, true);
 
@@ -58323,15 +58324,22 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         var getDimValueFunc = function(dimName) {
 
+                            if (!dimName) {
+
+                                return function(d) {
+                                    return 0;
+                                };
+                            }
+
                             var dimType = scope.config.dimSetting[dimName].dimType;
                             var dimNameClosure = dimName;
 
-                            if (dimType === 'ordnial' || dimType === 'semiOrdinal') {
+                            if (isDimTypeNumerical(dimType)) {
 
                                 return function(d) {
                                     return +d.dimNameClosure;
                                 };
-                            } else if (dimType === 'nominal') {
+                            } else {
 
                                 return function(d) {
                                     return scope.config.dimSetting[dimNameClosure].keyEquivalentNumber[d[dimNameClosure]];
@@ -58367,6 +58375,18 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             });
 
+                            assignSizeOfNodesForScatterAndJitter();
+
+                        };
+
+                        var assignSizeOfNodesForScatterAndJitter = function() {
+
+                            scope.data.forEach(function(d) {
+
+                                d.nodeWidth = 5;
+                                d.nodeHeight = 5;
+
+                            });
                         };
 
                         var setOffsetOfNodesForJitter = function() {
@@ -58385,20 +58405,325 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             });
 
+                            assignSizeOfNodesForScatterAndJitter();
+
                         };
 
                         var setOffsetOfNodesForGather = function() {
 
+                            makeNestedData();
 
-                            var SDforJitter = getSDforJitter();
+                            assignClusterIDOfNodes();
+                            updateClusterSizeInNestedData();
+                            calculateRequiredParametersForGather();
+                            // assignOffsetForGather();
 
-                            scope.data.forEach(function(d) {
+                        };
 
-                                d.XOffset = d3.math.random.normal([0, SDforJitter.xSD]);
-                                d.YOffset = d3.math.random.normal([0, SDforJitter.ySD]);
+                        var makeNestedData = function() {
+                            // debugger;
+
+                            nest = d3.nest()
+                                .key(function(d) {
+                                    return d[scope.config.xDim];
+                                })
+                                .key(function(d) {
+                                    return d[scope.config.yDim];
+                                })
+                                .sortValues(sortFuncByColorDimension())
+                                .entries(scope.data);
+
+
+                        };
+
+                        var assignClusterIDOfNodes = function() {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    d.values.forEach(function(d, i, j) {
+
+                                        d.clusterID = i;
+
+                                    });
+
+                                });
 
                             });
 
+
+                        };
+
+                        var updateClusterSizeInNestedData = function() {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    d.numOfElement = d.values.length;
+
+                                });
+
+                            });
+
+
+                        };
+
+                        var sortFuncByColorDimension = function() {
+
+                            var colorDim = scope.config.colorDim;
+
+                            if (!colorDim) {
+                                return function(a, b) {
+                                    return a;
+                                };
+                            } else {
+
+                                // debugger;
+
+                                if (isDimTypeNumerical(scope.config.dimSetting[colorDim].dimType)) {
+
+                                    return numericalDimSortFunc(colorDim);
+
+                                } else {
+
+                                    return nominalDimSortFunc(colorDim);
+
+                                }
+
+                                // return scope.config.dimOrder[scope.config.colorDim].indexOf(a[scope.config.colorDim]) - scope.config.dimOrder[scope.config.colorDim].indexOf(b[scope.config.colorDim]);
+
+                            }
+
+                        };
+
+                        var nominalDimSortFunc = function(dim) {
+
+                            var dimSetting = scope.config.dimSetting[dim];
+
+                            return function(a, b) {
+                                var myDim = dim;
+                                return dimSetting.keyEquivalentNumber[a[myDim]] - dimSetting.keyEquivalentNumber[b[myDim]];
+                            };
+
+                        };
+
+                        var numericalDimSortFunc = function(dim) {
+
+                            return function(a, b) {
+                                return a;
+                            };
+                        };
+
+                        var isDimTypeNumerical = function(dimType) {
+
+                            if (dimType === 'nominal') {
+
+                                return false;
+
+                            } else if (dimType === 'ordinal' || dimType === 'semiOrdinal') {
+
+                                return true;
+                            } else {
+
+                                alert("Unidentified dimension type");
+                            }
+                        };
+
+
+
+                        var calculateRequiredParametersForGather = function() {
+
+                            var box;
+                            box = getClusterBox();
+                            getNodesSizeAndOffsetPosition(box);
+
+                        };
+
+                        var getClusterBox = function() {
+
+                            var box = getNominalBox();
+                            var marginPercentage = 0.1;
+
+                            return {
+                                widthOfBox: box.widthOfBox * (1 - marginPercentage),
+                                heightOfBox: box.heightOfBox * (1 - marginPercentage)
+                            };
+
+                        };
+
+                        var getNodesSizeAndOffsetPosition = function(box) {
+
+                            if (scope.config.relativeMode === "relative") {
+
+                                getNodesSizeAndOffsetPositionForRelative(box);
+
+                            } else {
+                                getNodesSizeAndOffsetPositionForAbsolute(box);
+                            }
+
+                        };
+
+                        var getNodesSizeAndOffsetPositionForAbsolute = function(box) {
+                            var size;
+                            size = getNodesSizeForAbsolute(box);
+                            assignSizeOfNodes(size);
+                            getNodesOffsetForAbsoulte(box, size);
+
+                        };
+
+                        var getNodesSizeForAbsolute = function(box) {
+
+                            var maxNumberOfElementInCluster = getClusterWithMaximumPopulation();
+                            var size = calculateNodesSizeForAbsolute(box, maxNumberOfElementInCluster);
+
+                            return size;
+
+                        };
+
+                        var assignSizeOfNodes = function(size) {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    d.values.forEach(function(d, i, j) {
+
+                                        d.nodeWidth = size;
+                                        d.nodeHeight = size;
+
+                                    });
+
+                                });
+
+                            });
+
+                        };
+
+                        var getNodesOffsetForAbsoulte = function (box) {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    assignNodesOffsetByCluster(d.values, box);
+
+                                });
+
+                            });
+
+
+                        };
+
+                        var assignNodesOffsetByCluster = function(cluster, box) {
+
+                            if (box.widthOfBox > box.heightOfBox) {
+
+                                assignNodesOffsetHorizontallyByCluster(cluster, box);
+                            } else {
+
+                                assignNodesOffsetVerticallyByCluster(cluster, box);
+                            }
+
+                        };
+
+                        var assignNodesOffsetHorizontallyByCluster = function( cluster, box, nodeSize) {
+
+                            var numberOfElementInShortEdge = getNumOfElementInShortEdgeUsingAspectRatioKeeping(box.widthOfBox, box.heightOfBox, cluster.length);
+
+                            var nodeHeight = cluster[0].nodeHeight;
+                            var nodeWidth = cluster[0].nodeWidth;
+
+                            cluster.forEach (function(d, i, j) {
+
+                                d.XOffset = d.clusterID % numberOfElementInShortEdge * nodeWidth;
+                                d.YOffset = Math.floor(d.clusterID/numberOfElementInShortEdge)* nodeHeight;
+
+
+                            });
+
+
+                        };
+
+                        var getClusterWithMaximumPopulation = function() {
+
+                            return d3.max(nest, function(d) {
+
+                                return d3.max(d.values, function(d) {
+
+                                    return d.numOfElement;
+                                });
+                            });
+
+                        };
+
+                        var calculateNodesSizeForAbsolute = function(box, maxNumber) {
+
+                            if (box.widthOfBox > box.heightOfBox) {
+
+                                return calculateNodesSizeWithLongAndShortEdges(box.widthOfBox, box.heightOfBox, maxNumber);
+
+                            } else {
+
+                                return calculateNodesSizeWithLongAndShortEdges(box.heightOfBox, box.widthOfBox, maxNumber);
+                            }
+                        };
+
+                        var calculateNodesSizeWithLongAndShortEdges = function(longEdge, shortEdge, number) { 
+
+
+                            var numElementInShortEdge = getNumOfElementInShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, number);
+
+                            return shortEdge/numElementInShortEdge;
+
+                        };
+
+                        var getNumOfElementInShortEdgeUsingAspectRatioKeeping = function (longEdge, shortEdge, number) {
+                        
+                            var numElementInShortEdge=0, sizeNode, lengthCandidate;
+
+                            do {
+
+                                numElementInShortEdge++;
+                                sizeNode = shortEdge / numElementInShortEdge;
+                                lengthCandidate = sizeNode * number / numElementInShortEdge;
+
+                            } while (lengthCandidate > longEdge);
+
+                            return numElementInShortEdge;
+
+                        };
+
+                        var getNodesSizeAndOffsetPositionForRelative = function(box) {
+
+                        };
+
+
+                        // var assignOffsetForGather = function() {
+
+                        //     if (getFillingDirection() === 'horizontal') {
+
+                        //         stackNodesHorizontallyOffsetForGather();
+
+                        //     } else if (getFillingDirection() === 'vertical') {
+
+                        //         stackNodesVerticallyOffsetForGather();
+                        //     }
+                        // };
+
+                        var getFillingDirection = function () {
+
+
+                            var clusterBox = getClusterBox();
+
+                            if (clusterBox.widthOfBox > clusterBox.heightOfBox) {
+
+                                return 'horizontal';
+                            } else {
+
+                                return 'vertical';
+                            }
                         };
 
                         var getSDforJitter = function() {
@@ -58419,8 +58744,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var getNominalBox = function() {
 
                             return {
-                                widthOfBox: width / (getKeys(scope.config.xDim).length + 1),
-                                heightOfBox: height / (getKeys(scope.config.yDim).length + 1)
+                                widthOfBox: width / (getKeys(scope.config.xDim).length + 2),
+                                heightOfBox: height / (getKeys(scope.config.yDim).length + 2)
                             };
 
                         };
@@ -58436,6 +58761,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         var getColorOfNodes = function() {
 
+
+
                         };
 
                         var getShapeOfNodes = function() {
@@ -58443,7 +58770,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         };
 
                         var writeNodesInSVG = function() {
-                           // debugger;
+                            // debugger;
                             svgGroup.selectAll(".dot")
                                 .data(scope.data, function(d) {
                                     return +d.id;
@@ -58453,16 +58780,19 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                     // if (d.cancer== "Cancer") {
                                     //     console.log(height);
                                     // }
-                                    return "translate(" + (d.XOffset) + "," + (- (d.YOffset)) + ")";
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ")";
+                                })
+                                .style("fill", function(d) {
+                                    return color(d[scope.config.colorDim]);
                                 })
                                 .attr("x", xMap)
                                 .attr("y", yMap)
                                 .attr("width", function(d) {
                                     // console.log(initialSquareLenth);
-                                    return +10;
+                                    return +d.nodeWidth;
                                 })
                                 .attr("height", function(d) {
-                                    return +10;
+                                    return +d.nodeHeight;
                                 })
                                 .attr("rx", function(d) {
                                     return scope.round ? +5 : 0;
@@ -58650,7 +58980,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 $scope.nomaShapeRendering = 'auto';
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
-                $scope.nomaConfig.relativeMode = 'relative';
+                $scope.nomaConfig.relativeMode = 'absolute';
 
 
                 $scope.changeActiveDataTitanic = function() {
