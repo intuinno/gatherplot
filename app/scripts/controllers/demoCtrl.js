@@ -45,7 +45,7 @@
                 $scope.nomaConfig.fillingDirection = 'vertical';
                 $scope.nomaConfig.XAlign = 'justify';
                 $scope.nomaConfig.YAlign = 'justify';
-                $scope.nomaConfig.SVGAspectRatio = 2;
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = true;

@@ -57605,7 +57605,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         }; //End Data change renderer
 
 
-                     
+
                         // define render function
                         scope.handleConfigChange = function(data, config) {
 
@@ -57906,8 +57906,6 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             }
                         };
 
-
-
                         var calculateRequiredParametersForGather = function() {
 
                             var box;
@@ -58003,20 +58001,31 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         };
 
-                        var assignNodesOffsetHorizontallyByCluster = function(cluster, box) {
-
-                            var numberOfElementInShortEdge = getNumOfElementInShortEdgeUsingAspectRatioKeeping(box.widthOfBox, box.heightOfBox, cluster.length);
+                        var assignNodesOffsetLongShortEdge = function(longEdge, shortEdge, cluster, dimInLongEdge, dimInShortEdge) {
+                            var numberOfElementInShortEdge = getNumOfElementInShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length);
                             var nodeHeight = cluster[0].nodeHeight;
                             var nodeWidth = cluster[0].nodeWidth;
                             var offsetForCenterPosition = calculateOffsetForCenterPosition(numberOfElementInShortEdge, cluster.length, nodeHeight, nodeWidth);
 
                             cluster.forEach(function(d, i, j) {
 
-                                d.YOffset = d.clusterID % numberOfElementInShortEdge * nodeWidth - offsetForCenterPosition.offsetInShortEdge;
-                                d.XOffset = Math.floor(d.clusterID / numberOfElementInShortEdge) * nodeHeight - offsetForCenterPosition.offsetInLongEdge;
+                                d[dimInShortEdge] = d.clusterID % numberOfElementInShortEdge * nodeWidth - offsetForCenterPosition.offsetInShortEdge;
+                                d[dimInLongEdge] = Math.floor(d.clusterID / numberOfElementInShortEdge) * nodeHeight - offsetForCenterPosition.offsetInLongEdge;
 
                             });
 
+
+                        };
+
+                        var assignNodesOffsetHorizontallyByCluster = function(cluster, box) {
+
+                            assignNodesOffsetLongShortEdge(box.widthOfBox, box.heightOfBox, cluster, 'XOffset', 'YOffset');
+
+                        };
+
+                        var assignNodesOffsetVerticallyByCluster = function(cluster, box) {
+
+                            assignNodesOffsetLongShortEdge(box.heightOfBox, box.heightOfBox, cluster, 'YOffset', 'XOffset');
 
                         };
 
@@ -58024,15 +58033,15 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             var offsetInShortEdgeForCenterPosition;
                             var offsetInLongEdgeForCenterPosition;
-                            var numberOfElementInLongEdge = Math.ceil(numNodes/numberOfElementInShortEdge);
+                            var numberOfElementInLongEdge = Math.ceil(numNodes / numberOfElementInShortEdge);
 
-                            offsetInShortEdgeForCenterPosition = numberOfElementInShortEdge * nodeLengthInShortEdge/2;
-                            offsetInLongEdgeForCenterPosition = numberOfElementInLongEdge * nodeLengthInLongEdge/2;
+                            offsetInShortEdgeForCenterPosition = numberOfElementInShortEdge * nodeLengthInShortEdge / 2;
+                            offsetInLongEdgeForCenterPosition = numberOfElementInLongEdge * nodeLengthInLongEdge / 2;
 
                             return {
                                 offsetInShortEdge: offsetInShortEdgeForCenterPosition,
                                 offsetInLongEdge: offsetInLongEdgeForCenterPosition
-                                };
+                            };
                         };
 
                         var getClusterWithMaximumPopulation = function() {
@@ -58363,7 +58372,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 $scope.nomaConfig.fillingDirection = 'vertical';
                 $scope.nomaConfig.XAlign = 'justify';
                 $scope.nomaConfig.YAlign = 'justify';
-                $scope.nomaConfig.SVGAspectRatio = 2;
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = true;
