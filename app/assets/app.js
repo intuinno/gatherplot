@@ -58374,10 +58374,14 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                             var SDforJitter = getSDforJitter();
 
+                            var xNormalGenerator = d3.random.normal(0, SDforJitter.xSD);
+                            var yNormalGenerator = d3.random.normal(0, SDforJitter.ySD);
+
                             scope.data.forEach(function(d) {
 
-                                d.XOffset = d3.random.normal([0, SDforJitter.xSD]);
-                                d.YOffset = d3.random.normal([0, SDforJitter.ySD]);
+
+                                d.XOffset = xNormalGenerator();
+                                d.YOffset = yNormalGenerator();
 
                             });
 
@@ -58400,7 +58404,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var getSDforJitter = function() {
 
                             var nominalBox = getNominalBox();
-                            var probFactor = 0.3;
+                            var probFactor = 0.1;
 
                             var xSD = nominalBox.widthOfBox * probFactor;
                             var ySD = nominalBox.heightOfBox * probFactor;
@@ -58415,8 +58419,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var getNominalBox = function() {
 
                             return {
-                                widthOfBox: d3.min(scope.data, xValue),
-                                heightOfBox: d3.min(scope.data, yValue)
+                                widthOfBox: width / (getKeys(scope.config.xDim).length + 1),
+                                heightOfBox: height / (getKeys(scope.config.yDim).length + 1)
                             };
 
                         };
