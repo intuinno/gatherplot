@@ -660,7 +660,7 @@
 
                         var assignNodesOffsetHorizontallyByCluster = function(cluster, box) {
 
-                            var offsetAndSizeInfo = assignNodesOffsetLongShortEdge(box.heightOfBox, box.widthOfBox, cluster);
+                            var offsetAndSizeInfo = assignNodesOffsetLongShortEdge(box.widthOfBox, box.heightOfBox, cluster);
 
                             var nodeHeight = offsetAndSizeInfo.nodeSize.lengthInShortEdge;
                             var nodeWidth = offsetAndSizeInfo.nodeSize.lengthInLongEdge;
@@ -671,11 +671,11 @@
 
                             cluster.forEach(function(d, i, j) {
 
-                                d.nodeWidth = nodeHeight;
-                                d.nodeHeight = nodeWidth;
+                                d.nodeWidth = nodeWidth;
+                                d.nodeHeight = nodeHeight;
 
-                                d.YOffset = d.clusterID % numElementInLongEdge * nodeWidth - offsetInLongEdge + nodeWidth;
-                                d.XOffset = Math.floor(d.clusterID / numElementInLongEdge) * nodeHeight - offsetInShortEdge;
+                                d.YOffset = d.clusterID % numElementInShortEdge * nodeHeight - offsetInShortEdge + nodeHeight;
+                                d.XOffset = Math.floor(d.clusterID / numElementInShortEdge) * nodeWidth - offsetInLongEdge;
 
                             });
 
