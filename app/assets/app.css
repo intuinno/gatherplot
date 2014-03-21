@@ -6966,6 +6966,10 @@ button.close {
   background-color: #FFF;
 }
 
+.jumbotron {
+  padding: 0px;
+}
+
 .well {
   background-color: #FFF;
   border: none;
@@ -7022,7 +7026,7 @@ body {
 
 .chart-title {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
     margin-top: 20px;
 
 }

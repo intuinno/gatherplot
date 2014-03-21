@@ -21,7 +21,7 @@
                         var YPadding = 30;
                         var XMargin = 10;
                         var YMargin = 2;
-                        var margin = 80;
+                        var margin = 30;
                         var width = 1040;
                         var height = 820;
                         var outerWidth = width + 2 * margin;
@@ -51,8 +51,6 @@
 
                             svg = d3.select(iElement[0])
                                 .append("svg:svg")
-                                .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
-                                .attr("preserveAspectRatio", "xMinYMin");
 
                             svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -283,18 +281,15 @@
                             // XPadding = 60;
                             // YPadding = 30;
                             //Update size of SVG
-                            var widthSVG = d3.select(iElement[0]).node().offsetWidth;
+                            outerWidth = d3.select(iElement[0]).node().offsetWidth;
                             // calculate the height
-                            var heightSVG = d3.select(iElement[0]).node().offsetWidth / config.SVGAspectRatio;
-
                             outerHeight = outerWidth / config.SVGAspectRatio;
 
-                            svg.attr('height', heightSVG)
-                                .attr('width', widthSVG)
-                                .attr("viewBox", "0 0 " + (outerWidth) + " " + (outerHeight));
+                            svg.attr('height', outerHeight)
+                                .attr('width', outerWidth);
 
-                            // width = o - 2 * margin;
-                            height = outerHeight - 2 * margin;
+                            width = outerWidth -  margin;
+                            height = outerHeight - margin;
 
                         };
 
