@@ -452,7 +452,7 @@
 
                             assignClusterIDOfNodes();
                             updateClusterSizeInNestedData();
-                            calculateRequiredParametersForGather();
+                            getNodesSizeAndOffsetPosition();
                             // assignOffsetForGather();
 
                         };
@@ -568,14 +568,6 @@
                             }
                         };
 
-                        var calculateRequiredParametersForGather = function() {
-
-                            var box;
-                            box = getClusterBox();
-                            getNodesSizeAndOffsetPosition(box);
-
-                        };
-
                         var getClusterBox = function() {
 
                             var box = getNominalBox();
@@ -588,61 +580,25 @@
 
                         };
 
-                        var getNodesSizeAndOffsetPosition = function(box) {
 
-                            if (scope.config.relativeMode === "relative") {
+                        var getNodesSizeForAbsolute = function() {
 
-                                getNodesSizeAndOffsetPositionForRelative(box);
-
-                            } else {
-                                getNodesSizeAndOffsetPositionForAbsolute(box);
-                            }
-
-                        };
-
-                        var getNodesSizeAndOffsetPositionForAbsolute = function(box) {
-                            var size;
-                            size = getNodesSizeForAbsolute(box);
-                            assignSizeOfNodes(size);
-                            getNodesOffsetForAbsoulte(box, size);
-
-                        };
-
-                        var getNodesSizeForAbsolute = function(box) {
-
-                            var maxNumberOfElementInCluster = getClusterWithMaximumPopulation();
-                            var size = calculateNodesSizeForAbsolute(box, maxNumberOfElementInCluster);
+                            var maxNumElementInCluster = getClusterWithMaximumPopulation();
+                            var box = getClusterBox();
+                            var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
 
                             return size;
 
                         };
 
-                        var assignSizeOfNodes = function(size) {
+
+                        var getNodesSizeAndOffsetPosition = function(box, size) {
 
                             nest.forEach(function(d, i, j) {
 
                                 d.values.forEach(function(d, i, j) {
 
-                                    d.values.forEach(function(d, i, j) {
-
-                                        d.nodeWidth = size;
-                                        d.nodeHeight = size;
-
-                                    });
-
-                                });
-
-                            });
-
-                        };
-
-                        var getNodesOffsetForAbsoulte = function(box) {
-
-                            nest.forEach(function(d, i, j) {
-
-                                d.values.forEach(function(d, i, j) {
-
-                                    assignNodesOffsetByCluster(d.values, box);
+                                    assignNodesOffsetByCluster(d.values);
 
                                 });
 
@@ -651,11 +607,14 @@
 
                         };
 
-                        var assignNodesOffsetByCluster = function(cluster, box) {
+                        var assignNodesOffsetByCluster = function(cluster) {
+
+                            var box = getClusterBox();
 
                             if (box.widthOfBox > box.heightOfBox) {
 
                                 assignNodesOffsetHorizontallyByCluster(cluster, box);
+
                             } else {
 
                                 assignNodesOffsetVerticallyByCluster(cluster, box);
@@ -663,42 +622,95 @@
 
                         };
 
-                        var assignNodesOffsetLongShortEdge = function(longEdge, shortEdge, cluster, dimInLongEdge, dimInShortEdge) {
-                            var numberOfElementInShortEdge = getNumOfElementInShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length);
-                            var nodeHeight = cluster[0].nodeHeight;
-                            var nodeWidth = cluster[0].nodeWidth;
-                            var offsetForCenterPosition = calculateOffsetForCenterPosition(numberOfElementInShortEdge, cluster.length, nodeHeight, nodeWidth);
+                        var assignNodesOffsetLongShortEdge = function(longEdge, shortEdge, cluster) {
 
-                            cluster.forEach(function(d, i, j) {
+                            var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length);
+                            var nodeSize = getNodeSizeAbsoluteOrRelative(longEdge, shortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
+                            var offsetForCenterPosition = calculateOffsetForCenterPosition(nodeSize.lengthInLongEdge, nodeSize.lengthInShortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
 
-                                d[dimInShortEdge] = d.clusterID % numberOfElementInShortEdge * nodeWidth - offsetForCenterPosition.offsetInShortEdge;
-                                d[dimInLongEdge] = Math.floor(d.clusterID / numberOfElementInShortEdge) * nodeHeight - offsetForCenterPosition.offsetInLongEdge;
+                            return {
+                                numElement: numElement,
+                                nodeSize: nodeSize,
+                                offsetForCenterPosition: offsetForCenterPosition
+                            };
 
-                            });
 
+                        };
+
+                        var getNodeSizeAbsoluteOrRelative = function(longEdge, shortEdge, numElementInLongEdge, numElementInShortEdge) {
+
+                            var lengthInLongEdge, lengthInShortEdge;
+
+                            if (scope.config.relativeMode === "absolute") {
+
+                                lengthInLongEdge = getNodesSizeForAbsolute();
+                                lengthInShortEdge = lengthInLongEdge;
+
+                            } else {
+                                lengthInLongEdge = longEdge / numElementInLongEdge;
+                                lengthInShortEdge = shortEdge / numElementInShortEdge;
+                            }
+
+                            return {
+                                lengthInLongEdge: lengthInLongEdge,
+                                lengthInShortEdge: lengthInShortEdge
+                            };
 
                         };
 
                         var assignNodesOffsetHorizontallyByCluster = function(cluster, box) {
 
-                            assignNodesOffsetLongShortEdge(box.widthOfBox, box.heightOfBox, cluster, 'XOffset', 'YOffset');
+                            var offsetAndSizeInfo = assignNodesOffsetLongShortEdge(box.heightOfBox, box.widthOfBox, cluster);
+
+                            var nodeHeight = offsetAndSizeInfo.nodeSize.lengthInShortEdge;
+                            var nodeWidth = offsetAndSizeInfo.nodeSize.lengthInLongEdge;
+                            var numElementInShortEdge = offsetAndSizeInfo.numElement.numElementInShortEdge;
+                            var numElementInLongEdge = offsetAndSizeInfo.numElement.numElementInLongEdge;
+                            var offsetInShortEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInShortEdge;
+                            var offsetInLongEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInLongEdge;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeWidth = nodeHeight;
+                                d.nodeHeight = nodeWidth;
+
+                                d.YOffset = d.clusterID % numElementInLongEdge * nodeWidth - offsetInLongEdge + nodeWidth;
+                                d.XOffset = Math.floor(d.clusterID / numElementInLongEdge) * nodeHeight - offsetInShortEdge;
+
+                            });
 
                         };
 
                         var assignNodesOffsetVerticallyByCluster = function(cluster, box) {
 
-                            assignNodesOffsetLongShortEdge(box.heightOfBox, box.heightOfBox, cluster, 'YOffset', 'XOffset');
+                            var offsetAndSizeInfo = assignNodesOffsetLongShortEdge(box.heightOfBox, box.widthOfBox, cluster);
+
+                            var nodeHeight = offsetAndSizeInfo.nodeSize.lengthInLongEdge;
+                            var nodeWidth = offsetAndSizeInfo.nodeSize.lengthInShortEdge;
+                            var numElementInShortEdge = offsetAndSizeInfo.numElement.numElementInShortEdge;
+                            var numElementInLongEdge = offsetAndSizeInfo.numElement.numElementInLongEdge;
+                            var offsetInShortEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInShortEdge;
+                            var offsetInLongEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInLongEdge;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeHeight = nodeHeight;
+                                d.nodeWidth = nodeWidth;
+
+                                d.XOffset = d.clusterID % numElementInShortEdge * nodeWidth - offsetInShortEdge;
+                                d.YOffset = Math.floor(d.clusterID / numElementInShortEdge) * nodeHeight - offsetInLongEdge + nodeHeight;
+
+                            });
 
                         };
 
-                        var calculateOffsetForCenterPosition = function(numberOfElementInShortEdge, numNodes, nodeLengthInShortEdge, nodeLengthInLongEdge) {
+                        var calculateOffsetForCenterPosition = function(nodeLengthInLongEdge, nodeLengthInShortEdge, numElementInLongEdge, numElementInShortEdge) {
 
                             var offsetInShortEdgeForCenterPosition;
                             var offsetInLongEdgeForCenterPosition;
-                            var numberOfElementInLongEdge = Math.ceil(numNodes / numberOfElementInShortEdge);
 
-                            offsetInShortEdgeForCenterPosition = numberOfElementInShortEdge * nodeLengthInShortEdge / 2;
-                            offsetInLongEdgeForCenterPosition = numberOfElementInLongEdge * nodeLengthInLongEdge / 2;
+                            offsetInShortEdgeForCenterPosition = numElementInShortEdge * nodeLengthInShortEdge / 2;
+                            offsetInLongEdgeForCenterPosition = numElementInLongEdge * nodeLengthInLongEdge / 2;
 
                             return {
                                 offsetInShortEdge: offsetInShortEdgeForCenterPosition,
@@ -733,15 +745,16 @@
                         var calculateNodesSizeWithLongAndShortEdges = function(longEdge, shortEdge, number) {
 
 
-                            var numElementInShortEdge = getNumOfElementInShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, number);
+                            var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, number);
 
-                            return shortEdge / numElementInShortEdge;
+                            return shortEdge / numElement.numElementInShortEdge;
 
                         };
 
-                        var getNumOfElementInShortEdgeUsingAspectRatioKeeping = function(longEdge, shortEdge, number) {
+                        var getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping = function(longEdge, shortEdge, number) {
 
                             var numElementInShortEdge = 0,
+                                numElementInLongEdge,
                                 sizeNode, lengthCandidate;
 
                             do {
@@ -752,26 +765,14 @@
 
                             } while (lengthCandidate > longEdge);
 
-                            return numElementInShortEdge;
+                            numElementInLongEdge = Math.ceil(number / numElementInShortEdge);
+
+                            return {
+                                numElementInShortEdge: numElementInShortEdge,
+                                numElementInLongEdge: numElementInLongEdge
+                            };
 
                         };
-
-                        var getNodesSizeAndOffsetPositionForRelative = function(box) {
-
-                        };
-
-
-                        // var assignOffsetForGather = function() {
-
-                        //     if (getFillingDirection() === 'horizontal') {
-
-                        //         stackNodesHorizontallyOffsetForGather();
-
-                        //     } else if (getFillingDirection() === 'vertical') {
-
-                        //         stackNodesVerticallyOffsetForGather();
-                        //     }
-                        // };
 
                         var getFillingDirection = function() {
 

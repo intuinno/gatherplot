@@ -78,33 +78,13 @@
 
 
                             </select>mode.</h5>
-                        <h5>Arrange subgroup in
+                        <h5>Arrange subgroup in color with
 
-                            <span class="btn-toolbar">
-
-                                <div class="btn-group">
-
-                                    <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'vertical'"><i class="glyphicon glyphicon-resize-vertical"></i>
-
-                                    </button>
-
-                                    <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'horizontal'"><i class="glyphicon glyphicon-resize-horizontal"></i>
-
-                                    </button>
-
-                                    <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="both"><i class="glyphicon glyphicon-resize-full"></i>
-
-                                    </button>
-
-                                </div>
-
-                            </span>direction and color them with
-
-                            <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
+                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
 
                                 <option value="">-- undefined --</option>
 
-                            </select>Vs.
+                            </select>
 
                         </h5>
                     </div>
