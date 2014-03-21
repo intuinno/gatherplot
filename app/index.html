@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-ng-app="myApp">
+<html >
 
 <head>
     <meta charset="utf-8">
@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="./assets/app.css">
 </head>
 
-<body>
+<body data-ng-app="myApp">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="container">
@@ -57,7 +57,7 @@
 
                     </h5>
                     <h4 class="chart-title">{{activeData}}</h4>
-                    <div nomarect class="nomarect" margin="0" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
+                    <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
                     <div class="chart-simple-interface">
                         <h5>Show me
 
@@ -299,6 +299,7 @@
                                 <p>
                                     <label label-default="label-default" class="checkbox-inline">
                                         <input type="checkbox" ng-model="nomaRound">Round Edge</label>
+                                        {{nomaRound}}
                                 </p>
                                 <dl>
                                     <dt>
@@ -456,7 +457,7 @@
         <!--/row-->
         <hr>
         <footer>
-            <p>© Intuinno at PivotLab in Purdue University  2013</p>
+            <p>© Intuinno at PivotLab in Purdue University 2013</p>
         </footer>
     </div>
     <script src="./assets/app.js"></script>

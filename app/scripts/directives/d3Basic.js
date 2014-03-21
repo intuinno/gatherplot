@@ -17,10 +17,7 @@
                     link: function(scope, iElement, iAttrs) {
 
                         //Constants and Setting Environment variables 
-                        var XPadding = 30;
-                        var YPadding = 30;
-                        var XMargin = 10;
-                        var YMargin = 2;
+
                         var margin = 30;
                         var width = 1040;
                         var height = 820;
@@ -31,8 +28,6 @@
                         var renderData;
                         var thresholdNominal = 100; //Threshold for automatic nominal identification
                         var defaultBinSize = 10;
-                        var minWidth = 12;
-                        var minHeight = 6;
                         var xValue, yValue; //Function for getting value of X,Y position 
                         var xScale, yScale;
                         var xMap, yMap;
@@ -50,7 +45,7 @@
                         var initializeSVG = function() {
 
                             svg = d3.select(iElement[0])
-                                .append("svg:svg")
+                                .append("svg:svg");
 
                             svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -90,13 +85,17 @@
                             return scope.handleConfigChange(renderData, newVals);
                         }, true);
 
-                        scope.$watch('border', function(newVals, oldVals) {
+                        scope.$watch(function() {
+                            return scope.border;
+                        }, function(newVals, oldVals) {
                             return scope.renderBorderChange(newVals);
-                        }, true);
+                        }, false);
 
-                        scope.$watch('round', function(newVals, oldVals) {
+                        scope.$watch(function() {
+                            return scope.round;
+                        }, function(newVals, oldVals) {
                             return scope.renderRoundChange(newVals);
-                        }, true);
+                        }, false);
 
                         scope.$watch('shapeRenderingMode', function(newVals, oldVals) {
                             return scope.renderShapeRenderingChange(newVals);
@@ -288,8 +287,8 @@
                             svg.attr('height', outerHeight)
                                 .attr('width', outerWidth);
 
-                            width = outerWidth -  margin;
-                            height = outerHeight - margin;
+                            width = outerWidth - 2 * margin;
+                            height = outerHeight - 2 * margin;
 
                         };
 
@@ -307,8 +306,8 @@
                         var drawPlot = function() {
 
                             drawNodes();
-                            //   drawAxes();
-                            //   drawLegends();
+                            drawAxes();
+                            drawLegends();
 
                         };
 
@@ -332,13 +331,13 @@
                             var nominalBox = getNominalBox();
 
                             xScale = d3.scale.linear().range([0, width]);
-                            xScale.domain([d3.min(scope.data, xValue) - 1, d3.max(scope.data, xValue) + 1]);
+                            xScale.domain([d3.min(scope.data, xValue) - 0.5, d3.max(scope.data, xValue) + 0.5]);
                             xMap = function(d) {
                                 return xScale(xValue(d));
                             };
 
                             yScale = d3.scale.linear().range([height, 0]);
-                            yScale.domain([d3.min(scope.data, yValue) - 1, d3.max(scope.data, yValue) + 1]);
+                            yScale.domain([d3.min(scope.data, yValue) - 0.5, d3.max(scope.data, yValue) + 0.5]);
                             yMap = function(d) {
                                 return yScale(yValue(d));
                             };
@@ -801,8 +800,8 @@
                         var getNominalBox = function() {
 
                             return {
-                                widthOfBox: width / (getKeys(scope.config.xDim).length + 2),
-                                heightOfBox: height / (getKeys(scope.config.yDim).length + 2)
+                                widthOfBox: width / (getKeys(scope.config.xDim).length ),
+                                heightOfBox: height / (getKeys(scope.config.yDim).length )
                             };
 
                         };
@@ -860,10 +859,57 @@
 
                         };
 
+                        var labelGenerator = function(dimName) {
+
+                            if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+
+                                return function(d) {
+
+                                    return d[scope.config.xDim];
+                                };
+                            } else {
+
+                                return function(d) {
+
+
+
+                                    return getKeys(dimName)[d];
+
+                                };
+                            }
+
+
+                        };
+
                         var drawAxes = function() {
 
-                            //Common Axis formating between scatterplot and gatherplot
-                            //Setup X axis
+
+                            var xAxis = d3.svg.axis()
+                                .scale(xScale)
+                                .ticks(getKeys(scope.config.xDim).length)
+                                .tickFormat(labelGenerator(scope.config.xDim))
+                                .orient("bottom");
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .ticks(getKeys(scope.config.yDim).length)
+                                .tickFormat(labelGenerator(scope.config.yDim))
+                                .orient("left");
+
+                            svg.selectAll(".axis").remove();
+
+                            xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + (height) + ")")
+                                .call(xAxis);
+
+
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+
+
                             xAxisNodes.selectAll('text')
                                 .style("font-size", 12);
 
@@ -879,10 +925,11 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 12)
                                 .attr("y", -15)
-                                .attr("transform", "rotate(-90)")
-                                .attr("dx", function(d) {
+                                .attr("dy", function(d) {
                                     return (String(d).length - 1) * 12 / 2;
-                                });
+                                })
+                                .attr("transform", "rotate(-90)");
+
 
                             yAxisNodes
                                 .append("text")
@@ -902,20 +949,11 @@
                             });
 
 
-                            svgGroup.selectAll(".dot")
-                                .style("fill", function(d) {
-                                    return color(d[scope.config.colorDim]);
-                                })
-                                .style("stroke", function(d) {
-                                    return scope.border ? 'black' : 'none';
-                                })
-                                .style("stroke-width", "1px")
-                                .style("shape-rendering", scope.shapeRenderingMode);
                         };
 
                         var drawLegends = function() {
                             var legendGroup = svg.selectAll(".legend")
-                                .data(scope.config.dimOrder[scope.config.colorDim], function(d) {
+                                .data(getKeys(scope.config.colorDim), function(d) {
                                     return d;
                                 });
 

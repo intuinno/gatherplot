@@ -48,7 +48,7 @@
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
 
                 $scope.nomaRound = true;
-                $scope.nomaBorder = true;
+                $scope.nomaBorder = false;
                 $scope.nomaShapeRendering = 'auto';
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
