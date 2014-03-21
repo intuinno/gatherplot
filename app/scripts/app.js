@@ -3,6 +3,7 @@
 
     // create the angular app
     angular.module('myApp', [
+        // 'ngSlider',
         'myApp.controllers',
         'myApp.directives'
     ]);

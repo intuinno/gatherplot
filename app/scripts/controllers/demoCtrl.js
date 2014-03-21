@@ -53,6 +53,13 @@
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
                 $scope.nomaConfig.relativeMode = 'absolute';
+                $scope.nomaConfig.binSize = 10;
+
+                $scope.sliderOptions = {
+                    from: 1,
+                    to: 30,
+                    step: 1
+                };
 
 
                 $scope.changeActiveDataTitanic = function() {
@@ -202,7 +209,8 @@
                     $scope.activeData = 'Continuous Variables';
                     var data = [];
 
-
+                    var lowMeanHighSDRandomNumberGenerator = d3.random.normal(0.3, 2);
+                    var highMeanLowSDRandomNumberGenerator = d3.random.normal(0.8, 0.5);
 
                     for (var count = 0; count < numberOfEntity; count++) {
 
@@ -237,8 +245,8 @@
                         }
 
 
-                        temp.continous_variable1 = d3.random.normal([0.3, 2]);
-                        temp.continous_variable2 = d3.random.normal([0.8, 0.5]);
+                        temp.continous_variable1 = lowMeanHighSDRandomNumberGenerator();
+                        temp.continous_variable2 = highMeanLowSDRandomNumberGenerator();
                         temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
 
                         data.push(temp);
@@ -316,34 +324,34 @@
 
 
 
-                    d3Service.d3().then(function(d3) {
-                        d3.csv('data/cars.csv', function(error, tdata) {
-                            var count = 0;
 
-                            tdata.map(function(d) {
-                                d.id = count;
-                                count += 1;
-                            });
+                    d3.csv('data/cars.csv', function(error, tdata) {
+                        var count = 0;
 
-                            $scope.nomaData = tdata;
-                            $scope.nomaConfig.dims = d3.keys(tdata[0]);
-
-                            var index = $scope.nomaConfig.dims.indexOf('id');
-                            $scope.nomaConfig.dims.splice(index, 1);
-
-
-                            $scope.nomaConfig.xDim = $scope.nomaConfig.dims[1];
-                            $scope.nomaConfig.yDim = $scope.nomaConfig.dims[2];
-                            $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[8];
-
-                            $scope.nomaConfig.isGather = 'scatter';
-
-                            //$scope.$apply();
-
-
-
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
                         });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+
+                        $scope.nomaConfig.xDim = $scope.nomaConfig.dims[1];
+                        $scope.nomaConfig.yDim = $scope.nomaConfig.dims[2];
+                        $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[8];
+
+                        $scope.nomaConfig.isGather = 'scatter';
+
+                        //$scope.$apply();
+
+
+
                     });
+
 
 
 

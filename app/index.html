@@ -1,5 +1,5 @@
 <!doctype html>
-<html >
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -65,32 +65,44 @@
 
                                 <option value="">-- undefined --</option>
 
-                            </select>Vs.
+                            </select>  vs.
 
                             <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
 
                                 <option value="">-- undefined --</option>
 
-                            </select>in
+                            </select> 
 
-                            <select ng-model="nomaConfig.relativeMode" ng-options="f for f in nomaConfig.relativeModes">
-
-
-
-                            </select>mode.</h5>
-                        <h5>Arrange subgroup in color with
+                           
+                        <h5>Arrange subgroup with color according to 
 
                             <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
 
                                 <option value="">-- undefined --</option>
 
                             </select>
+</br>
+                        </h6>
 
-                        </h5>
+                         <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>  Check this to make it easy to compare groups of different sizes.</h6>
+
+
+
+
                     </div>
                 </div>
+
+
+
+
                 <accordion close-others="false">
-                    <accordion-group is-open="isAdvancedOptionOpen">
+                    <accordion-group is-open="isAdvancedOptionOpen" ng-hide='true'>
+
+                        <div>
+                            Data Binning Size
+                            <input ng-model="nomaConfig.binSize" type="text" id="mySlider1" slider options="sliderOptions" />
+
+                        </div>
                         <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i>
                             Under the Hood (Advanced Option)</accordion-heading>
                         <div class="row">
@@ -299,7 +311,7 @@
                                 <p>
                                     <label label-default="label-default" class="checkbox-inline">
                                         <input type="checkbox" ng-model="nomaRound">Round Edge</label>
-                                        {{nomaRound}}
+                                    {{nomaRound}}
                                 </p>
                                 <dl>
                                     <dt>

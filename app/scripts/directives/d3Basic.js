@@ -18,7 +18,7 @@
 
                         //Constants and Setting Environment variables 
 
-                        var margin = 30;
+                        var margin = 80;
                         var width = 1040;
                         var height = 820;
                         var outerWidth = width + 2 * margin;
@@ -32,11 +32,9 @@
                         var xScale, yScale;
                         var xMap, yMap;
                         var nest = {};
+                        scope.config.binSize = defaultBinSize;
 
                         var globalMaxLength;
-
-                        scope.config.YBinSize = defaultBinSize;
-                        scope.config.XBinSize = defaultBinSize;
 
                         scope.config.dimSetting = {};
 
@@ -97,7 +95,9 @@
                             return scope.renderRoundChange(newVals);
                         }, false);
 
-                        scope.$watch('shapeRenderingMode', function(newVals, oldVals) {
+                        scope.$watch(function() {
+                            return scope.shapeRenderingMode;
+                        }, function(newVals, oldVals) {
                             return scope.renderShapeRenderingChange(newVals);
                         }, true);
 
@@ -156,6 +156,7 @@
 
                                 scope.config.dimSetting[scope.config.dims[i]].dimType = identifyDimDataType(scope.config.dims[i]);
                                 setDimSettingKeyEquivalentNumber(scope.config.dims[i]);
+                                handleBinningForOrdinalVariablesForGatherplot(scope.config.dims[i]);
                             }
 
                         };
@@ -169,6 +170,48 @@
                                 currentDimSetting.keyEquivalentNumber = getNominalKeyEquivalentNumber(dim);
                             }
                         };
+
+                        var handleBinningForOrdinalVariablesForGatherplot = function(dimName) {
+
+                            if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
+
+                                doBinningForOrdinalDimension(dimName);
+                            }
+                        };
+
+                        var doBinningForOrdinalDimension = function(dimName) {
+
+                            var currentDimSetting = scope.config.dimSetting[dimName];
+
+                            currentDimSetting.binnedData = scope.data.map(binningFunc(dimName));
+
+                        };
+
+                        var binningFunc = function(dimName) {
+
+                            var minValue = d3.min(scope.data, function(d) {
+                                return +d[dimName];
+                            });
+                            var maxValue = d3.max(scope.data, function(d) {
+                                return +d[dimName];
+                            });
+
+                            var encodingBinScale = d3.scale.linear()
+                                .range([0, scope.config.binSize - 1])
+                                .domain([minValue, maxValue]);
+
+                            var decodingBinScale = d3.scale.linear()
+                                .domain([0, scope.config.binSize - 1])
+                                .range([minValue, maxValue]);
+
+                            return function(d) {
+
+                                return decodingBinScale(Math.round(encodingBinScale(d[dimName])));
+                            };
+                        };
+
+
+
 
                         var getNominalKeyEquivalentNumber = function(dim) {
 
@@ -213,7 +256,7 @@
 
                         var isSemiOrdinalDim = function(dim) {
 
-                            if (getNumberOfKeys(dim) > thresholdNominal) {
+                            if (getNumKeys(dim) < thresholdNominal) {
                                 return true;
                             } else {
                                 return false;
@@ -222,14 +265,30 @@
 
                         };
 
-                        var getNumberOfKeys = function(dim) {
+                        var getNumKeys = function(dim) {
 
-                            return getKeys().length;
+                            if (!dim) {
+
+                                return 1;
+                            }
+
+                            var currentDimSetting = scope.config.dimSetting[dim];
+
+
+
+                            if (isBinningRequired(currentDimSetting.dimType)) {
+
+                                return scope.config.binSize;
+
+                            } else {
+
+                                return getKeys(dim).length;
+                            }
                         };
 
                         var getKeys = function(dim) {
 
-                            if(!dim) {
+                            if (!dim) {
 
                                 return [''];
                             }
@@ -354,8 +413,6 @@
                             xValue = getDimValueFunc(scope.config.xDim);
                             yValue = getDimValueFunc(scope.config.yDim);
 
-                            xValue(scope.data[0]);
-
                         };
 
                         var getDimValueFunc = function(dimName) {
@@ -372,16 +429,39 @@
 
                             if (isDimTypeNumerical(dimType)) {
 
-                                return function(d) {
-                                    return +d.dimNameClosure;
-                                };
+                                if (isBinningRequired(dimType)) {
+
+                                    return function(d, i) {
+
+                                        return +scope.config.dimSetting[dimName].binnedData[d.id];
+                                    };
+
+                                } else {
+
+                                    return function(d) {
+                                        return +d[dimName];
+                                    };
+
+                                }
                             } else {
+
 
                                 return function(d) {
                                     return scope.config.dimSetting[dimNameClosure].keyEquivalentNumber[d[dimNameClosure]];
                                 };
                             }
 
+                        };
+
+                        var isBinningRequired = function(dimType) {
+
+                            if (dimType == 'ordinal' && scope.config.isGather === 'gather') {
+
+                                return true;
+                            } else {
+
+                                return false;
+                            }
                         };
 
                         var calculateOffsetOfNodes = function() {
@@ -460,12 +540,8 @@
                             // debugger;
 
                             nest = d3.nest()
-                                .key(function(d) {
-                                    return d[scope.config.xDim];
-                                })
-                                .key(function(d) {
-                                    return d[scope.config.yDim];
-                                })
+                                .key(xValue)
+                                .key(yValue)
                                 .sortValues(sortFuncByColorDimension())
                                 .entries(scope.data);
 
@@ -548,7 +624,7 @@
                         var numericalDimSortFunc = function(dim) {
 
                             return function(a, b) {
-                                return a;
+                                return a[dim] - b[dim];
                             };
                         };
 
@@ -591,7 +667,7 @@
                         };
 
 
-                        var getNodesSizeAndOffsetPosition = function(box, size) {
+                        var getNodesSizeAndOffsetPosition = function() {
 
                             nest.forEach(function(d, i, j) {
 
@@ -624,13 +700,42 @@
                         var assignNodesOffsetLongShortEdge = function(longEdge, shortEdge, cluster) {
 
                             var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length);
+                            if (isThemeRiverCondition(numElement)) {
+
+                                numElement = getNumOfElementForThemeRiver(longEdge, shortEdge, cluster.length);
+                            }
                             var nodeSize = getNodeSizeAbsoluteOrRelative(longEdge, shortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
                             var offsetForCenterPosition = calculateOffsetForCenterPosition(nodeSize.lengthInLongEdge, nodeSize.lengthInShortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
+
 
                             return {
                                 numElement: numElement,
                                 nodeSize: nodeSize,
                                 offsetForCenterPosition: offsetForCenterPosition
+                            };
+
+
+                        };
+
+                        var isThemeRiverCondition = function(numElement) {
+
+                            if (numElement.numElementInLongEdge / numElement.numElementInShortEdge > 10) {
+
+                                return true;
+                            } else {
+
+                                return false;
+                            }
+                        };
+
+                        var getNumOfElementForThemeRiver = function(longEdge, shortEdge, numElement) {
+
+                            var numElementInShortEdge = (shortEdge / getNodesSizeForAbsolute());
+                            var numElementInLongEdge = Math.ceil(numElement / numElementInShortEdge);
+
+                            return {
+                                numElementInShortEdge: numElementInShortEdge,
+                                numElementInLongEdge: numElementInLongEdge
                             };
 
 
@@ -673,7 +778,7 @@
                                 d.nodeWidth = nodeWidth;
                                 d.nodeHeight = nodeHeight;
 
-                                d.YOffset = d.clusterID % numElementInShortEdge * nodeHeight - offsetInShortEdge + nodeHeight;
+                                d.YOffset = (d.clusterID % numElementInShortEdge) * nodeHeight - offsetInShortEdge + nodeHeight;
                                 d.XOffset = Math.floor(d.clusterID / numElementInShortEdge) * nodeWidth - offsetInLongEdge;
 
                             });
@@ -696,7 +801,7 @@
                                 d.nodeHeight = nodeHeight;
                                 d.nodeWidth = nodeWidth;
 
-                                d.XOffset = d.clusterID % numElementInShortEdge * nodeWidth - offsetInShortEdge;
+                                d.XOffset = (d.clusterID % numElementInShortEdge) * nodeWidth - offsetInShortEdge;
                                 d.YOffset = Math.floor(d.clusterID / numElementInShortEdge) * nodeHeight - offsetInLongEdge + nodeHeight;
 
                             });
@@ -804,9 +909,11 @@
 
                         var getNominalBox = function() {
 
+
+
                             return {
-                                widthOfBox: width / (getKeys(scope.config.xDim).length ),
-                                heightOfBox: height / (getKeys(scope.config.yDim).length )
+                                widthOfBox: width / (getNumKeys(scope.config.xDim)),
+                                heightOfBox: height / (getNumKeys(scope.config.yDim))
                             };
 
                         };
@@ -836,16 +943,11 @@
                                 .data(scope.data, function(d) {
                                     return +d.id;
                                 })
-                                .attr("transform", function(d, i) {
-
-                                    // if (d.cancer== "Cancer") {
-                                    //     console.log(height);
-                                    // }
-                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ")";
-                                })
                                 .style("fill", function(d) {
                                     return color(d[scope.config.colorDim]);
                                 })
+                                .transition()
+                                .duration(1500)
                                 .attr("x", xMap)
                                 .attr("y", yMap)
                                 .attr("width", function(d) {
@@ -860,6 +962,13 @@
                                 })
                                 .attr("ry", function(d) {
                                     return scope.round ? +5 : 0;
+                                })
+                                .attr("transform", function(d, i) {
+
+                                    // if (d.cancer== "Cancer") {
+                                    //     console.log(height);
+                                    // }
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ")";
                                 });
 
                         };
@@ -875,7 +984,7 @@
 
                                 return function(d) {
 
-                                    return d[scope.config.xDim];
+                                    return d;
                                 };
                             } else {
 
@@ -891,18 +1000,40 @@
 
                         };
 
+                        var tickGenerator = function(dimName) {
+
+                            if (!dimName) {
+                                return 0;
+                            } else if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+
+                                var numKeys = getKeys(dimName).length;
+
+                                if (numKeys > 10) {
+
+                                    return 10;
+                                } else {
+
+                                    return numKeys;
+                                }
+
+                            } else {
+
+                                return getKeys(dimName).length;
+                            }
+                        };
+
                         var drawAxes = function() {
 
 
                             var xAxis = d3.svg.axis()
                                 .scale(xScale)
-                                .ticks(getKeys(scope.config.xDim).length)
+                                .ticks(tickGenerator(scope.config.xDim))
                                 .tickFormat(labelGenerator(scope.config.xDim))
                                 .orient("bottom");
 
                             var yAxis = d3.svg.axis()
                                 .scale(yScale)
-                                .ticks(getKeys(scope.config.yDim).length)
+                                .ticks(tickGenerator(scope.config.yDim))
                                 .tickFormat(labelGenerator(scope.config.yDim))
                                 .orient("left");
 
@@ -933,12 +1064,15 @@
 
                             //Setup Y axis
                             yAxisNodes.selectAll('text')
-                                .style("font-size", 12)
-                                .attr("y", -15)
-                                .attr("dy", function(d) {
-                                    return (String(d).length - 1) * 12 / 2;
-                                })
-                                .attr("transform", "rotate(-90)");
+                                .style("font-size", 12);
+                            // .attr("y", -20)
+                            // .attr("dx", function(d) {
+                            //     return (String(d).length - 1) * 12 / 2;
+                            // })
+                            // .attr("transform", function(d) {
+                            //     return "rotate(-90)translate(" + this.getBBox().width / 2 + "," +
+                            //         this.getBBox().height / 2 + ")";
+                            // });
 
 
                             yAxisNodes

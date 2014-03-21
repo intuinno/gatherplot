@@ -25,6 +25,9 @@ module.exports = function(grunt) {
       },
       bootstrap_font_copy: {
         command: 'cp -R bower_components/bootstrap/dist/fonts app/fonts'
+      },
+      ngslider_img_copy: {
+        command: 'cp -R bower_components/ng-slider/dist/img app/images'
       }
     },
 
@@ -89,6 +92,7 @@ module.exports = function(grunt) {
         src: [
           'bower_components/jquery-ui/themes/base/jquery-ui.css',
           'bower_components/bootstrap/dist/css/bootstrap.css',
+          // 'bower_components/ng-slider/dist/css/ng-slider.min.css',
           'app/styles/gatherplot.css'
           //place your Stylesheet files here
         ]
@@ -103,8 +107,10 @@ module.exports = function(grunt) {
           'bower_components/jquery/jquery.js',
           'bower_components/jquery-ui/ui/jquery-ui.js',
           'bower_components/angular/angular.js',
+          'bower_components/angular-sanitize/angular-sanitize.min.js',
           'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
           'bower_components/angular-ui-sortable/sortable.js',
+          // 'bower_components/ng-slider/dist/ng-slider.min.js',
           'app/scripts/app.js',
           'app/scripts/services/**/*.js',
           'app/scripts/directives/**/*.js',
