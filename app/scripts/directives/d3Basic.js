@@ -24,9 +24,13 @@
                         var outerWidth = width + 2 * margin;
                         var outerHeight = height + 2 * margin;
                         var initialSquareLenth = 10;
-                        var color = d3.scale.category10();
+                        var colorNominal = d3.scale.category10();
+                        var color;
+                        var colorScaleForHeatMap = d3.scale.linear()
+                                .range(["#98c8fd", "08306b"])
+                                .interpolate(d3.interpolateHsl);
                         var renderData;
-                        var thresholdNominal = 100; //Threshold for automatic nominal identification
+                        var thresholdNominal = 7; //Threshold for automatic nominal identification
                         var defaultBinSize = 10;
                         var xValue, yValue; //Function for getting value of X,Y position 
                         var xScale, yScale;
@@ -206,7 +210,7 @@
 
                             return function(d) {
 
-                                return decodingBinScale(Math.round(encodingBinScale(d[dimName])));
+                                return decodingBinScale(Math.floor(encodingBinScale(d[dimName])) + 0.5);
                             };
                         };
 
@@ -395,18 +399,68 @@
                             var nominalBox = getNominalBox();
 
                             xScale = d3.scale.linear().range([0, width]);
-                            xScale.domain([d3.min(scope.data, xValue) - 0.5, d3.max(scope.data, xValue) + 0.5]);
+                            xScale.domain([d3.min(scope.data, xValueConsideringBinning()) - 0.5, d3.max(scope.data, xValueConsideringBinning()) + 0.5]);
                             xMap = function(d) {
                                 return xScale(xValue(d));
                             };
 
                             yScale = d3.scale.linear().range([height, 0]);
-                            yScale.domain([d3.min(scope.data, yValue) - 0.5, d3.max(scope.data, yValue) + 0.5]);
+                            yScale.domain([d3.min(scope.data, yValueConsideringBinning()) - 0.5, d3.max(scope.data, yValueConsideringBinning()) + 0.5]);
                             yMap = function(d) {
                                 return yScale(yValue(d));
                             };
 
                         };
+
+                        var xValueConsideringBinning = function() {
+
+                            var dimName = scope.config.xDim;
+
+                            if(!dimName) {
+
+                                return xValue;
+                            }
+
+                            if (isBinningRequired(scope.config.dimSetting[dimName].dimType)) {
+
+                                return function(d) {
+
+                                    return d[dimName];
+
+                                };
+                            } else {
+
+                                return xValue;
+
+
+                            }
+                        };
+
+                        var yValueConsideringBinning = function() {
+
+                            var dimName = scope.config.yDim;
+
+                            if(!dimName) {
+
+                                return yValue;
+                            }
+
+                            if (isBinningRequired(scope.config.dimSetting[dimName].dimType)) {
+
+                                return function(d) {
+
+                                    return d[dimName];
+
+                                };
+                            } else {
+
+                                return yValue;
+
+
+                            }
+                        };
+
+
 
                         var calculatePositionOfNodes = function() {
                             //debugger;
@@ -455,7 +509,7 @@
 
                         var isBinningRequired = function(dimType) {
 
-                            if (dimType == 'ordinal' && scope.config.isGather === 'gather') {
+                            if (dimType === 'ordinal' && scope.config.isGather === 'gather') {
 
                                 return true;
                             } else {
@@ -929,7 +983,28 @@
 
                         var getColorOfNodes = function() {
 
+                            if (!scope.config.colorDim) {
+                                color = colorNominal;
+                                return;
+                            }
 
+
+                            var colorDomain = d3.extent(scope.data, function(d) {
+                                return d[scope.config.colorDim];
+                            });
+
+                            if (scope.config.dimSetting[scope.config.colorDim].dimType === 'ordinal') {
+
+                                colorScaleForHeatMap = d3.scale.linear()
+                                .range(["#98c8fd", "08306b"])
+                                .domain(colorDomain)
+                                .interpolate(d3.interpolateHsl);
+
+                                color = colorScaleForHeatMap;
+                            } else {
+
+                                color = colorNominal;
+                            }
 
                         };
 
@@ -1096,6 +1171,63 @@
                         };
 
                         var drawLegends = function() {
+
+                            resetLegends();
+
+                            if (!scope.config.colorDim) {
+
+                                return ;
+                            }
+
+                            var currentDimSetting = scope.config.dimSetting[scope.config.colorDim];
+
+                            if (currentDimSetting.dimType === 'ordinal') {
+
+                                drawHeatMapLegends();
+                            } else {
+
+                                drawNominalLegends();
+                            }
+                        };
+
+                        var resetLegends = function() {
+
+                            var legendGroup = svg.selectAll(".legend").remove();
+
+                        };
+
+                        var drawHeatMapLegends = function() {
+
+                            var colorDomain = d3.extent(scope.data, function(d) {
+                                return d[scope.config.colorDim];
+                            });
+
+                            var widthHeatMap = 200;
+                            var heightHeatMap = 20;
+
+
+                            var xScaleForHeatMap = d3.scale.linear()
+                                .domain(colorDomain)
+                                .rangeRound([width-100, width+100]);
+
+                            var values = d3.range(colorDomain[0], colorDomain[1], (colorDomain[1] - colorDomain[0]) / widthHeatMap);
+
+                            var g = svg.append("g")
+                                .attr("class", "legend")
+                                .selectAll("rect")
+                                .data(values)
+                                .enter().append("rect")
+                                .attr("x", xScaleForHeatMap)
+                                .attr("y", 10)
+                                .attr("width", 1)
+                                .attr("height", heightHeatMap)
+                                .style("fill", colorScaleForHeatMap);
+                                
+                        };
+
+                        var drawNominalLegends = function() {
+
+
                             var legendGroup = svg.selectAll(".legend")
                                 .data(getKeys(scope.config.colorDim), function(d) {
                                     return d;
