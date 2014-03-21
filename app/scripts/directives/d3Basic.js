@@ -229,6 +229,11 @@
 
                         var getKeys = function(dim) {
 
+                            if(!dim) {
+
+                                return [''];
+                            }
+
                             var nest = d3.nest()
                                 .key(function(d) {
                                     return d[dim];
@@ -565,7 +570,7 @@
                         var getClusterBox = function() {
 
                             var box = getNominalBox();
-                            var marginPercentage = 0.1;
+                            var marginPercentage = 0.15;
 
                             return {
                                 widthOfBox: box.widthOfBox * (1 - marginPercentage),
@@ -861,7 +866,12 @@
 
                         var labelGenerator = function(dimName) {
 
-                            if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+                            if (!dimName) {
+
+                                return function(d) {
+                                    return '';
+                                };
+                            } else if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
 
                                 return function(d) {
 
