@@ -1219,15 +1219,39 @@
                             var values = d3.range(colorDomain[0], colorDomain[1], (colorDomain[1] - colorDomain[0]) / widthHeatMap);
 
                             var g = svg.append("g")
-                                .attr("class", "legend")
-                                .selectAll("rect")
+                                .attr("class", "legend");
+                                
+
+
+                            var heatmap = g.selectAll("rect")
                                 .data(values)
                                 .enter().append("rect")
                                 .attr("x", xScaleForHeatMap)
-                                .attr("y", 10)
+                                .attr("y", 20)
                                 .attr("width", 1)
                                 .attr("height", heightHeatMap)
                                 .style("fill", colorScaleForHeatMap);
+
+                                g.append("text")
+                                .attr("x", width + 12)
+                                .attr("y", 10)
+                                .attr("dy", ".35em")
+                                .style("text-anchor", "middle")
+                                .text(scope.config.colorDim);
+
+                                g.append("text")
+                                .attr("x", xScaleForHeatMap(values[0]))
+                                .attr("y", 50)
+                                .attr("dy", ".35em")
+                                .style("text-anchor", "middle")
+                                .text(d3.round(colorDomain[0],1));
+
+                                g.append("text")
+                                .attr("x", xScaleForHeatMap(values[values.length-1]))
+                                .attr("y", 50)
+                                .attr("dy", ".35em")
+                                .style("text-anchor", "middle")
+                                .text(d3.round(colorDomain[1],1));
                                 
                         };
 
