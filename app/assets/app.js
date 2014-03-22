@@ -59115,7 +59115,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         var prepareScale = function() {
                             //debugger;
-                            var nominalBox = getNominalBox();
+                            //var nominalBox = getNominalBox();
 
                             xScale = d3.scale.linear().range([0, width]);
                             xScale.domain([d3.min(scope.data, xValueConsideringBinning()) - 0.5, d3.max(scope.data, xValueConsideringBinning()) + 0.5]);
@@ -59144,7 +59144,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                                 return function(d) {
 
-                                    return d[dimName];
+                                    return +d[dimName];
 
                                 };
                             } else {
@@ -59168,7 +59168,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                                 return function(d) {
 
-                                    return d[dimName];
+                                    return +d[dimName];
 
                                 };
                             } else {
@@ -59206,13 +59206,13 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                                     return function(d, i) {
 
-                                        return +scope.config.dimSetting[dimName].binnedData[d.id];
+                                        return +scope.config.dimSetting[dimNameClosure].binnedData[d.id];
                                     };
 
                                 } else {
 
                                     return function(d) {
-                                        return +d[dimName];
+                                        return +d[dimNameClosure];
                                     };
 
                                 }
@@ -59377,8 +59377,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                                 }
 
-                                // return scope.config.dimOrder[scope.config.colorDim].indexOf(a[scope.config.colorDim]) - scope.config.dimOrder[scope.config.colorDim].indexOf(b[scope.config.colorDim]);
-
+                               
                             }
 
                         };
@@ -59708,11 +59707,13 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             }
 
 
-                            var colorDomain = d3.extent(scope.data, function(d) {
-                                return d[scope.config.colorDim];
-                            });
+                            
 
                             if (scope.config.dimSetting[scope.config.colorDim].dimType === 'ordinal') {
+
+                                var colorDomain = d3.extent(scope.data, function(d) {
+                                return +d[scope.config.colorDim];
+                            });
 
                                 colorScaleForHeatMap = d3.scale.linear()
                                 .range(["#98c8fd", "08306b"])
@@ -59918,7 +59919,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         var drawHeatMapLegends = function() {
 
                             var colorDomain = d3.extent(scope.data, function(d) {
-                                return d[scope.config.colorDim];
+                                return +d[scope.config.colorDim];
                             });
 
                             var widthHeatMap = 200;
