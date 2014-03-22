@@ -27,8 +27,8 @@
                         var colorNominal = d3.scale.category10();
                         var color;
                         var colorScaleForHeatMap = d3.scale.linear()
-                                .range(["#98c8fd", "08306b"])
-                                .interpolate(d3.interpolateHsl);
+                            .range(["#98c8fd", "08306b"])
+                            .interpolate(d3.interpolateHsl);
                         var renderData;
                         var thresholdNominal = 7; //Threshold for automatic nominal identification
                         var defaultBinSize = 10;
@@ -421,7 +421,7 @@
 
                             var dimName = scope.config.xDim;
 
-                            if(!dimName) {
+                            if (!dimName) {
 
                                 return xValue;
                             }
@@ -445,7 +445,7 @@
 
                             var dimName = scope.config.yDim;
 
-                            if(!dimName) {
+                            if (!dimName) {
 
                                 return yValue;
                             }
@@ -663,7 +663,7 @@
 
                                 }
 
-                               
+
                             }
 
                         };
@@ -993,18 +993,18 @@
                             }
 
 
-                            
+
 
                             if (scope.config.dimSetting[scope.config.colorDim].dimType === 'ordinal') {
 
                                 var colorDomain = d3.extent(scope.data, function(d) {
-                                return +d[scope.config.colorDim];
-                            });
+                                    return +d[scope.config.colorDim];
+                                });
 
                                 colorScaleForHeatMap = d3.scale.linear()
-                                .range(["#98c8fd", "08306b"])
-                                .domain(colorDomain)
-                                .interpolate(d3.interpolateHsl);
+                                    .range(["#98c8fd", "08306b"])
+                                    .domain(colorDomain)
+                                    .interpolate(d3.interpolateHsl);
 
                                 color = colorScaleForHeatMap;
                             } else {
@@ -1166,12 +1166,12 @@
                                 .style("text-anchor", "end")
                                 .text(scope.config.yDim);
 
-                            svg.selectAll('.axis line, .axis path').style({
-                                'stroke': 'Black',
-                                'fill': 'none',
-                                'stroke-width': '1px',
-                                "shape-rendering": "crispEdges"
-                            });
+                            // svg.selectAll('.axis line, .axis path').style({
+                            //     'stroke': 'Black',
+                            //     'fill': 'none',
+                            //     'stroke-width': '10px',
+                            //     "shape-rendering": "crispEdges"
+                            // });
 
 
                         };
@@ -1182,7 +1182,7 @@
 
                             if (!scope.config.colorDim) {
 
-                                return ;
+                                return;
                             }
 
                             var currentDimSetting = scope.config.dimSetting[scope.config.colorDim];
@@ -1209,18 +1209,18 @@
                             });
 
                             var widthHeatMap = 200;
-                            var heightHeatMap = 20;
+                            var heightHeatMap = 18;
 
 
                             var xScaleForHeatMap = d3.scale.linear()
                                 .domain(colorDomain)
-                                .rangeRound([width-100, width+100]);
+                                .rangeRound([width - 100, width + 100]);
 
                             var values = d3.range(colorDomain[0], colorDomain[1], (colorDomain[1] - colorDomain[0]) / widthHeatMap);
 
                             var g = svg.append("g")
                                 .attr("class", "legend");
-                                
+
 
 
                             var heatmap = g.selectAll("rect")
@@ -1232,27 +1232,27 @@
                                 .attr("height", heightHeatMap)
                                 .style("fill", colorScaleForHeatMap);
 
-                                g.append("text")
+                            g.append("text")
                                 .attr("x", width + 12)
                                 .attr("y", 10)
                                 .attr("dy", ".35em")
                                 .style("text-anchor", "middle")
                                 .text(scope.config.colorDim);
 
-                                g.append("text")
+                            g.append("text")
                                 .attr("x", xScaleForHeatMap(values[0]))
                                 .attr("y", 50)
                                 .attr("dy", ".35em")
                                 .style("text-anchor", "middle")
-                                .text(d3.round(colorDomain[0],1));
+                                .text(d3.round(colorDomain[0], 1));
 
-                                g.append("text")
-                                .attr("x", xScaleForHeatMap(values[values.length-1]))
+                            g.append("text")
+                                .attr("x", xScaleForHeatMap(values[values.length - 1]))
                                 .attr("y", 50)
                                 .attr("dy", ".35em")
                                 .style("text-anchor", "middle")
-                                .text(d3.round(colorDomain[1],1));
-                                
+                                .text(d3.round(colorDomain[1], 1));
+
                         };
 
                         var drawNominalLegends = function() {
@@ -1269,7 +1269,7 @@
                             var legend = legendGroup.enter().append("g")
                                 .attr("class", "legend")
                                 .attr("transform", function(d, i) {
-                                    return "translate(0," + i * 20 + ")";
+                                    return "translate(0," + (i * 20 + 5) + ")";
                                 });
 
                             legend.append("rect")
@@ -1281,13 +1281,30 @@
                                 });
 
                             legend.append("text")
-                                .attr("x", width - 24)
+                                .attr("x", width +5)
                                 .attr("y", 9)
                                 .attr("dy", ".35em")
-                                .style("text-anchor", "end")
+                                .style("text-anchor", "left")
                                 .text(function(d) {
                                     return d;
                                 });
+
+
+
+                            var g = svg.append("g")
+                                .attr("class", "legend");
+
+
+
+                            g.append("text")
+                                .attr("x", width -24)
+                                .attr("y", 10)
+                                .attr("dy", ".35em")
+                                .style("text-anchor", "end")
+                                .text(scope.config.colorDim);
+
+
+
 
                         }; //End renderer
 

@@ -7016,6 +7016,11 @@ body {
   padding:0 10px;
 }
 
+.nomarect {
+
+  border-style:solid;
+border-color: #0000ff;
+}
 
 
 .hero-unit {
@@ -7051,11 +7056,13 @@ svg {
 
 .axis path,
 .axis line {
-  fill: none;
+ fill: none;
   stroke: #000;
-  stroke-width:2px;
+  stroke-width: 1px;
+  shape-rendering: geometricPrecision;
 }
 
 .dot {
   stroke-width: 1;
 }
+

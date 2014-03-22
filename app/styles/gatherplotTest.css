@@ -16,8 +16,8 @@
 }
 
 body {
-        padding-top: 60px;
-        padding-bottom: 40px;
+        padding-top: 0px;
+        padding-bottom: 5px;
     }
     .sidebar-nav {
         padding: 9px 0;
@@ -52,11 +52,6 @@ body {
   padding:0 10px;
 }
 
-.nomarect {
-
-  border-style:solid;
-border-color: #0000ff;
-}
 
 
 .hero-unit {
@@ -68,15 +63,23 @@ border-color: #0000ff;
 .chart-title {
     text-align: center;
     margin-bottom: 0px;
-    margin-top: 20px;
+    margin-top: 0px;
 
 }
 
+.chart-instruction {
+  display: inline-block;
+}
+
 .chart-simple-interface {
+    width: 500px;
     text-align: center;
     margin-bottom: 5px;
     margin-top: 5px;
-
+    border-style:solid;
+border-color: #0000ff;
+margin:0 auto;
+padding:10px;
 }
 
 svg {

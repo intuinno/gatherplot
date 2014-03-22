@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="navbar-collapse collapse">
-                    
+
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="#">Home</a>
                         </li>
@@ -55,6 +55,7 @@
                         </div>
 
                     </h5>
+
                     <h4 class="chart-title">{{activeData}}</h4>
                     <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
                     <div class="chart-simple-interface">
@@ -64,49 +65,54 @@
 
                                 <option value="">-- undefined --</option>
 
-                            </select>  vs.
+                            </select> vs. 
 
                             <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
 
                                 <option value="">-- undefined --</option>
 
-                            </select> 
+                            </select>
 
-                           
-                        <h5>Arrange subgroup with color according to 
+
+                            Arrange subgroup with color according to
 
                             <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
 
                                 <option value="">-- undefined --</option>
 
                             </select>
-</br>
-                        </h6>
+                        </h5>
+                        </br>
+                        <h6>
 
-                         <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>  Check this to make it easy to compare groups of different sizes.</h6>
+                            <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>Check this to make it easy to compare groups of different sizes.</h6>
 
 
+                        <button class="btn btn-default" ng-click="isCollapsed = !isCollapsed">Toggle Ad</button>
+                        <hr>
+                        <div collapse="isCollapsed">
+                            <div class="well well-lg">Some content</div>
+                        </div>
 
 
                     </div>
                 </div>
-                <div>
-Data Binning Size: {{nomaConfig.binSize}} <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px">
-</div>
-
+                
 
 
                 <accordion close-others="false">
-                    <accordion-group is-open="isAdvancedOptionOpen" ng-hide='true'>
+                    <accordion-group is-open="isAdvancedOptionOpen" ng-hide='false'>
 
-                        <div>
-                            Data Binning Size
-                            <input ng-model="nomaConfig.binSize" type="text" id="mySlider1" slider options="sliderOptions" />
-
-                        </div>
+                        
                         <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i>
                             Under the Hood (Advanced Option)</accordion-heading>
                         <div class="row">
+
+                            <div>
+                    Data Binning Size: {{nomaConfig.binSize}}
+                    <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px">
+                </div>
+
                             <div class="col-md-4">
                                 <h3>X-axis:
 
@@ -469,6 +475,24 @@ Data Binning Size: {{nomaConfig.binSize}} <input type="range" ng-model="nomaConf
         </div>
         <!--/row-->
         <hr>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'gatherplot'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+         (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
         <!-- <footer>
             <p>© <a href="http://www.intuinno.com" > Intuinno</a> at PivotLab in Purdue University 2013</p>
         </footer> -->
