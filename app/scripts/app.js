@@ -3,8 +3,7 @@
 
     // create the angular app
     angular.module('myApp', [
-        'ngTouch',
-        'vr.directives.slider',
+        // 'ngSlider',
         'myApp.controllers',
         'myApp.directives'
     ]);

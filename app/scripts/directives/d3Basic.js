@@ -12,7 +12,6 @@
                         border: "=",
                         round: "=",
                         shapeRenderingMode: "=",
-                        binSize: "="
                     },
 
                     link: function(scope, iElement, iAttrs) {
@@ -37,7 +36,7 @@
                         var xScale, yScale;
                         var xMap, yMap;
                         var nest = {};
-                        scope.binSize = defaultBinSize;
+                        scope.config.binSize = defaultBinSize;
 
                         var globalMaxLength;
 
@@ -86,13 +85,6 @@
                         scope.$watch('config', function(newVals, oldVals) {
                             // debugger;
                             return scope.handleConfigChange(renderData, newVals);
-                        }, true);
-
-                        scope.$watch(function() {
-                            return scope.binSize;
-                        }, function(newVals, oldVals) {
-                            // debugger;
-                            return scope.renderDataChange(scope.data, scope.config);
                         }, true);
 
                         scope.$watch(function() {
@@ -209,11 +201,11 @@
                             });
 
                             var encodingBinScale = d3.scale.linear()
-                                .range([0, scope.binSize - 1])
+                                .range([0, scope.config.binSize - 1])
                                 .domain([minValue, maxValue]);
 
                             var decodingBinScale = d3.scale.linear()
-                                .domain([0, scope.binSize - 1])
+                                .domain([0, scope.config.binSize - 1])
                                 .range([minValue, maxValue]);
 
                             return function(d) {
@@ -290,7 +282,7 @@
 
                             if (isBinningRequired(currentDimSetting.dimType)) {
 
-                                return scope.binSize;
+                                return scope.config.binSize;
 
                             } else {
 

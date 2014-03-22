@@ -33105,7 +33105,7 @@ $.widget( "ui.tooltip", {
 
 }( jQuery ) );
 ;/**
- * @license AngularJS v1.2.15
+ * @license AngularJS v1.3.0-build.2487+sha.6011145
  * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -33174,7 +33174,7 @@ function minErr(module) {
       return match;
     });
 
-    message = message + '\nhttp://errors.angularjs.org/1.2.15/' +
+    message = message + '\nhttp://errors.angularjs.org/1.3.0-build.2487+sha.6011145/' +
       (module ? module + '/' : '') + code;
     for (i = 2; i < arguments.length; i++) {
       message = message + (i == 2 ? '?' : '&') + 'p' + (i-2) + '=' +
@@ -35025,11 +35025,11 @@ function setupModuleLoader(window) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
-  full: '1.2.15',    // all of these placeholder strings will be replaced by grunt's
+  full: '1.3.0-build.2487+sha.6011145',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
-  minor: 2,
-  dot: 15,
-  codeName: 'beer-underestimating'
+  minor: 3,
+  dot: 0,
+  codeName: 'snapshot'
 };
 
 
@@ -38697,7 +38697,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
        * @param {function(interpolatedValue)} fn Function that will be called whenever
                 the interpolated value of the attribute changes.
        *        See the {@link guide/directive#Attributes Directives} guide for more info.
-       * @returns {function()} the `fn` parameter.
+       * @returns {function()} Returns a deregistration function for this observer.
        */
       $observe: function(key, fn) {
         var attrs = this,
@@ -38711,7 +38711,10 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             fn(attrs[key]);
           }
         });
-        return fn;
+
+        return function() {
+          arrayRemove(listeners, fn);
+        };
       }
     };
 
@@ -41195,16 +41198,13 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       var callbackId = '_' + (callbacks.counter++).toString(36);
       callbacks[callbackId] = function(data) {
         callbacks[callbackId].data = data;
+        callbacks[callbackId].called = true;
       };
 
       var jsonpDone = jsonpReq(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
-          function() {
-        if (callbacks[callbackId].data) {
-          completeRequest(callback, 200, callbacks[callbackId].data);
-        } else {
-          completeRequest(callback, status || -2);
-        }
-        callbacks[callbackId] = angular.noop;
+          callbackId, function(status, text) {
+        completeRequest(callback, status, callbacks[callbackId].data, "", text);
+        callbacks[callbackId] = noop;
       });
     } else {
 
@@ -41304,34 +41304,40 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     }
   };
 
-  function jsonpReq(url, done) {
+  function jsonpReq(url, callbackId, done) {
     // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
     // - fetches local scripts via XHR and evals them
     // - adds and immediately removes script elements from the document
-    var script = rawDocument.createElement('script'),
-        doneWrapper = function() {
-          script.onreadystatechange = script.onload = script.onerror = null;
-          rawDocument.body.removeChild(script);
-          if (done) done();
-        };
-
-    script.type = 'text/javascript';
+    var script = rawDocument.createElement('script'), callback = null;
+    script.type = "text/javascript";
     script.src = url;
+    script.async = true;
 
-    if (msie && msie <= 8) {
-      script.onreadystatechange = function() {
-        if (/loaded|complete/.test(script.readyState)) {
-          doneWrapper();
+    callback = function(event) {
+      removeEventListenerFn(script, "load", callback);
+      removeEventListenerFn(script, "error", callback);
+      rawDocument.body.removeChild(script);
+      script = null;
+      var status = -1;
+      var text = "unknown";
+
+      if (event) {
+        if (event.type === "load" && !callbacks[callbackId].called) {
+          event = { type: "error" };
         }
-      };
-    } else {
-      script.onload = script.onerror = function() {
-        doneWrapper();
-      };
-    }
+        text = event.type;
+        status = event.type === "error" ? 404 : 200;
+      }
 
+      if (done) {
+        done(status, text);
+      }
+    };
+
+    addEventListenerFn(script, "load", callback);
+    addEventListenerFn(script, "error", callback);
     rawDocument.body.appendChild(script);
-    return doneWrapper;
+    return callback;
   }
 }
 
@@ -45626,7 +45632,7 @@ function $RootScopeProvider(){
  */
 function $$SanitizeUriProvider() {
   var aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file):/,
-    imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file):|data:image\//;
+    imgSrcSanitizationWhitelist = /^\s*(https?|ftp|file|blob):|data:image\//;
 
   /**
    * @description
@@ -47655,6 +47661,32 @@ function timeZoneGetter(date) {
   return paddedZone;
 }
 
+function getFirstThursdayOfYear(year) {
+    // 0 = index of January
+    var dayOfWeekOnFirst = (new Date(year, 0, 1)).getDay();
+    // 4 = index of Thursday (+1 to account for 1st = 5)
+    // 11 = index of *next* Thursday (+1 account for 1st = 12)
+    return new Date(year, 0, ((dayOfWeekOnFirst <= 4) ? 5 : 12) - dayOfWeekOnFirst);
+}
+
+function getThursdayThisWeek(datetime) {
+    return new Date(datetime.getFullYear(), datetime.getMonth(),
+      // 4 = index of Thursday
+      datetime.getDate() + (4 - datetime.getDay()));
+}
+
+function weekGetter(size) {
+   return function(date) {
+      var firstThurs = getFirstThursdayOfYear(date.getFullYear()),
+         thisThurs = getThursdayThisWeek(date);
+
+      var diff = +thisThurs - +firstThurs,
+         result = 1 + Math.round(diff / 6.048e8); // 6.048e8 ms per week
+
+      return padNumber(result, size);
+   };
+}
+
 function ampmGetter(date, formats) {
   return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
 }
@@ -47683,10 +47715,12 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: ampmGetter,
-     Z: timeZoneGetter
+     Z: timeZoneGetter,
+    ww: weekGetter(2),
+     w: weekGetter(1)
 };
 
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZEw']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z|w+))(.*)/,
     NUMBER_STRING = /^\-?\d+$/;
 
 /**
@@ -47721,6 +47755,8 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  *   * `'.sss' or ',sss'`: Millisecond in second, padded (000-999)
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-+1200)
+ *   * `'ww'`: ISO-8601 week of year (00-53)
+ *   * `'w'`: ISO-8601 week of year (0-53)
  *
  *   `format` string can also be one of the following predefined
  *   {@link guide/i18n localizable formats}:
@@ -49015,6 +49051,11 @@ var ngFormDirective = formDirectiveFactory(true);
 var URL_REGEXP = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
 var EMAIL_REGEXP = /^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*$/i;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
+var DATE_REGEXP = /^(\d{4})-(\d{2})-(\d{2})$/;
+var DATETIMELOCAL_REGEXP = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)$/;
+var WEEK_REGEXP = /^(\d{4})-W(\d\d)$/;
+var MONTH_REGEXP = /^(\d{4})-(\d\d)$/;
+var TIME_REGEXP = /^(\d\d):(\d\d)$/;
 
 var inputType = {
 
@@ -49095,6 +49136,425 @@ var inputType = {
    */
   'text': textInputType,
 
+    /**
+     * @ngdoc input
+     * @name input[date]
+     *
+     * @description
+     * Input with date validation and transformation. In browsers that do not yet support
+     * the HTML5 date input, a text element will be used. In that case, text must be entered in a valid ISO-8601
+     * date format (yyyy-MM-dd), for example: `2009-01-06`. The model must always be a Date object.
+     *
+     * @param {string} ngModel Assignable angular expression to data-bind to.
+     * @param {string=} name Property name of the form under which the control is published.
+     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
+     * valid ISO date string (yyyy-MM-dd).
+     * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
+     * a valid ISO date string (yyyy-MM-dd).
+     * @param {string=} required Sets `required` validation error key if the value is not entered.
+     * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+     *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+     *    `required` when you want to data-bind to the `required` attribute.
+     * @param {string=} ngChange Angular expression to be executed when input changes due to user
+     *    interaction with the input element.
+     *
+     * @example
+     <example name="date-input-directive">
+     <file name="index.html">
+       <script>
+          function Ctrl($scope) {
+            $scope.value = new Date(2013, 9, 22);
+          }
+       </script>
+       <form name="myForm" ng-controller="Ctrl as dateCtrl">
+          Pick a date between in 2013:
+          <input type="date" id="exampleInput" name="input" ng-model="value"
+              placeholder="yyyy-MM-dd" min="2013-01-01" max="2013-12-31" required />
+          <span class="error" ng-show="myForm.input.$error.required">
+              Required!</span>
+          <span class="error" ng-show="myForm.input.$error.date">
+              Not a valid date!</span>
+           <tt>value = {{value | date: "yyyy-MM-dd"}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+       </form>
+     </file>
+     <file name="protractor.js" type="protractor">
+        var value = element(by.binding('value | date: "yyyy-MM-dd"'));
+        var valid = element(by.binding('myForm.input.$valid'));
+        var input = element(by.model('value'));
+
+        // currently protractor/webdriver does not support
+        // sending keys to all known HTML5 input controls
+        // for various browsers (see https://github.com/angular/protractor/issues/562).
+        function setInput(val) {
+          // set the value of the element and force validation.
+          var scr = "var ipt = document.getElementById('exampleInput'); " +
+          "ipt.value = '" + val + "';" +
+          "angular.element(ipt).scope().$apply(function(s) { s.myForm[ipt.name].$setViewValue('" + val + "'); });";
+          browser.executeScript(scr);
+        }
+
+        it('should initialize to model', function() {
+          expect(value.getText()).toContain('2013-10-22');
+          expect(valid.getText()).toContain('myForm.input.$valid = true');
+        });
+
+        it('should be invalid if empty', function() {
+          setInput('');
+          expect(value.getText()).toEqual('value =');
+          expect(valid.getText()).toContain('myForm.input.$valid = false');
+        });
+
+        it('should be invalid if over max', function() {
+          setInput('2015-01-01');
+          expect(value.getText()).toContain('');
+          expect(valid.getText()).toContain('myForm.input.$valid = false');
+        });
+     </file>
+     </example>f
+     */
+  'date': createDateInputType('date', DATE_REGEXP,
+         createDateParser(DATE_REGEXP, ['yyyy', 'MM', 'dd']),
+         'yyyy-MM-dd'),
+
+   /**
+    * @ngdoc input
+    * @name input[dateTimeLocal]
+    *
+    * @description
+    * Input with datetime validation and transformation. In browsers that do not yet support
+    * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+    * local datetime format (yyyy-MM-ddTHH:mm), for example: `2010-12-28T14:57`. The model must be a Date object.
+    *
+    * @param {string} ngModel Assignable angular expression to data-bind to.
+    * @param {string=} name Property name of the form under which the control is published.
+    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
+    * valid ISO datetime format (yyyy-MM-ddTHH:mm).
+    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
+    * a valid ISO datetime format (yyyy-MM-ddTHH:mm).
+    * @param {string=} required Sets `required` validation error key if the value is not entered.
+    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+    *    `required` when you want to data-bind to the `required` attribute.
+    * @param {string=} ngChange Angular expression to be executed when input changes due to user
+    *    interaction with the input element.
+    *
+    * @example
+    <example name="datetimelocal-input-directive">
+    <file name="index.html">
+      <script>
+        function Ctrl($scope) {
+          $scope.value = new Date(2010, 11, 28, 14, 57);
+        }
+      </script>
+      <form name="myForm" ng-controller="Ctrl as dateCtrl">
+        Pick a date between in 2013:
+        <input type="datetime-local" id="exampleInput" name="input" ng-model="value"
+            placeholder="yyyy-MM-ddTHH:mm" min="2001-01-01T00:00" max="2013-12-31T00:00" required />
+        <span class="error" ng-show="myForm.input.$error.required">
+            Required!</span>
+        <span class="error" ng-show="myForm.input.$error.datetimelocal">
+            Not a valid date!</span>
+        <tt>value = {{value | date: "yyyy-MM-ddTHH:mm"}}</tt><br/>
+        <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+        <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+        <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+        <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+      </form>
+    </file>
+    <file name="protractor.js" type="protractor">
+      var value = element(by.binding('value | date: "yyyy-MM-ddTHH:mm"'));
+      var valid = element(by.binding('myForm.input.$valid'));
+      var input = element(by.model('value'));
+
+      // currently protractor/webdriver does not support
+      // sending keys to all known HTML5 input controls
+      // for various browsers (https://github.com/angular/protractor/issues/562).
+      function setInput(val) {
+        // set the value of the element and force validation.
+        var scr = "var ipt = document.getElementById('exampleInput'); " +
+        "ipt.value = '" + val + "';" +
+        "angular.element(ipt).scope().$apply(function(s) { s.myForm[ipt.name].$setViewValue('" + val + "'); });";
+        browser.executeScript(scr);
+      }
+
+      it('should initialize to model', function() {
+        expect(value.getText()).toContain('2010-12-28T14:57');
+        expect(valid.getText()).toContain('myForm.input.$valid = true');
+      });
+
+      it('should be invalid if empty', function() {
+        setInput('');
+        expect(value.getText()).toEqual('value =');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+
+      it('should be invalid if over max', function() {
+        setInput('2015-01-01T23:59');
+        expect(value.getText()).toContain('');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+    </file>
+    </example>
+    */
+  'datetime-local': createDateInputType('datetimelocal', DATETIMELOCAL_REGEXP,
+      createDateParser(DATETIMELOCAL_REGEXP, ['yyyy', 'MM', 'dd', 'HH', 'mm']),
+      'yyyy-MM-ddTHH:mm'),
+
+  /**
+   * @ngdoc input
+   * @name input[time]
+   *
+   * @description
+   * Input with time validation and transformation. In browsers that do not yet support
+   * the HTML5 date input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+   * local time format (HH:mm), for example: `14:57`. Model must be a Date object. This binding will always output a
+   * Date object to the model of January 1, 1900, or local date `new Date(0, 0, 1, HH, mm)`.
+   *
+   * @param {string} ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
+   * valid ISO time format (HH:mm).
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be a
+   * valid ISO time format (HH:mm).
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
+   *
+   * @example
+   <example name="time-input-directive">
+   <file name="index.html">
+     <script>
+      function Ctrl($scope) {
+        $scope.value = new Date(0, 0, 1, 14, 57);
+      }
+     </script>
+     <form name="myForm" ng-controller="Ctrl as dateCtrl">
+        Pick a between 8am and 5pm:
+        <input type="time" id="exampleInput" name="input" ng-model="value"
+            placeholder="HH:mm" min="08:00" max="17:00" required />
+        <span class="error" ng-show="myForm.input.$error.required">
+            Required!</span>
+        <span class="error" ng-show="myForm.input.$error.time">
+            Not a valid date!</span>
+        <tt>value = {{value | date: "HH:mm"}}</tt><br/>
+        <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+        <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+        <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+        <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+     </form>
+   </file>
+   <file name="protractor.js" type="protractor">
+      var value = element(by.binding('value | date: "HH:mm"'));
+      var valid = element(by.binding('myForm.input.$valid'));
+      var input = element(by.model('value'));
+
+      // currently protractor/webdriver does not support
+      // sending keys to all known HTML5 input controls
+      // for various browsers (https://github.com/angular/protractor/issues/562).
+      function setInput(val) {
+        // set the value of the element and force validation.
+        var scr = "var ipt = document.getElementById('exampleInput'); " +
+        "ipt.value = '" + val + "';" +
+        "angular.element(ipt).scope().$apply(function(s) { s.myForm[ipt.name].$setViewValue('" + val + "'); });";
+        browser.executeScript(scr);
+      }
+
+      it('should initialize to model', function() {
+        expect(value.getText()).toContain('14:57');
+        expect(valid.getText()).toContain('myForm.input.$valid = true');
+      });
+
+      it('should be invalid if empty', function() {
+        setInput('');
+        expect(value.getText()).toEqual('value =');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+
+      it('should be invalid if over max', function() {
+        setInput('23:59');
+        expect(value.getText()).toContain('');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+   </file>
+   </example>
+   */
+  'time': createDateInputType('time', TIME_REGEXP,
+      createDateParser(TIME_REGEXP, ['HH', 'mm']),
+     'HH:mm'),
+
+   /**
+    * @ngdoc input
+    * @name input[week]
+    *
+    * @description
+    * Input with week-of-the-year validation and transformation to Date. In browsers that do not yet support
+    * the HTML5 week input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+    * week format (yyyy-W##), for example: `2013-W02`. The model must always be a Date object.
+    *
+    * @param {string} ngModel Assignable angular expression to data-bind to.
+    * @param {string=} name Property name of the form under which the control is published.
+    * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be a
+    * valid ISO week format (yyyy-W##).
+    * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must be
+    * a valid ISO week format (yyyy-W##).
+    * @param {string=} required Sets `required` validation error key if the value is not entered.
+    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+    *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+    *    `required` when you want to data-bind to the `required` attribute.
+    * @param {string=} ngChange Angular expression to be executed when input changes due to user
+    *    interaction with the input element.
+    *
+    * @example
+    <example name="week-input-directive">
+    <file name="index.html">
+      <script>
+      function Ctrl($scope) {
+        $scope.value = new Date(2013, 0, 3);
+      }
+      </script>
+      <form name="myForm" ng-controller="Ctrl as dateCtrl">
+        Pick a date between in 2013:
+        <input id="exampleInput" type="week" name="input" ng-model="value"
+            placeholder="YYYY-W##" min="2012-W32" max="2013-W52" required />
+        <span class="error" ng-show="myForm.input.$error.required">
+            Required!</span>
+        <span class="error" ng-show="myForm.input.$error.week">
+            Not a valid date!</span>
+        <tt>value = {{value | date: "yyyy-Www"}}</tt><br/>
+        <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+        <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+        <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+        <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+      </form>
+    </file>
+    <file name="protractor.js" type="protractor">
+      var value = element(by.binding('value | date: "yyyy-Www"'));
+      var valid = element(by.binding('myForm.input.$valid'));
+      var input = element(by.model('value'));
+
+      // currently protractor/webdriver does not support
+      // sending keys to all known HTML5 input controls
+      // for various browsers (https://github.com/angular/protractor/issues/562).
+      function setInput(val) {
+        // set the value of the element and force validation.
+        var scr = "var ipt = document.getElementById('exampleInput'); " +
+        "ipt.value = '" + val + "';" +
+        "angular.element(ipt).scope().$apply(function(s) { s.myForm[ipt.name].$setViewValue('" + val + "'); });";
+        browser.executeScript(scr);
+      }
+
+      it('should initialize to model', function() {
+        expect(value.getText()).toContain('2013-W01');
+        expect(valid.getText()).toContain('myForm.input.$valid = true');
+      });
+
+      it('should be invalid if empty', function() {
+        setInput('');
+        expect(value.getText()).toEqual('value =');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+
+      it('should be invalid if over max', function() {
+        setInput('2015-W01');
+        expect(value.getText()).toContain('');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+    </file>
+    </example>
+    */
+  'week': createDateInputType('week', WEEK_REGEXP, weekParser, 'yyyy-Www'),
+
+  /**
+   * @ngdoc input
+   * @name input[month]
+   *
+   * @description
+   * Input with month validation and transformation. In browsers that do not yet support
+   * the HTML5 month input, a text element will be used. In that case, the text must be entered in a valid ISO-8601
+   * month format (yyyy-MM), for example: `2009-01`. The model must always be a Date object. In the event the model is
+   * not set to the first of the month, the first of that model's month is assumed.
+   *
+   * @param {string} ngModel Assignable angular expression to data-bind to.
+   * @param {string=} name Property name of the form under which the control is published.
+   * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`. This must be
+   * a valid ISO month format (yyyy-MM).
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater than `max`. This must
+   * be a valid ISO month format (yyyy-MM).
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
+   *    the element when the ngRequired expression evaluates to true. Use `ngRequired` instead of
+   *    `required` when you want to data-bind to the `required` attribute.
+   * @param {string=} ngChange Angular expression to be executed when input changes due to user
+   *    interaction with the input element.
+   *
+   * @example
+   <example name="month-input-directive">
+   <file name="index.html">
+     <script>
+      function Ctrl($scope) {
+        $scope.value = new Date(2013, 9, 1);
+      }
+     </script>
+     <form name="myForm" ng-controller="Ctrl as dateCtrl">
+       Pick a month int 2013:
+       <input id="exampleInput" type="month" name="input" ng-model="value"
+          placeholder="yyyy-MM" min="2013-01" max="2013-12" required />
+       <span class="error" ng-show="myForm.input.$error.required">
+          Required!</span>
+       <span class="error" ng-show="myForm.input.$error.month">
+          Not a valid month!</span>
+       <tt>value = {{value | date: "yyyy-MM"}}</tt><br/>
+       <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+       <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+       <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+       <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+     </form>
+   </file>
+   <file name="protractor.js" type="protractor">
+      var value = element(by.binding('value | date: "yyyy-MM"'));
+      var valid = element(by.binding('myForm.input.$valid'));
+      var input = element(by.model('value'));
+
+      // currently protractor/webdriver does not support
+      // sending keys to all known HTML5 input controls
+      // for various browsers (https://github.com/angular/protractor/issues/562).
+      function setInput(val) {
+        // set the value of the element and force validation.
+        var scr = "var ipt = document.getElementById('exampleInput'); " +
+        "ipt.value = '" + val + "';" +
+        "angular.element(ipt).scope().$apply(function(s) { s.myForm[ipt.name].$setViewValue('" + val + "'); });";
+        browser.executeScript(scr);
+      }
+
+      it('should initialize to model', function() {
+        expect(value.getText()).toContain('2013-10');
+        expect(valid.getText()).toContain('myForm.input.$valid = true');
+      });
+
+      it('should be invalid if empty', function() {
+        setInput('');
+        expect(value.getText()).toEqual('value =');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+
+      it('should be invalid if over max', function() {
+        setInput('2015-01');
+        expect(value.getText()).toContain('');
+        expect(valid.getText()).toContain('myForm.input.$valid = false');
+      });
+   </file>
+   </example>
+   */
+  'month': createDateInputType('month', MONTH_REGEXP,
+     createDateParser(MONTH_REGEXP, ['yyyy', 'MM']),
+     'yyyy-MM'),
 
   /**
    * @ngdoc input
@@ -49597,6 +50057,108 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 }
 
+function weekParser(isoWeek) {
+   if(isDate(isoWeek)) {
+      return isoWeek;
+   }
+
+   if(isString(isoWeek)) {
+      WEEK_REGEXP.lastIndex = 0;
+      var parts = WEEK_REGEXP.exec(isoWeek);
+      if(parts) {
+         var year = +parts[1],
+            week = +parts[2],
+            firstThurs = getFirstThursdayOfYear(year),
+            addDays = (week - 1) * 7;
+         return new Date(year, 0, firstThurs.getDate() + addDays);
+      }
+   }
+
+   return NaN;
+}
+
+function createDateParser(regexp, mapping) {
+   return function(iso) {
+      var parts, map;
+
+      if(isDate(iso)) {
+         return iso;
+      }
+
+      if(isString(iso)) {
+         regexp.lastIndex = 0;
+         parts = regexp.exec(iso);
+
+         if(parts) {
+            parts.shift();
+            map = { yyyy: 0, MM: 1, dd: 1, HH: 0, mm: 0 };
+
+            forEach(parts, function(part, index) {
+               if(index < mapping.length) {
+                  map[mapping[index]] = +part;
+               }
+            });
+
+            return new Date(map.yyyy, map.MM - 1, map.dd, map.HH, map.mm);
+         }
+      }
+
+      return NaN;
+   };
+}
+
+function createDateInputType(type, regexp, parseDate, format) {
+   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
+      textInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+      ctrl.$parsers.push(function(value) {
+         if(ctrl.$isEmpty(value)) {
+            ctrl.$setValidity(type, true);
+            return null;
+         }
+
+         if(regexp.test(value)) {
+            ctrl.$setValidity(type, true);
+            return parseDate(value);
+         }
+
+         ctrl.$setValidity(type, false);
+         return undefined;
+      });
+
+      ctrl.$formatters.push(function(value) {
+         if(isDate(value)) {
+            return $filter('date')(value, format);
+         }
+         return '';
+      });
+
+      if(attr.min) {
+         var minValidator = function(value) {
+            var valid = ctrl.$isEmpty(value) ||
+               (parseDate(value) >= parseDate(attr.min));
+            ctrl.$setValidity('min', valid);
+            return valid ? value : undefined;
+         };
+
+         ctrl.$parsers.push(minValidator);
+         ctrl.$formatters.push(minValidator);
+      }
+
+      if(attr.max) {
+         var maxValidator = function(value) {
+            var valid = ctrl.$isEmpty(value) ||
+               (parseDate(value) <= parseDate(attr.max));
+            ctrl.$setValidity('max', valid);
+            return valid ? value : undefined;
+         };
+
+         ctrl.$parsers.push(maxValidator);
+         ctrl.$formatters.push(maxValidator);
+      }
+   };
+}
+
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   textInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
@@ -49856,14 +50418,14 @@ function checkboxInputType(scope, element, attr, ctrl) {
       </file>
     </example>
  */
-var inputDirective = ['$browser', '$sniffer', function($browser, $sniffer) {
+var inputDirective = ['$browser', '$sniffer', '$filter', function($browser, $sniffer, $filter) {
   return {
     restrict: 'E',
     require: '?ngModel',
     link: function(scope, element, attr, ctrl) {
       if (ctrl) {
         (inputType[lowercase(attr.type)] || inputType.text)(scope, element, attr, ctrl, $sniffer,
-                                                            $browser);
+                                                            $browser, $filter);
       }
     }
   };
@@ -50251,6 +50813,11 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
  *    - {@link input[number] number}
  *    - {@link input[email] email}
  *    - {@link input[url] url}
+ *    - {@link input[date] date}
+ *    - {@link input[dateTimeLocal] dateTimeLocal}
+ *    - {@link input[time] time}
+ *    - {@link input[month] month}
+ *    - {@link input[week] week}
  *  - {@link ng.directive:select select}
  *  - {@link ng.directive:textarea textarea}
  *
@@ -54250,7 +54817,7 @@ var optionDirective = ['$interpolate', function($interpolate) {
 
 var styleDirective = valueFn({
   restrict: 'E',
-  terminal: true
+  terminal: false
 });
 
   if (window.angular.bootstrap) {
@@ -54272,6 +54839,20 @@ var styleDirective = valueFn({
 })(window, document);
 
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}</style>');;/*
+ AngularJS v1.2.15-build.2399+sha.ca4ddfa
+ (c) 2010-2014 Google, Inc. http://angularjs.org
+ License: MIT
+*/
+(function(p,h,q){'use strict';function E(a){var e=[];s(e,h.noop).chars(a);return e.join("")}function k(a){var e={};a=a.split(",");var d;for(d=0;d<a.length;d++)e[a[d]]=!0;return e}function F(a,e){function d(a,b,d,g){b=h.lowercase(b);if(t[b])for(;f.last()&&u[f.last()];)c("",f.last());v[b]&&f.last()==b&&c("",b);(g=w[b]||!!g)||f.push(b);var l={};d.replace(G,function(a,b,e,c,d){l[b]=r(e||c||d||"")});e.start&&e.start(b,l,g)}function c(a,b){var c=0,d;if(b=h.lowercase(b))for(c=f.length-1;0<=c&&f[c]!=b;c--);
+if(0<=c){for(d=f.length-1;d>=c;d--)e.end&&e.end(f[d]);f.length=c}}var b,g,f=[],l=a;for(f.last=function(){return f[f.length-1]};a;){g=!0;if(f.last()&&x[f.last()])a=a.replace(RegExp("(.*)<\\s*\\/\\s*"+f.last()+"[^>]*>","i"),function(b,a){a=a.replace(H,"$1").replace(I,"$1");e.chars&&e.chars(r(a));return""}),c("",f.last());else{if(0===a.indexOf("\x3c!--"))b=a.indexOf("--",4),0<=b&&a.lastIndexOf("--\x3e",b)===b&&(e.comment&&e.comment(a.substring(4,b)),a=a.substring(b+3),g=!1);else if(y.test(a)){if(b=a.match(y))a=
+a.replace(b[0],""),g=!1}else if(J.test(a)){if(b=a.match(z))a=a.substring(b[0].length),b[0].replace(z,c),g=!1}else K.test(a)&&(b=a.match(A))&&(a=a.substring(b[0].length),b[0].replace(A,d),g=!1);g&&(b=a.indexOf("<"),g=0>b?a:a.substring(0,b),a=0>b?"":a.substring(b),e.chars&&e.chars(r(g)))}if(a==l)throw L("badparse",a);l=a}c()}function r(a){if(!a)return"";var e=M.exec(a);a=e[1];var d=e[3];if(e=e[2])n.innerHTML=e.replace(/</g,"&lt;"),e="textContent"in n?n.textContent:n.innerText;return a+e+d}function B(a){return a.replace(/&/g,
+"&amp;").replace(N,function(a){return"&#"+a.charCodeAt(0)+";"}).replace(/</g,"&lt;").replace(/>/g,"&gt;")}function s(a,e){var d=!1,c=h.bind(a,a.push);return{start:function(a,g,f){a=h.lowercase(a);!d&&x[a]&&(d=a);d||!0!==C[a]||(c("<"),c(a),h.forEach(g,function(d,f){var g=h.lowercase(f),k="img"===a&&"src"===g||"background"===g;!0!==O[g]||!0===D[g]&&!e(d,k)||(c(" "),c(f),c('="'),c(B(d)),c('"'))}),c(f?"/>":">"))},end:function(a){a=h.lowercase(a);d||!0!==C[a]||(c("</"),c(a),c(">"));a==d&&(d=!1)},chars:function(a){d||
+c(B(a))}}}var L=h.$$minErr("$sanitize"),A=/^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,z=/^<\s*\/\s*([\w:-]+)[^>]*>/,G=/([\w:-]+)(?:\s*=\s*(?:(?:"((?:[^"])*)")|(?:'((?:[^'])*)')|([^>\s]+)))?/g,K=/^</,J=/^<\s*\//,H=/\x3c!--(.*?)--\x3e/g,y=/<!DOCTYPE([^>]*?)>/i,I=/<!\[CDATA\[(.*?)]]\x3e/g,N=/([^\#-~| |!])/g,w=k("area,br,col,hr,img,wbr");p=k("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr");q=k("rp,rt");var v=h.extend({},q,p),t=h.extend({},p,k("address,article,aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul")),
+u=h.extend({},q,k("a,abbr,acronym,b,bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,samp,small,span,strike,strong,sub,sup,time,tt,u,var")),x=k("script,style"),C=h.extend({},w,t,u,v),D=k("background,cite,href,longdesc,src,usemap"),O=h.extend({},D,k("abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,scope,scrolling,shape,size,span,start,summary,target,title,type,valign,value,vspace,width")),
+n=document.createElement("pre"),M=/^(\s*)([\s\S]*?)(\s*)$/;h.module("ngSanitize",[]).provider("$sanitize",function(){this.$get=["$$sanitizeUri",function(a){return function(e){var d=[];F(e,s(d,function(c,b){return!/^unsafe/.test(a(c,b))}));return d.join("")}}]});h.module("ngSanitize").filter("linky",["$sanitize",function(a){var e=/((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>]/,d=/^mailto:/;return function(c,b){function g(a){a&&m.push(E(a))}function f(a,c){m.push("<a ");h.isDefined(b)&&
+(m.push('target="'),m.push(b),m.push('" '));m.push('href="');m.push(a);m.push('">');g(c);m.push("</a>")}if(!c)return c;for(var l,k=c,m=[],n,p;l=k.match(e);)n=l[0],l[2]==l[3]&&(n="mailto:"+n),p=l.index,g(k.substr(0,p)),f(n,l[0].replace(d,"")),k=k.substring(p+l[0].length);g(k);return a(m.join(""))}}])})(window,window.angular);
+//# sourceMappingURL=angular-sanitize.min.js.map
+;/*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
@@ -58121,31 +58702,12 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
       }
     };
   }
-]);;/*
- AngularJS v1.2.15
- (c) 2010-2014 Google, Inc. http://angularjs.org
- License: MIT
-*/
-(function(y,w,z){'use strict';function u(f,a,c){r.directive(f,["$parse","$swipe",function(m,p){var q=75,g=0.3,e=30;return function(h,n,l){function k(d){if(!b)return!1;var s=Math.abs(d.y-b.y);d=(d.x-b.x)*a;return v&&s<q&&0<d&&d>e&&s/d<g}var s=m(l[f]),b,v;p.bind(n,{start:function(d,s){b=d;v=!0},cancel:function(b){v=!1},end:function(b,a){k(b)&&h.$apply(function(){n.triggerHandler(c);s(h,{$event:a})})}})}}])}var r=w.module("ngTouch",[]);r.factory("$swipe",[function(){function f(a){var c=a.touches&&a.touches.length?
-a.touches:[a];a=a.changedTouches&&a.changedTouches[0]||a.originalEvent&&a.originalEvent.changedTouches&&a.originalEvent.changedTouches[0]||c[0].originalEvent||c[0];return{x:a.clientX,y:a.clientY}}return{bind:function(a,c){var m,p,q,g,e=!1;a.on("touchstart mousedown",function(a){q=f(a);e=!0;p=m=0;g=q;c.start&&c.start(q,a)});a.on("touchcancel",function(a){e=!1;c.cancel&&c.cancel(a)});a.on("touchmove mousemove",function(a){if(e&&q){var n=f(a);m+=Math.abs(n.x-g.x);p+=Math.abs(n.y-g.y);g=n;10>m&&10>p||
-(p>m?(e=!1,c.cancel&&c.cancel(a)):(a.preventDefault(),c.move&&c.move(n,a)))}});a.on("touchend mouseup",function(a){e&&(e=!1,c.end&&c.end(f(a),a))})}}}]);r.config(["$provide",function(f){f.decorator("ngClickDirective",["$delegate",function(a){a.shift();return a}])}]);r.directive("ngClick",["$parse","$timeout","$rootElement",function(f,a,c){function m(a,b,c){for(var d=0;d<a.length;d+=2)if(Math.abs(a[d]-b)<e&&Math.abs(a[d+1]-c)<e)return a.splice(d,d+2),!0;return!1}function p(a){if(!(Date.now()-n>g)){var b=
-a.touches&&a.touches.length?a.touches:[a],c=b[0].clientX,b=b[0].clientY;1>c&&1>b||k&&k[0]===c&&k[1]===b||(k&&(k=null),"label"===a.target.tagName.toLowerCase()&&(k=[c,b]),m(l,c,b)||(a.stopPropagation(),a.preventDefault(),a.target&&a.target.blur()))}}function q(c){c=c.touches&&c.touches.length?c.touches:[c];var b=c[0].clientX,e=c[0].clientY;l.push(b,e);a(function(){for(var a=0;a<l.length;a+=2)if(l[a]==b&&l[a+1]==e){l.splice(a,a+2);break}},g,!1)}var g=2500,e=25,h="ng-click-active",n,l,k;return function(a,
-b,e){function d(){k=!1;b.removeClass(h)}var g=f(e.ngClick),k=!1,t,r,u,x;b.on("touchstart",function(a){k=!0;t=a.target?a.target:a.srcElement;3==t.nodeType&&(t=t.parentNode);b.addClass(h);r=Date.now();a=a.touches&&a.touches.length?a.touches:[a];a=a[0].originalEvent||a[0];u=a.clientX;x=a.clientY});b.on("touchmove",function(a){d()});b.on("touchcancel",function(a){d()});b.on("touchend",function(a){var g=Date.now()-r,f=a.changedTouches&&a.changedTouches.length?a.changedTouches:a.touches&&a.touches.length?
-a.touches:[a],h=f[0].originalEvent||f[0],f=h.clientX,h=h.clientY,s=Math.sqrt(Math.pow(f-u,2)+Math.pow(h-x,2));k&&(750>g&&12>s)&&(l||(c[0].addEventListener("click",p,!0),c[0].addEventListener("touchstart",q,!0),l=[]),n=Date.now(),m(l,f,h),t&&t.blur(),w.isDefined(e.disabled)&&!1!==e.disabled||b.triggerHandler("click",[a]));d()});b.onclick=function(a){};b.on("click",function(b,c){a.$apply(function(){g(a,{$event:c||b})})});b.on("mousedown",function(a){b.addClass(h)});b.on("mousemove mouseup",function(a){b.removeClass(h)})}}]);
-u("ngSwipeLeft",-1,"swipeleft");u("ngSwipeRight",1,"swiperight")})(window,window.angular);
-//# sourceMappingURL=angular-touch.min.js.map
-;/*
- angular-slider v0.2.5 
- (c) 2013-2014 Venturocket, Inc. http://github.com/Venturocket 
- License: MIT 
-*/
-window.AngularSlider=function(a,b,c){function d(a){n.cssText=a}function e(a,b){return typeof a===b}function f(){j.inputtypes=function(a){for(var d,e,f,g=0,h=a.length;h>g;g++)o.setAttribute("type",e=a[g]),d="text"!==o.type,d&&(o.value=p,o.style.cssText="position:absolute;visibility:hidden;",/^range$/.test(e)&&o.style.WebkitAppearance!==c?(k.appendChild(o),f=b.defaultView,d=f.getComputedStyle&&"textfield"!==f.getComputedStyle(o,null).WebkitAppearance&&0!==o.offsetHeight,k.removeChild(o)):/^(search|tel)$/.test(e)||(d=/^(url|email)$/.test(e)?o.checkValidity&&o.checkValidity()===!1:o.value!=p)),r[a[g]]=!!d;return r}("search tel url email datetime date month week time datetime-local number range color".split(" "))}var g,h,i="2.7.1",j={},k=b.documentElement,l="modernizr",m=b.createElement(l),n=m.style,o=b.createElement("input"),p=":)",q=({}.toString,{}),r={},s=[],t=s.slice,u={}.hasOwnProperty;h=e(u,"undefined")||e(u.call,"undefined")?function(a,b){return b in a&&e(a.constructor.prototype[b],"undefined")}:function(a,b){return u.call(a,b)},Function.prototype.bind||(Function.prototype.bind=function(a){var b=this;if("function"!=typeof b)throw new TypeError;var c=t.call(arguments,1),d=function(){if(this instanceof d){var e=function(){};e.prototype=b.prototype;var f=new e,g=b.apply(f,c.concat(t.call(arguments)));return Object(g)===g?g:f}return b.apply(a,c.concat(t.call(arguments)))};return d});for(var v in q)h(q,v)&&(g=v.toLowerCase(),j[g]=q[v](),s.push((j[g]?"":"no-")+g));return j.input||f(),j.addTest=function(a,b){if("object"==typeof a)for(var d in a)h(a,d)&&j.addTest(d,a[d]);else{if(a=a.toLowerCase(),j[a]!==c)return j;b="function"==typeof b?b():b,"undefined"!=typeof enableClasses&&enableClasses&&(k.className+=" "+(b?"":"no-")+a),j[a]=b}return j},d(""),m=o=null,j._version=i,j}(this,this.document),function(a,b,c){function d(a){return"[object Function]"==q.call(a)}function e(a){return"string"==typeof a}function f(){}function g(a){return!a||"loaded"==a||"complete"==a||"uninitialized"==a}function h(){var a=r.shift();s=1,a?a.t?o(function(){("c"==a.t?m.injectCss:m.injectJs)(a.s,0,a.a,a.x,a.e,1)},0):(a(),h()):s=0}function i(a,c,d,e,f,i,j){function k(b){if(!n&&g(l.readyState)&&(t.r=n=1,!s&&h(),l.onload=l.onreadystatechange=null,b)){"img"!=a&&o(function(){v.removeChild(l)},50);for(var d in A[c])A[c].hasOwnProperty(d)&&A[c][d].onload()}}var j=j||m.errorTimeout,l=b.createElement(a),n=0,q=0,t={t:d,s:c,e:f,a:i,x:j};1===A[c]&&(q=1,A[c]=[]),"object"==a?l.data=c:(l.src=c,l.type=a),l.width=l.height="0",l.onerror=l.onload=l.onreadystatechange=function(){k.call(this,q)},r.splice(e,0,t),"img"!=a&&(q||2===A[c]?(v.insertBefore(l,u?null:p),o(k,j)):A[c].push(l))}function j(a,b,c,d,f){return s=0,b=b||"j",e(a)?i("c"==b?x:w,a,b,this.i++,c,d,f):(r.splice(this.i++,0,a),1==r.length&&h()),this}function k(){var a=m;return a.loader={load:j,i:0},a}var l,m,n=b.documentElement,o=a.setTimeout,p=b.getElementsByTagName("script")[0],q={}.toString,r=[],s=0,t="MozAppearance"in n.style,u=t&&!!b.createRange().compareNode,v=u?n:p.parentNode,n=a.opera&&"[object Opera]"==q.call(a.opera),n=!!b.attachEvent&&!n,w=t?"object":n?"script":"img",x=n?"script":w,y=Array.isArray||function(a){return"[object Array]"==q.call(a)},z=[],A={},B={timeout:function(a,b){return b.length&&(a.timeout=b[0]),a}};m=function(a){function b(a){var b,c,d,a=a.split("!"),e=z.length,f=a.pop(),g=a.length,f={url:f,origUrl:f,prefixes:a};for(c=0;g>c;c++)d=a[c].split("="),(b=B[d.shift()])&&(f=b(f,d));for(c=0;e>c;c++)f=z[c](f);return f}function g(a,e,f,g,h){var i=b(a),j=i.autoCallback;i.url.split(".").pop().split("?").shift(),i.bypass||(e&&(e=d(e)?e:e[a]||e[g]||e[a.split("/").pop().split("?")[0]]),i.instead?i.instead(a,e,f,g,h):(A[i.url]?i.noexec=!0:A[i.url]=1,f.load(i.url,i.forceCSS||!i.forceJS&&"css"==i.url.split(".").pop().split("?").shift()?"c":c,i.noexec,i.attrs,i.timeout),(d(e)||d(j))&&f.load(function(){k(),e&&e(i.origUrl,h,g),j&&j(i.origUrl,h,g),A[i.url]=2})))}function h(a,b){function c(a,c){if(a){if(e(a))c||(l=function(){var a=[].slice.call(arguments);m.apply(this,a),n()}),g(a,l,b,0,j);else if(Object(a)===a)for(i in h=function(){var b,c=0;for(b in a)a.hasOwnProperty(b)&&c++;return c}(),a)a.hasOwnProperty(i)&&(!c&&!--h&&(d(l)?l=function(){var a=[].slice.call(arguments);m.apply(this,a),n()}:l[i]=function(a){return function(){var b=[].slice.call(arguments);a&&a.apply(this,b),n()}}(m[i])),g(a[i],l,b,i,j))}else!c&&n()}var h,i,j=!!a.test,k=a.load||a.both,l=a.callback||f,m=l,n=a.complete||f;c(j?a.yep:a.nope,!!k),k&&c(k)}var i,j,l=this.yepnope.loader;if(e(a))g(a,0,l,0);else if(y(a))for(i=0;i<a.length;i++)j=a[i],e(j)?g(j,0,l,0):y(j)?m(j):Object(j)===j&&h(j,l);else Object(a)===a&&h(a,l)},m.addPrefix=function(a,b){B[a]=b},m.addFilter=function(a){z.push(a)},m.errorTimeout=1e4,null==b.readyState&&b.addEventListener&&(b.readyState="loading",b.addEventListener("DOMContentLoaded",l=function(){b.removeEventListener("DOMContentLoaded",l,0),b.readyState="complete"},0)),a.yepnope=k(),a.yepnope.executeStack=h,a.yepnope.injectJs=function(a,c,d,e,i,j){var k,l,n=b.createElement("script"),e=e||m.errorTimeout;n.src=a;for(l in d)n.setAttribute(l,d[l]);c=j?h:c||f,n.onreadystatechange=n.onload=function(){!k&&g(n.readyState)&&(k=1,c(),n.onload=n.onreadystatechange=null)},o(function(){k||(k=1,c(1))},e),i?n.onload():p.parentNode.insertBefore(n,p)},a.yepnope.injectCss=function(a,c,d,e,g,i){var j,e=b.createElement("link"),c=i?h:c||f;e.href=a,e.rel="stylesheet",e.type="text/css";for(j in d)e.setAttribute(j,d[j]);g||(p.parentNode.insertBefore(e,p),o(c,0))}}(this,document),AngularSlider.load=function(){yepnope.apply(window,[].slice.call(arguments,0))},angular.module("vr.directives.slider",["ngTouch"]).directive("slider",["$timeout","$document","$interpolate","$swipe",function(a,b,c,d){function e(a){return angular.element(a)}function f(a){return""+a+"px"}function g(a,b){return a.css({opacity:b})}function h(a){return g(a,0)}function i(a){return g(a,1)}function j(a,b){return a.css({left:b})}function k(a){var b=parseFloat(a.css("width"));return isNaN(b)?a[0].offsetWidth:b}function l(a){return k(a)/2}function m(a){try{return a.offset().left}catch(b){}return a[0].getBoundingClientRect().left}function n(a,b){return m(a)>m(b)?m(a)-m(b)-k(b):m(b)-m(a)-k(a)}function o(a,b){return a.attr("ng-bind-template",b)}function p(a,b,c,d,e){(angular.isUndefined(b)||!b)&&(b=0),(angular.isUndefined(c)||!c||0==c)&&(c=1/Math.pow(10,b)),(angular.isUndefined(d)||!d)&&(d=0),(angular.isUndefined(a)||!a)&&(a=0);var f=(a-d)%c,g=f>c/2?a+c-f:a-f;return(angular.isUndefined(e)||!e)&&(e=g),g=Math.min(Math.max(g,d),e),parseFloat(g.toFixed(b))}function q(a,b){return Math.floor(a/b+.5)*b}function r(a,b){return a>0&&!isNaN(b)?Math.ceil(b/a)*a:b}function s(a){return u+" "+a+" "+v}var t=3,u=c.startSymbol(),v=c.endSymbol();return{restrict:"EA",scope:{floor:"@",ceiling:"@",step:"@",precision:"@",buffer:"@",stickiness:"@",showSteps:"@",ngModel:"=",ngModelLow:"=",ngModelHigh:"=",translate:"&",translateRange:"&",translateCombined:"&",scale:"&",inverseScale:"&"},template:"<span class='bar full'></span><span class='bar steps'><span class='bubble step' ng-repeat='step in stepBubbles()'></span></span><span class='bar selection'></span><span class='bar unselected low'></span><span class='bar unselected high'></span><span class='pointer low'></span><span class='pointer high'></span><span class='bubble low'></span><span class='bubble high'></span><span class='bubble middle'></span><span class='bubble selection'></span><span class='bubble limit floor'></span><span class='bubble limit ceiling'></span><input type='range' class='input low' /><input type='range' class='input high' /><input type='range' class='input selection' />",compile:function(c,g){function u(a){a||(a=c);var b=[];return angular.forEach(a.children(),function(a){b.push(e(a))}),b}function v(a,b,c){return{fullBar:a[0],stepBubs:a[1],selBar:b?a[2]:null,unSelBarLow:b?a[3]:null,unSelBarHigh:b?a[4]:null,minPtr:b?a[5]:a[2],maxPtr:b?a[6]:null,lowBub:b?a[7]:a[3],highBub:b?a[8]:null,cmbBub:b?a[9]:null,selBub:b?a[10]:null,flrBub:b?a[11]:a[4],ceilBub:b?a[12]:a[5],minInput:c?b?a[13]:a[6]:null,maxInput:c?b?a[14]:null:null,selInput:c?b?a[15]:null:null}}var w=g.showSteps,x=null==g.ngModel&&null!=g.ngModelLow&&null!=g.ngModelHigh,y={},z=x?"ngModelLow":"ngModel",A="ngModelHigh",B="selectBar",C=["floor","ceiling","stickiness",z];if(y=function(){for(var a=u(),b=[],c=0,d=a.length;d>c;c++){var f=a[c];f=e(f),f.css({"white-space":"nowrap",position:"absolute",display:"block","z-index":1}),b.push(f)}return b}(),y=v(y,!0,!0),g.translate&&g.$set("translate",""+g.translate+"(value)"),g.translateRange&&g.$set("translateRange",""+g.translateRange+"(low,high)"),g.translateCombined&&g.$set("translateCombined",""+g.translateCombined+"(low,high)"),g.scale&&g.$set("scale",""+g.scale+"(value)"),g.inverseScale&&g.$set("inverseScale",""+g.inverseScale+"(value)"),y.fullBar.css({left:0,right:0}),AngularSlider.inputtypes.range){var D={position:"absolute",margin:0,padding:0,opacity:0,height:"100%"};y.minInput.attr("step",s("inputSteps()")),y.minInput.attr("min",s("floor")),y.minInput.css(D),y.minInput.css("left",0),x?(y.minInput.attr("max",s("ngModelHigh - (buffer / 2)")),y.maxInput.attr("step",s("inputSteps()")),y.maxInput.attr("min",s("ngModelLow + (buffer / 2)")),y.maxInput.attr("max",s("ceiling")),y.maxInput.css(D),y.selInput.attr("step",s("inputSteps()")),y.selInput.attr("min",s("ngModelLow")),y.selInput.attr("max",s("ngModelHigh")),y.selInput.css(D)):(y.minInput.attr("max",s("ceiling")),y.minInput.css({width:"100%"}),y.maxInput.remove(),y.selInput.remove())}else y.minInput.remove(),y.maxInput.remove(),y.selInput.remove();if(o(y.stepBubs.children().eq(0),s("translation(step)")),o(y.ceilBub,s("translation(ceiling)")),o(y.flrBub,s("translation(floor)")),o(y.selBub,s("rangeTranslation("+z+","+A+")")),o(y.lowBub,s("translation("+z+")")),o(y.highBub,s("translation("+A+")")),o(y.cmbBub,s("combinedTranslation("+z+","+A+")")),x)C.push(A),C.unshift("buffer");else for(var E=[y.selBar,y.unSelBarLow,y.unSelBarHigh,y.maxPtr,y.selBub,y.highBub,y.cmbBub],F=0,G=E.length;G>F;F++)c=E[F],c.remove();return C.unshift("precision","step"),w||y.stepBubs.children().remove(),{post:function(c,g,o){function s(){if(angular.forEach(C,function(a){c[a]=parseFloat(c[a]),a==z||a==A?c[a]=p(c[a],c.precision,c.step,c.floor,c.ceiling):"buffer"==a?c.buffer=!c.buffer||isNaN(c.buffer)||c.buffer<0?0:r(c.step,c.buffer):"precision"==a?c.precision=!c.precision||isNaN(c.precision)?0:parseInt(c.precision):"step"==a?c.step=!c.step||isNaN(c.step)?1/Math.pow(10,c.precision):parseFloat(c.step.toFixed(c.precision)):"stickiness"==a&&(isNaN(c.stickiness)?c.stickiness=t:c.stickiness<1&&(c.stickiness=1)),c.decodedValues[a]=c.decodeRef(a)}),x){if(c[A]<c[z]){var a=c[A];c[A]=c[z],c[z]=a}var b=p(c[A]-c[z],c.precision,c.step);if(c.buffer>0&&b<c.buffer){var d=c.encode((c.decodedValues[z]+c.decodedValues[A])/2);c[z]=p(d-c.buffer/2,c.precision,c.step,c.floor,c.ceiling),c[A]=c[z]+c.buffer,c[A]>c.ceiling&&(c[A]=c.ceiling,c[z]=c.ceiling-c.buffer)}}D=k(y.fullBar),E=l(y.minPtr),F=m(y.fullBar),G=F+D-k(y.minPtr),H=G-F,I=c.floor,J=c.decodedValues.floor,K=c.ceiling,L=c.decodedValues.ceiling,M=K-I,N=L-J,O=q(N,c.decodedValues.step)}function w(){function a(a){return 100*((a-F)/H)}function o(b){return a(b)/100*N+J}function r(a){return c.encode(o(a))}function t(a){var b=a-J;return M==N?b=q(b,c.decodedValues.step)/O:b/=N,100*b}function u(a){return t(c.decode(a))}function v(a){return f(a*H/100)}function w(a){return Math.min(Math.max(a,F),G)}function C(b){return j(b,v(a(w(m(b)))))}function L(a,b,d){var e=a>0?1:-1;return b=b?b:100,d?(Math.sin(Math.min(Math.abs(a/b),1)*Math.PI-Math.PI/2)+1)*e*b/6:e*Math.pow(Math.min(Math.abs(2*(a/b)),1),c.stickiness)*b/2}function S(){var b=t(c.decodedValues[z]),d=u(c[z]+c.step)-b,e=b-u(c[z]-c.step),f=u(c[z]+c.buffer)-b,g=a(E+F),h=b+L(P,P>0?d:e);if(j(y.minPtr,v(h)),j(y.lowBub,v(a(m(y.minPtr)-l(y.lowBub)+E))),x){var i=t(c.decodedValues[A]),k=u(c[A]+c.step)-i,n=i-u(c[A]-c.step),o=i-u(c[A]-c.buffer),p=i+L(Q,Q>0?k:n);if(h>i-o&&(h=b+L(P,f,!0),j(y.minPtr,v(h)),j(y.lowBub,v(a(m(y.minPtr)-l(y.lowBub)+E)))),b+f>p&&(p=i+L(Q,o,!0)),j(y.maxPtr,v(p)),j(y.highBub,v(a(m(y.maxPtr)-l(y.highBub)+E))),j(y.selBar,v(h+g)),y.selBar.css({width:v(p-h)}),j(y.selBub,v((h+p)/2-a(l(y.selBub)+F)+g)),j(y.cmbBub,v((h+p)/2-a(l(y.cmbBub)+F)+g)),y.unSelBarLow.css({left:0,width:v(h+g)}),j(y.unSelBarHigh,v(p+g)),y.unSelBarHigh.css({right:0}),AngularSlider.inputtypes.range){var q=2*g,r=h+f/2,s=100-r;r+=q;var w=p-o/2,B=h+q,C=p-h-q;h+q>=p&&(B=h,C=p+q-h),y.minInput.css({width:v(w)}),y.maxInput.css({left:v(r),width:v(s)}),y.selInput.css({left:v(B),width:v(C)})}}}function T(){var a=y.lowBub;C(y.lowBub),x&&(C(y.highBub),C(y.selBub),n(y.lowBub,y.highBub)<10?(h(y.lowBub),h(y.highBub),i(y.cmbBub),C(y.cmbBub),a=y.cmbBub):(i(y.lowBub),i(y.highBub),h(y.cmbBub),a=y.highBub)),n(y.flrBub,y.lowBub)<5?h(y.flrBub):x?n(y.flrBub,a)<5?h(y.flrBub):i(y.flrBub):i(y.flrBub),n(y.lowBub,y.ceilBub)<5?h(y.ceilBub):x?n(a,y.ceilBub)<5?h(y.ceilBub):i(y.ceilBub):i(y.ceilBub)}function U(){P=0,Q=0,_&&(S(),T(),_.removeClass("active")),_=null,ab=null,Y=!1}function V(b){_&&c.$apply(function(){var d=b.clientX||b.x;if(Y){var e=r(d)-Z,f=r(d)+$;I>e?(f+=I-e,e=I):f>K&&(e-=f-K,f=K);var h=u(e),i=u(f);P=h,Q=i,c[z]=e=p(e,c.precision,c.step,c.floor,c.ceiling),c[A]=f=p(f,c.precision,c.step,c.floor,c.ceiling),P-=u(e),Q-=u(f)}else{var j=w(d+F-m(g)-l(_)),k=a(j),n=c.encode(J+N*k/100);if(P=k,x)if(c.buffer>0)ab===z?n>c[A]-c.buffer&&(n=c[A]-c.buffer):n<c[z]+c.buffer&&(n=c[z]+c.buffer);else if(ab===z){if(n>c[A]){c[z]=c[A],c.decodedValues[z]=c.decodeRef(z),ab=A;var o=y.minPtr;y.minPtr=y.maxPtr,y.maxPtr=o,y.maxPtr.removeClass("active").removeClass("high").addClass("low"),y.minPtr.addClass("active").removeClass("low").addClass("high")}}else if(n<c[z]){c[A]=c[z],c.decodedValues[A]=c.decodeRef(A),ab=z;var o=y.minPtr;y.minPtr=y.maxPtr,y.maxPtr=o,y.minPtr.removeClass("active").removeClass("low").addClass("high"),y.maxPtr.addClass("active").removeClass("high").addClass("low")}c[ab]=n=p(n,c.precision,c.step,c.floor,c.ceiling),c.decodedValues[ab]=c.decodeRef(ab),ab===z?(P-=u(n),Q=0):(Q=P-u(n),P=0)}S(),T()})}function W(a,b,d){var e=a.clientX||a.x;if(_=b,ab=d,_.addClass("active"),ab==B){Y=!0;var f=r(e);Z=f-c[z],$=c[A]-f}V(a)}function X(){function a(a,b,c){function f(a){W(a,b,c)}function g(a){V(a),U()}a=e(a),d.bind(a,{start:f,move:V,end:g,cancel:U})}function c(a,b,c){a=e(a),c=angular.isUndefined(c)?a:e(c),d.bind(a,{start:function(a){W(a,c,b)}})}function f(a){a=e(a),d.bind(a,{move:V,end:function(a){V(a),U()},cancel:U})}AngularSlider.inputtypes.range?(a(y.minInput,y.minPtr,z),x&&(a(y.maxInput,y.maxPtr,A),a(y.selInput,y.selBar,B))):(f(b),c(y.minPtr,z),c(y.lowBub,z),c(y.flrBub,z,y.minPtr),x?(c(y.maxPtr,A),c(y.highBub,A),c(y.ceilBub,A,y.maxPtr),c(y.selBar,B),c(y.selBub,B,y.selBar),c(y.unSelBarLow,z,y.minPtr),c(y.unSelBarHigh,A,y.maxPtr)):(c(y.ceilBub,z,y.minPtr),c(y.fullBar,z,y.minPtr)))}var Y,Z,$,_,ab;s(),j(y.flrBub,0),j(y.ceilBub,f(D-k(y.ceilBub))),S(),T(),R||(X(),R=!0)}var y=v(u(g),x,AngularSlider.inputtypes.range);c.decodedValues={floor:0,ceiling:0,step:0,precision:0,buffer:0,stickiness:0,ngModel:0,ngModelLow:0,ngModelHigh:0},c.translation=function(a){return a=parseFloat(a).toFixed(c.precision),angular.isUndefined(o.translate)?""+a:c.translate({value:a})},c.rangeTranslation=function(a,b){return angular.isUndefined(o.translateRange)?"Range: "+c.translation((b-a).toFixed(c.precision)):c.translateRange({low:a,high:b})},c.combinedTranslation=function(a,b){return angular.isUndefined(o.translateCombined)?c.translation(a)+" - "+c.translation(b):c.translateCombined({low:a,high:b})},c.encode=function(a){return angular.isUndefined(o.scale)||""==o.scale?a:c.scale({value:a})},c.decode=function(a){return angular.isUndefined(o.inverseScale)||""==o.inverseScale?a:c.inverseScale({value:a})},(1!=Math.round(c.encode(c.decode(1)))||100!=Math.round(c.encode(c.decode(100))))&&console.warn("The scale and inverseScale functions are not perfect inverses: 1 = "+c.encode(c.decode(1))+"  100 = "+c.encode(c.decode(100))),c.decodeRef=function(a){return c.decode(c[a])},c.inputSteps=function(){return Math.pow(10,-1*c.precision)};for(var D=0,E=0,F=0,G=0,H=0,I=0,J=0,K=0,L=0,M=0,N=0,O=1,P=0,Q=0,R=!1,S=0;S<C.length;S++)c.$watch(C[S],function(){w()});e(window).bind("resize",function(){w()}),c.$on("refreshSlider",function(){a(function(){w()})}),a(function(){w()})}}}}}]);;(function() {
+]);;(function() {
     'use strict';
 
     // create the angular app
     angular.module('myApp', [
-        'ngTouch',
-        'vr.directives.slider',
+        // 'ngSlider',
         'myApp.controllers',
         'myApp.directives'
     ]);
@@ -58154,6 +58716,1278 @@ window.AngularSlider=function(a,b,c){function d(a){n.cssText=a}function e(a,b){r
     angular.module('myApp.controllers', []);
     angular.module('myApp.directives', [ 'ui.bootstrap', 'ui.sortable']);
 
+
+}());;(function() {
+    'use strict';
+
+    angular.module('myApp.directives')
+        .directive('nomarect',
+            function() {
+                return {
+                    restrict: 'EA',
+                    scope: {
+                        data: "=",
+                        config: "=",
+                        border: "=",
+                        round: "=",
+                        shapeRenderingMode: "=",
+                    },
+
+                    link: function(scope, iElement, iAttrs) {
+
+                        //Constants and Setting Environment variables 
+
+                        var margin = 80;
+                        var width = 1040;
+                        var height = 820;
+                        var outerWidth = width + 2 * margin;
+                        var outerHeight = height + 2 * margin;
+                        var initialSquareLenth = 10;
+                        var colorNominal = d3.scale.category10();
+                        var color;
+                        var colorScaleForHeatMap = d3.scale.linear()
+                                .range(["#98c8fd", "08306b"])
+                                .interpolate(d3.interpolateHsl);
+                        var renderData;
+                        var thresholdNominal = 7; //Threshold for automatic nominal identification
+                        var defaultBinSize = 10;
+                        var xValue, yValue; //Function for getting value of X,Y position 
+                        var xScale, yScale;
+                        var xMap, yMap;
+                        var nest = {};
+                        scope.config.binSize = defaultBinSize;
+
+                        var globalMaxLength;
+
+                        scope.config.dimSetting = {};
+
+                        var svg, svgGroup, xAxisNodes, yAxisNodes;
+
+                        var initializeSVG = function() {
+
+                            svg = d3.select(iElement[0])
+                                .append("svg:svg");
+
+                            svgGroup = svg.append("g")
+                                .attr("transform", "translate(" + margin + "," + margin + ")");
+
+                            xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + height + ")");
+
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis");
+
+                        };
+
+                        initializeSVG();
+
+                        // on window resize, re-render d3 canvas
+                        window.onresize = function() {
+                            return scope.$apply();
+                        };
+
+                        scope.$watch(function() {
+                            return angular.element(window)[0].innerWidth;
+                        }, function() {
+                            return scope.handleConfigChange(renderData, scope.config);
+                        });
+
+                        // watch for data changes and re-render
+                        scope.$watch('data', function(newVals, oldVals) {
+                            return scope.renderDataChange(newVals, scope.config);
+
+                        }, false);
+
+                        // watch for Config changes and re-render
+
+                        scope.$watch('config', function(newVals, oldVals) {
+                            // debugger;
+                            return scope.handleConfigChange(renderData, newVals);
+                        }, true);
+
+                        scope.$watch(function() {
+                            return scope.border;
+                        }, function(newVals, oldVals) {
+                            return scope.renderBorderChange(newVals);
+                        }, false);
+
+                        scope.$watch(function() {
+                            return scope.round;
+                        }, function(newVals, oldVals) {
+                            return scope.renderRoundChange(newVals);
+                        }, false);
+
+                        scope.$watch(function() {
+                            return scope.shapeRenderingMode;
+                        }, function(newVals, oldVals) {
+                            return scope.renderShapeRenderingChange(newVals);
+                        }, true);
+
+
+                        scope.renderBorderChange = function(isBorder) {
+
+                            svgGroup.selectAll(".dot")
+                                .style("stroke", function(d) {
+                                    return isBorder ? 'black' : 'none';
+                                });
+
+                        };
+
+                        scope.renderRoundChange = function(isRound) {
+
+                            svgGroup.selectAll(".dot")
+                                .transition()
+                                .duration(500)
+                                .attr("rx", function(d) {
+                                    return isRound ? +d.nodeWidth / 2 : 0;
+                                })
+                                .attr("ry", function(d) {
+                                    return isRound ? +d.nodeWidth / 2 : 0;
+                                });
+
+                        };
+
+                        scope.renderShapeRenderingChange = function(newShapeRendering) {
+
+                            svgGroup.selectAll(".dot")
+                                .style("shape-rendering", newShapeRendering);
+
+                        };
+
+                        var reloadDataToSVG = function() {
+
+                            svgGroup.selectAll("*").remove();
+
+                            svgGroup.selectAll(".dot")
+                                .data(scope.data)
+                                .enter().append("rect")
+                                .attr("class", "dot");
+
+
+                            scope.config.dimOrder = {};
+                            scope.config.dimType = {};
+
+
+                        };
+
+                        var identifyAndUpdateDimDataType = function() {
+
+                            for (var i = 0; i < scope.config.dims.length; i++) {
+
+                                scope.config.dimSetting[scope.config.dims[i]] = {};
+
+                                scope.config.dimSetting[scope.config.dims[i]].dimType = identifyDimDataType(scope.config.dims[i]);
+                                setDimSettingKeyEquivalentNumber(scope.config.dims[i]);
+                                handleBinningForOrdinalVariablesForGatherplot(scope.config.dims[i]);
+                            }
+
+                        };
+
+                        var setDimSettingKeyEquivalentNumber = function(dim) {
+
+                            var currentDimSetting = scope.config.dimSetting[dim];
+
+                            if (currentDimSetting.dimType === 'nominal') {
+                                //For Nominal variable
+                                currentDimSetting.keyEquivalentNumber = getNominalKeyEquivalentNumber(dim);
+                            }
+                        };
+
+                        var handleBinningForOrdinalVariablesForGatherplot = function(dimName) {
+
+                            if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
+
+                                doBinningForOrdinalDimension(dimName);
+                            }
+                        };
+
+                        var doBinningForOrdinalDimension = function(dimName) {
+
+                            var currentDimSetting = scope.config.dimSetting[dimName];
+
+                            currentDimSetting.binnedData = scope.data.map(binningFunc(dimName));
+
+                        };
+
+                        var binningFunc = function(dimName) {
+
+                            var minValue = d3.min(scope.data, function(d) {
+                                return +d[dimName];
+                            });
+                            var maxValue = d3.max(scope.data, function(d) {
+                                return +d[dimName];
+                            });
+
+                            var encodingBinScale = d3.scale.linear()
+                                .range([0, scope.config.binSize - 1])
+                                .domain([minValue, maxValue]);
+
+                            var decodingBinScale = d3.scale.linear()
+                                .domain([0, scope.config.binSize - 1])
+                                .range([minValue, maxValue]);
+
+                            return function(d) {
+
+                                return decodingBinScale(Math.floor(encodingBinScale(d[dimName])) + 0.5);
+                            };
+                        };
+
+
+
+
+                        var getNominalKeyEquivalentNumber = function(dim) {
+
+                            var keys = getKeys(dim);
+
+                            var keyNumberDict = {};
+
+                            for (var i = 0; i < keys.length; i++) {
+
+                                keyNumberDict[keys[i]] = i;
+
+                            }
+
+                            return keyNumberDict;
+
+                        };
+
+
+                        var identifyDimDataType = function(dim) {
+
+                            if (isFirstSampleNumber(dim)) {
+
+                                return identifyOrdinalDimDataType(dim);
+                            } else {
+
+                                return "nominal";
+                            }
+
+                        };
+
+                        var identifyOrdinalDimDataType = function(dim) {
+
+                            if (isSemiOrdinalDim(dim)) {
+
+                                return "semiOrdinal";
+                            } else {
+
+                                return "ordinal";
+                            }
+
+                        };
+
+                        var isSemiOrdinalDim = function(dim) {
+
+                            if (getNumKeys(dim) < thresholdNominal) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+
+
+                        };
+
+                        var getNumKeys = function(dim) {
+
+                            if (!dim) {
+
+                                return 1;
+                            }
+
+                            var currentDimSetting = scope.config.dimSetting[dim];
+
+
+
+                            if (isBinningRequired(currentDimSetting.dimType)) {
+
+                                return scope.config.binSize;
+
+                            } else {
+
+                                return getKeys(dim).length;
+                            }
+                        };
+
+                        var getKeys = function(dim) {
+
+                            if (!dim) {
+
+                                return [''];
+                            }
+
+                            var nest = d3.nest()
+                                .key(function(d) {
+                                    return d[dim];
+                                })
+                                .entries(scope.data);
+
+                            return nest.map(function(d) {
+                                return d.key;
+                            });
+                        };
+
+                        var isFirstSampleNumber = function(dim) {
+
+                            return !isNaN(getKeys(dim)[0]);
+
+                        };
+
+                        scope.renderDataChange = function(data, config) {
+
+                            if (!data) {
+                                return;
+                            }
+
+                            renderData = data;
+
+
+                            reloadDataToSVG();
+
+                            identifyAndUpdateDimDataType();
+
+                            scope.handleConfigChange(data, config);
+
+                        }; //End Data change renderer
+
+
+
+                        // define render function
+                        scope.handleConfigChange = function(data, config) {
+
+                            if (!data) {
+                                return;
+                            }
+
+                            renderConfigChange(data, config);
+
+                        };
+
+                        var updateSizeSVG = function(config) {
+                            // XPadding = 60;
+                            // YPadding = 30;
+                            //Update size of SVG
+                            outerWidth = d3.select(iElement[0]).node().offsetWidth;
+                            // calculate the height
+                            outerHeight = outerWidth / config.SVGAspectRatio;
+
+                            svg.attr('height', outerHeight)
+                                .attr('width', outerWidth);
+
+                            width = outerWidth - 2 * margin;
+                            height = outerHeight - 2 * margin;
+
+                        };
+
+                        var renderConfigChange = function(data, config) {
+
+
+                            updateSizeSVG(config);
+
+                            //Call separate render for the rendering
+
+                            drawPlot();
+
+                        };
+
+                        var drawPlot = function() {
+
+                            drawNodes();
+                            drawAxes();
+                            drawLegends();
+
+                        };
+
+                        var drawNodes = function() {
+
+                            calculateParametersOfNodes();
+                            prepareScale();
+                            drawNodesInSVG();
+
+                        };
+
+                        var calculateParametersOfNodes = function() {
+
+                            calculatePositionOfNodes();
+                            calculateOffsetOfNodes();
+
+                        };
+
+                        var prepareScale = function() {
+                            //debugger;
+                            //var nominalBox = getNominalBox();
+
+                            xScale = d3.scale.linear().range([0, width]);
+                            xScale.domain([d3.min(scope.data, xValueConsideringBinning()) - 0.5, d3.max(scope.data, xValueConsideringBinning()) + 0.5]);
+                            xMap = function(d) {
+                                return xScale(xValue(d));
+                            };
+
+                            yScale = d3.scale.linear().range([height, 0]);
+                            yScale.domain([d3.min(scope.data, yValueConsideringBinning()) - 0.5, d3.max(scope.data, yValueConsideringBinning()) + 0.5]);
+                            yMap = function(d) {
+                                return yScale(yValue(d));
+                            };
+
+                        };
+
+                        var xValueConsideringBinning = function() {
+
+                            var dimName = scope.config.xDim;
+
+                            if(!dimName) {
+
+                                return xValue;
+                            }
+
+                            if (isBinningRequired(scope.config.dimSetting[dimName].dimType)) {
+
+                                return function(d) {
+
+                                    return +d[dimName];
+
+                                };
+                            } else {
+
+                                return xValue;
+
+
+                            }
+                        };
+
+                        var yValueConsideringBinning = function() {
+
+                            var dimName = scope.config.yDim;
+
+                            if(!dimName) {
+
+                                return yValue;
+                            }
+
+                            if (isBinningRequired(scope.config.dimSetting[dimName].dimType)) {
+
+                                return function(d) {
+
+                                    return +d[dimName];
+
+                                };
+                            } else {
+
+                                return yValue;
+
+
+                            }
+                        };
+
+
+
+                        var calculatePositionOfNodes = function() {
+                            //debugger;
+                            xValue = getDimValueFunc(scope.config.xDim);
+                            yValue = getDimValueFunc(scope.config.yDim);
+
+                        };
+
+                        var getDimValueFunc = function(dimName) {
+
+                            if (!dimName) {
+
+                                return function(d) {
+                                    return 0;
+                                };
+                            }
+
+                            var dimType = scope.config.dimSetting[dimName].dimType;
+                            var dimNameClosure = dimName;
+
+                            if (isDimTypeNumerical(dimType)) {
+
+                                if (isBinningRequired(dimType)) {
+
+                                    return function(d, i) {
+
+                                        return +scope.config.dimSetting[dimNameClosure].binnedData[d.id];
+                                    };
+
+                                } else {
+
+                                    return function(d) {
+                                        return +d[dimNameClosure];
+                                    };
+
+                                }
+                            } else {
+
+
+                                return function(d) {
+                                    return scope.config.dimSetting[dimNameClosure].keyEquivalentNumber[d[dimNameClosure]];
+                                };
+                            }
+
+                        };
+
+                        var isBinningRequired = function(dimType) {
+
+                            if (dimType === 'ordinal' && scope.config.isGather === 'gather') {
+
+                                return true;
+                            } else {
+
+                                return false;
+                            }
+                        };
+
+                        var calculateOffsetOfNodes = function() {
+
+                            if (scope.config.isGather === 'scatter') {
+
+                                setOffsetOfNodesForScatter();
+
+                            } else if (scope.config.isGather === 'jitter') {
+
+                                setOffsetOfNodesForJitter();
+
+                            } else if (scope.config.isGather === 'gather') {
+
+                                setOffsetOfNodesForGather();
+
+                            }
+
+                        };
+
+                        var setOffsetOfNodesForScatter = function() {
+
+                            scope.data.forEach(function(d) {
+
+                                d.XOffset = 0;
+                                d.YOffset = 0;
+
+                            });
+
+                            assignSizeOfNodesForScatterAndJitter();
+
+                        };
+
+                        var assignSizeOfNodesForScatterAndJitter = function() {
+
+                            scope.data.forEach(function(d) {
+
+                                d.nodeWidth = 5;
+                                d.nodeHeight = 5;
+
+                            });
+                        };
+
+                        var setOffsetOfNodesForJitter = function() {
+
+
+                            var SDforJitter = getSDforJitter();
+
+                            var xNormalGenerator = d3.random.normal(0, SDforJitter.xSD);
+                            var yNormalGenerator = d3.random.normal(0, SDforJitter.ySD);
+
+                            scope.data.forEach(function(d) {
+
+
+                                d.XOffset = xNormalGenerator();
+                                d.YOffset = yNormalGenerator();
+
+                            });
+
+                            assignSizeOfNodesForScatterAndJitter();
+
+                        };
+
+                        var setOffsetOfNodesForGather = function() {
+
+                            makeNestedData();
+
+                            assignClusterIDOfNodes();
+                            updateClusterSizeInNestedData();
+                            getNodesSizeAndOffsetPosition();
+                            // assignOffsetForGather();
+
+                        };
+
+                        var makeNestedData = function() {
+                            // debugger;
+
+                            nest = d3.nest()
+                                .key(xValue)
+                                .key(yValue)
+                                .sortValues(sortFuncByColorDimension())
+                                .entries(scope.data);
+
+
+                        };
+
+                        var assignClusterIDOfNodes = function() {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    d.values.forEach(function(d, i, j) {
+
+                                        d.clusterID = i;
+
+                                    });
+
+                                });
+
+                            });
+
+
+                        };
+
+                        var updateClusterSizeInNestedData = function() {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    d.numOfElement = d.values.length;
+
+                                });
+
+                            });
+
+
+                        };
+
+                        var sortFuncByColorDimension = function() {
+
+                            var colorDim = scope.config.colorDim;
+
+                            if (!colorDim) {
+                                return function(a, b) {
+                                    return a;
+                                };
+                            } else {
+
+                                // debugger;
+
+                                if (isDimTypeNumerical(scope.config.dimSetting[colorDim].dimType)) {
+
+                                    return numericalDimSortFunc(colorDim);
+
+                                } else {
+
+                                    return nominalDimSortFunc(colorDim);
+
+                                }
+
+                               
+                            }
+
+                        };
+
+                        var nominalDimSortFunc = function(dim) {
+
+                            var dimSetting = scope.config.dimSetting[dim];
+
+                            return function(a, b) {
+                                var myDim = dim;
+                                return dimSetting.keyEquivalentNumber[a[myDim]] - dimSetting.keyEquivalentNumber[b[myDim]];
+                            };
+
+                        };
+
+                        var numericalDimSortFunc = function(dim) {
+
+                            return function(a, b) {
+                                return a[dim] - b[dim];
+                            };
+                        };
+
+                        var isDimTypeNumerical = function(dimType) {
+
+                            if (dimType === 'nominal') {
+
+                                return false;
+
+                            } else if (dimType === 'ordinal' || dimType === 'semiOrdinal') {
+
+                                return true;
+                            } else {
+
+                                alert("Unidentified dimension type");
+                            }
+                        };
+
+                        var getClusterBox = function() {
+
+                            var box = getNominalBox();
+                            var marginPercentage = 0.15;
+
+                            return {
+                                widthOfBox: box.widthOfBox * (1 - marginPercentage),
+                                heightOfBox: box.heightOfBox * (1 - marginPercentage)
+                            };
+
+                        };
+
+
+                        var getNodesSizeForAbsolute = function() {
+
+                            var maxNumElementInCluster = getClusterWithMaximumPopulation();
+                            var box = getClusterBox();
+                            var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
+
+                            return size;
+
+                        };
+
+
+                        var getNodesSizeAndOffsetPosition = function() {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    assignNodesOffsetByCluster(d.values);
+
+                                });
+
+                            });
+
+
+                        };
+
+                        var assignNodesOffsetByCluster = function(cluster) {
+
+                            var box = getClusterBox();
+
+                            if (box.widthOfBox > box.heightOfBox) {
+
+                                assignNodesOffsetHorizontallyByCluster(cluster, box);
+
+                            } else {
+
+                                assignNodesOffsetVerticallyByCluster(cluster, box);
+                            }
+
+                        };
+
+                        var assignNodesOffsetLongShortEdge = function(longEdge, shortEdge, cluster) {
+
+                            var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length);
+                            if (isThemeRiverCondition(numElement)) {
+
+                                numElement = getNumOfElementForThemeRiver(longEdge, shortEdge, cluster.length);
+                            }
+                            var nodeSize = getNodeSizeAbsoluteOrRelative(longEdge, shortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
+                            var offsetForCenterPosition = calculateOffsetForCenterPosition(nodeSize.lengthInLongEdge, nodeSize.lengthInShortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
+
+
+                            return {
+                                numElement: numElement,
+                                nodeSize: nodeSize,
+                                offsetForCenterPosition: offsetForCenterPosition
+                            };
+
+
+                        };
+
+                        var isThemeRiverCondition = function(numElement) {
+
+                            if (numElement.numElementInLongEdge / numElement.numElementInShortEdge > 10) {
+
+                                return true;
+                            } else {
+
+                                return false;
+                            }
+                        };
+
+                        var getNumOfElementForThemeRiver = function(longEdge, shortEdge, numElement) {
+
+                            var numElementInShortEdge = (shortEdge / getNodesSizeForAbsolute());
+                            var numElementInLongEdge = Math.ceil(numElement / numElementInShortEdge);
+
+                            return {
+                                numElementInShortEdge: numElementInShortEdge,
+                                numElementInLongEdge: numElementInLongEdge
+                            };
+
+
+                        };
+
+                        var getNodeSizeAbsoluteOrRelative = function(longEdge, shortEdge, numElementInLongEdge, numElementInShortEdge) {
+
+                            var lengthInLongEdge, lengthInShortEdge;
+
+                            if (scope.config.relativeMode === "absolute") {
+
+                                lengthInLongEdge = getNodesSizeForAbsolute();
+                                lengthInShortEdge = lengthInLongEdge;
+
+                            } else {
+                                lengthInLongEdge = longEdge / numElementInLongEdge;
+                                lengthInShortEdge = shortEdge / numElementInShortEdge;
+                            }
+
+                            return {
+                                lengthInLongEdge: lengthInLongEdge,
+                                lengthInShortEdge: lengthInShortEdge
+                            };
+
+                        };
+
+                        var assignNodesOffsetHorizontallyByCluster = function(cluster, box) {
+
+                            var offsetAndSizeInfo = assignNodesOffsetLongShortEdge(box.widthOfBox, box.heightOfBox, cluster);
+
+                            var nodeHeight = offsetAndSizeInfo.nodeSize.lengthInShortEdge;
+                            var nodeWidth = offsetAndSizeInfo.nodeSize.lengthInLongEdge;
+                            var numElementInShortEdge = offsetAndSizeInfo.numElement.numElementInShortEdge;
+                            var numElementInLongEdge = offsetAndSizeInfo.numElement.numElementInLongEdge;
+                            var offsetInShortEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInShortEdge;
+                            var offsetInLongEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInLongEdge;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeWidth = nodeWidth;
+                                d.nodeHeight = nodeHeight;
+
+                                d.YOffset = (d.clusterID % numElementInShortEdge) * nodeHeight - offsetInShortEdge + nodeHeight;
+                                d.XOffset = Math.floor(d.clusterID / numElementInShortEdge) * nodeWidth - offsetInLongEdge;
+
+                            });
+
+                        };
+
+                        var assignNodesOffsetVerticallyByCluster = function(cluster, box) {
+
+                            var offsetAndSizeInfo = assignNodesOffsetLongShortEdge(box.heightOfBox, box.widthOfBox, cluster);
+
+                            var nodeHeight = offsetAndSizeInfo.nodeSize.lengthInLongEdge;
+                            var nodeWidth = offsetAndSizeInfo.nodeSize.lengthInShortEdge;
+                            var numElementInShortEdge = offsetAndSizeInfo.numElement.numElementInShortEdge;
+                            var numElementInLongEdge = offsetAndSizeInfo.numElement.numElementInLongEdge;
+                            var offsetInShortEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInShortEdge;
+                            var offsetInLongEdge = offsetAndSizeInfo.offsetForCenterPosition.offsetInLongEdge;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeHeight = nodeHeight;
+                                d.nodeWidth = nodeWidth;
+
+                                d.XOffset = (d.clusterID % numElementInShortEdge) * nodeWidth - offsetInShortEdge;
+                                d.YOffset = Math.floor(d.clusterID / numElementInShortEdge) * nodeHeight - offsetInLongEdge + nodeHeight;
+
+                            });
+
+                        };
+
+                        var calculateOffsetForCenterPosition = function(nodeLengthInLongEdge, nodeLengthInShortEdge, numElementInLongEdge, numElementInShortEdge) {
+
+                            var offsetInShortEdgeForCenterPosition;
+                            var offsetInLongEdgeForCenterPosition;
+
+                            offsetInShortEdgeForCenterPosition = numElementInShortEdge * nodeLengthInShortEdge / 2;
+                            offsetInLongEdgeForCenterPosition = numElementInLongEdge * nodeLengthInLongEdge / 2;
+
+                            return {
+                                offsetInShortEdge: offsetInShortEdgeForCenterPosition,
+                                offsetInLongEdge: offsetInLongEdgeForCenterPosition
+                            };
+                        };
+
+                        var getClusterWithMaximumPopulation = function() {
+
+                            return d3.max(nest, function(d) {
+
+                                return d3.max(d.values, function(d) {
+
+                                    return d.numOfElement;
+                                });
+                            });
+
+                        };
+
+                        var calculateNodesSizeForAbsolute = function(box, maxNumber) {
+
+                            if (box.widthOfBox > box.heightOfBox) {
+
+                                return calculateNodesSizeWithLongAndShortEdges(box.widthOfBox, box.heightOfBox, maxNumber);
+
+                            } else {
+
+                                return calculateNodesSizeWithLongAndShortEdges(box.heightOfBox, box.widthOfBox, maxNumber);
+                            }
+                        };
+
+                        var calculateNodesSizeWithLongAndShortEdges = function(longEdge, shortEdge, number) {
+
+
+                            var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, number);
+
+                            return shortEdge / numElement.numElementInShortEdge;
+
+                        };
+
+                        var getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping = function(longEdge, shortEdge, number) {
+
+                            var numElementInShortEdge = 0,
+                                numElementInLongEdge,
+                                sizeNode, lengthCandidate;
+
+                            do {
+
+                                numElementInShortEdge++;
+                                sizeNode = shortEdge / numElementInShortEdge;
+                                lengthCandidate = sizeNode * number / numElementInShortEdge;
+
+                            } while (lengthCandidate > longEdge);
+
+                            numElementInLongEdge = Math.ceil(number / numElementInShortEdge);
+
+                            return {
+                                numElementInShortEdge: numElementInShortEdge,
+                                numElementInLongEdge: numElementInLongEdge
+                            };
+
+                        };
+
+                        var getFillingDirection = function() {
+
+
+                            var clusterBox = getClusterBox();
+
+                            if (clusterBox.widthOfBox > clusterBox.heightOfBox) {
+
+                                return 'horizontal';
+                            } else {
+
+                                return 'vertical';
+                            }
+                        };
+
+                        var getSDforJitter = function() {
+
+                            var nominalBox = getNominalBox();
+                            var probFactor = 0.1;
+
+                            var xSD = nominalBox.widthOfBox * probFactor;
+                            var ySD = nominalBox.heightOfBox * probFactor;
+
+                            return {
+                                xSD: xSD,
+                                ySD: ySD
+                            };
+
+                        };
+
+                        var getNominalBox = function() {
+
+
+
+                            return {
+                                widthOfBox: width / (getNumKeys(scope.config.xDim)),
+                                heightOfBox: height / (getNumKeys(scope.config.yDim))
+                            };
+
+                        };
+
+                        var drawNodesInSVG = function() {
+
+                            getColorOfNodes();
+                            getShapeOfNodes();
+                            writeNodesInSVG();
+
+
+                        };
+
+                        var getColorOfNodes = function() {
+
+                            if (!scope.config.colorDim) {
+                                color = colorNominal;
+                                return;
+                            }
+
+
+                            
+
+                            if (scope.config.dimSetting[scope.config.colorDim].dimType === 'ordinal') {
+
+                                var colorDomain = d3.extent(scope.data, function(d) {
+                                return +d[scope.config.colorDim];
+                            });
+
+                                colorScaleForHeatMap = d3.scale.linear()
+                                .range(["#98c8fd", "08306b"])
+                                .domain(colorDomain)
+                                .interpolate(d3.interpolateHsl);
+
+                                color = colorScaleForHeatMap;
+                            } else {
+
+                                color = colorNominal;
+                            }
+
+                        };
+
+                        var getShapeOfNodes = function() {
+
+                        };
+
+                        var writeNodesInSVG = function() {
+                            // debugger;
+                            svgGroup.selectAll(".dot")
+                                .data(scope.data, function(d) {
+                                    return +d.id;
+                                })
+                                .style("fill", function(d) {
+                                    return color(d[scope.config.colorDim]);
+                                })
+                                .transition()
+                                .duration(1500)
+                                .attr("x", xMap)
+                                .attr("y", yMap)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidth;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeight;
+                                })
+                                .attr("rx", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("ry", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("transform", function(d, i) {
+
+                                    // if (d.cancer== "Cancer") {
+                                    //     console.log(height);
+                                    // }
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ")";
+                                });
+
+                        };
+
+                        var labelGenerator = function(dimName) {
+
+                            if (!dimName) {
+
+                                return function(d) {
+                                    return '';
+                                };
+                            } else if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+
+                                return function(d) {
+
+                                    return d;
+                                };
+                            } else {
+
+                                return function(d) {
+
+
+
+                                    return getKeys(dimName)[d];
+
+                                };
+                            }
+
+
+                        };
+
+                        var tickGenerator = function(dimName) {
+
+                            if (!dimName) {
+                                return 0;
+                            } else if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+
+                                var numKeys = getKeys(dimName).length;
+
+                                if (numKeys > 10) {
+
+                                    return 10;
+                                } else {
+
+                                    return numKeys;
+                                }
+
+                            } else {
+
+                                return getKeys(dimName).length;
+                            }
+                        };
+
+                        var drawAxes = function() {
+
+
+                            var xAxis = d3.svg.axis()
+                                .scale(xScale)
+                                .ticks(tickGenerator(scope.config.xDim))
+                                .tickFormat(labelGenerator(scope.config.xDim))
+                                .orient("bottom");
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .ticks(tickGenerator(scope.config.yDim))
+                                .tickFormat(labelGenerator(scope.config.yDim))
+                                .orient("left");
+
+                            svg.selectAll(".axis").remove();
+
+                            xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + (height) + ")")
+                                .call(xAxis);
+
+
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+
+
+                            xAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+                            xAxisNodes
+                                .append("text")
+                                .attr("class", "axislabel")
+                                .attr("x", width / 2)
+                                .attr("y", 56)
+                                .style("text-anchor", "end")
+                                .text(scope.config.xDim);
+
+                            //Setup Y axis
+                            yAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+                            // .attr("y", -20)
+                            // .attr("dx", function(d) {
+                            //     return (String(d).length - 1) * 12 / 2;
+                            // })
+                            // .attr("transform", function(d) {
+                            //     return "rotate(-90)translate(" + this.getBBox().width / 2 + "," +
+                            //         this.getBBox().height / 2 + ")";
+                            // });
+
+
+                            yAxisNodes
+                                .append("text")
+                                .attr("class", "axislabel")
+                                .attr("transform", "rotate(-90)")
+                                .attr("x", -height / 2)
+                                .attr("y", -50)
+                                .attr("dy", ".71em")
+                                .style("text-anchor", "end")
+                                .text(scope.config.yDim);
+
+                            svg.selectAll('.axis line, .axis path').style({
+                                'stroke': 'Black',
+                                'fill': 'none',
+                                'stroke-width': '1px',
+                                "shape-rendering": "crispEdges"
+                            });
+
+
+                        };
+
+                        var drawLegends = function() {
+
+                            resetLegends();
+
+                            if (!scope.config.colorDim) {
+
+                                return ;
+                            }
+
+                            var currentDimSetting = scope.config.dimSetting[scope.config.colorDim];
+
+                            if (currentDimSetting.dimType === 'ordinal') {
+
+                                drawHeatMapLegends();
+                            } else {
+
+                                drawNominalLegends();
+                            }
+                        };
+
+                        var resetLegends = function() {
+
+                            var legendGroup = svg.selectAll(".legend").remove();
+
+                        };
+
+                        var drawHeatMapLegends = function() {
+
+                            var colorDomain = d3.extent(scope.data, function(d) {
+                                return +d[scope.config.colorDim];
+                            });
+
+                            var widthHeatMap = 200;
+                            var heightHeatMap = 20;
+
+
+                            var xScaleForHeatMap = d3.scale.linear()
+                                .domain(colorDomain)
+                                .rangeRound([width-100, width+100]);
+
+                            var values = d3.range(colorDomain[0], colorDomain[1], (colorDomain[1] - colorDomain[0]) / widthHeatMap);
+
+                            var g = svg.append("g")
+                                .attr("class", "legend")
+                                .selectAll("rect")
+                                .data(values)
+                                .enter().append("rect")
+                                .attr("x", xScaleForHeatMap)
+                                .attr("y", 10)
+                                .attr("width", 1)
+                                .attr("height", heightHeatMap)
+                                .style("fill", colorScaleForHeatMap);
+                                
+                        };
+
+                        var drawNominalLegends = function() {
+
+
+                            var legendGroup = svg.selectAll(".legend")
+                                .data(getKeys(scope.config.colorDim), function(d) {
+                                    return d;
+                                });
+
+                            legendGroup.exit().remove();
+
+
+                            var legend = legendGroup.enter().append("g")
+                                .attr("class", "legend")
+                                .attr("transform", function(d, i) {
+                                    return "translate(0," + i * 20 + ")";
+                                });
+
+                            legend.append("rect")
+                                .attr("x", width - 18)
+                                .attr("width", 18)
+                                .attr("height", 18)
+                                .style("fill", function(d) {
+                                    return color(d);
+                                });
+
+                            legend.append("text")
+                                .attr("x", width - 24)
+                                .attr("y", 9)
+                                .attr("dy", ".35em")
+                                .style("text-anchor", "end")
+                                .text(function(d) {
+                                    return d;
+                                });
+
+                        }; //End renderer
+
+                    }
+
+                }; //End return 
+
+            } // End function (d3Service)
+
+    );
 
 }());;(function() {
   'use strict';
@@ -58238,9 +60072,14 @@ window.AngularSlider=function(a,b,c){function d(a){n.cssText=a}function e(a,b){r
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
                 $scope.nomaConfig.relativeMode = 'absolute';
-                $scope.nomaBinSize = 10;
+                $scope.nomaConfig.binSize = 10;
 
-              
+                $scope.sliderOptions = {
+                    from: 1,
+                    to: 30,
+                    step: 1
+                };
+
 
                 $scope.changeActiveDataTitanic = function() {
 
