@@ -11,7 +11,6 @@
     "angular-mocks": "1.2.15",
     "jquery-ui": "~1.10.4",
     "d3": "~3.4.3",
-    "angular-ui-sortable": "~0.12.1",
-    "ng-slider": "*"
+    "angular-ui-sortable": "~0.12.1"
   }
 }
