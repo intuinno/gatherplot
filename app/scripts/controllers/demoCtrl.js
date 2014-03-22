@@ -53,14 +53,9 @@
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
                 $scope.nomaConfig.relativeMode = 'absolute';
-                $scope.nomaConfig.binSize = 10;
+                $scope.nomaBinSize = 10;
 
-                $scope.sliderOptions = {
-                    from: 1,
-                    to: 30,
-                    step: 1
-                };
-
+              
 
                 $scope.changeActiveDataTitanic = function() {
 

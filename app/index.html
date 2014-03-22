@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="navbar-collapse collapse">
-                    
+
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="#">Home</a>
                         </li>
@@ -56,7 +56,7 @@
 
                     </h5>
                     <h4 class="chart-title">{{activeData}}</h4>
-                    <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
+                    <div nomarect  data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" binSize="nomaBinSize"></div>
                     <div class="chart-simple-interface">
                         <h5>Show me
 
@@ -64,26 +64,26 @@
 
                                 <option value="">-- undefined --</option>
 
-                            </select>  vs.
+                            </select>vs.
 
                             <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
 
                                 <option value="">-- undefined --</option>
 
-                            </select> 
-
-                           
-                        <h5>Arrange subgroup with color according to 
-
-                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
-
-                                <option value="">-- undefined --</option>
-
                             </select>
-</br>
-                        </h6>
 
-                         <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>  Check this to make it easy to compare groups of different sizes.</h6>
+
+                            <h5>Arrange subgroup with color according to
+
+                                <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
+
+                                    <option value="">-- undefined --</option>
+
+                                </select>
+                                </br>
+                                </h6>
+
+                                <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>Check this to make it easy to compare groups of different sizes.</h6>
 
 
 
@@ -91,20 +91,23 @@
                     </div>
                 </div>
 
+               
 
 
 
                 <accordion close-others="false">
                     <accordion-group is-open="isAdvancedOptionOpen" ng-hide='false'>
 
-                        <div>
-                            Data Binning Size
-                            <input ng-model="nomaConfig.binSize" type="text" id="mySlider1" slider options="sliderOptions" />
 
-                        </div>
                         <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i>
                             Under the Hood (Advanced Option)</accordion-heading>
                         <div class="row">
+<div>
+    Data Bin Size: 
+                             <slider ng-model="nomaBinSize" >
+                </slider>
+</div>
+
                             <div class="col-md-4">
                                 <h3>X-axis:
 
@@ -472,7 +475,7 @@
         </footer> -->
     </div>
     <script src="./assets/app.js"></script>
-    <script src="//localhost:7777/livereload.js"></script>
+    <script src="./scripts/directives/d3Basic.js" <script src="//localhost:7777/livereload.js"></script>
 
 </body>
 
