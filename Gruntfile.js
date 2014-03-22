@@ -25,9 +25,6 @@ module.exports = function(grunt) {
       },
       bootstrap_font_copy: {
         command: 'cp -R bower_components/bootstrap/dist/fonts app/fonts'
-      },
-      ngslider_img_copy: {
-        command: 'cp -R bower_components/ng-slider/dist/img app/images'
       }
     },
 
@@ -113,9 +110,7 @@ module.exports = function(grunt) {
           'app/scripts/services/**/*.js',
           'app/scripts/controllers/**/*.js',
           'app/scripts/filters/**/*.js',
-
-          
-          //place your JavaScript files here
+        //place your JavaScript files here
         ]
       },
     },
