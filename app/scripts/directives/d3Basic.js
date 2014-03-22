@@ -87,6 +87,11 @@
                             return scope.handleConfigChange(renderData, newVals);
                         }, true);
 
+                        scope.$watch('config.binSize', function(newVals, oldVals) {
+                            // debugger;
+                            return scope.renderDataChange(scope.data, scope.config);
+                        }, true);
+
                         scope.$watch(function() {
                             return scope.border;
                         }, function(newVals, oldVals) {

@@ -90,12 +90,14 @@
 
                     </div>
                 </div>
-
+                <div>
+Data Binning Size: {{nomaConfig.binSize}} <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px">
+</div>
 
 
 
                 <accordion close-others="false">
-                    <accordion-group is-open="isAdvancedOptionOpen" ng-hide='false'>
+                    <accordion-group is-open="isAdvancedOptionOpen" ng-hide='true'>
 
                         <div>
                             Data Binning Size
