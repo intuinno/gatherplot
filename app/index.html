@@ -40,23 +40,29 @@
     </div>
     <div class="container" ng-controller="DemoCtrl">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div>
                     <h5>
+                        <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
+                            <div class="btn-group">
 
-                        <div class="btn-group">
+                                <button type="button" class="btn btn-default active" ng-model="nomaConfig.isGather" btn-radio="'scatter'">Scatter</button>
 
-                            <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'scatter'">Scatter</button>
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'jitter'">Jitter</button>
 
-                            <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'jitter'">Jitter</button>
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'">Gather</button>
 
-                            <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'">Gather</button>
-
+                            </div>
                         </div>
+                        <alert class="chart-instruction" ng-show="isPlotSelectFocused" close="isPlotSelectFocused=false">
+                            Try these buttons.</alert>
 
                     </h5>
 
                     <h4 class="chart-title">{{activeData}}</h4>
+                    <div>
+                        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+                    </div>
                     <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
                     <div class="chart-simple-interface">
                         <h5>Show me
@@ -65,7 +71,7 @@
 
                                 <option value="">-- undefined --</option>
 
-                            </select> vs. 
+                            </select>&nbsp;vs&nbsp;.
 
                             <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
 
@@ -73,8 +79,9 @@
 
                             </select>
 
-
-                            Arrange subgroup with color according to
+                            </br>
+                            </br>
+                            Mark nodes with color according to
 
                             <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
 
@@ -82,361 +89,156 @@
 
                             </select>
                         </h5>
-                        </br>
+
                         <h6>
 
                             <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>Check this to make it easy to compare groups of different sizes.</h6>
 
-
-                        <button class="btn btn-default" ng-click="isCollapsed = !isCollapsed">Toggle Ad</button>
-                        <hr>
-                        <div collapse="isCollapsed">
-                            <div class="well well-lg">Some content</div>
-                        </div>
-
-
                     </div>
                 </div>
-                
-
-
                 <accordion close-others="false">
                     <accordion-group is-open="isAdvancedOptionOpen" ng-hide='false'>
 
-                        
+
                         <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i>
                             Under the Hood (Advanced Option)</accordion-heading>
-                        <div class="row">
+                        <div class="well">
+                            <div class="row ">
 
-                            <div>
-                    Data Binning Size: {{nomaConfig.binSize}}
-                    <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px">
-                </div>
-
-                            <div class="col-md-4">
-                                <h3>X-axis:
-
-                                    <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
-
-                                        <option value="">-- undefined --</option>
-
-                                    </select>
-
-                                </h3>
-                                <p>
-                                </p>
-                                <div class="btn-toolbar">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'left'"><i class="glyphicon glyphicon-align-left"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'center'"><i class="glyphicon glyphicon-align-center"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'right'"><i class="glyphicon glyphicon-align-right"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'justify'"><i class="glyphicon glyphicon-align-justify"></i>
-                                        </button>
-                                    </div>
+                                <div class="col-md-4">
+                                    Data Binning Size: {{nomaConfig.binSize}}
+                                    <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px">
                                 </div>
-                                <p></p>
-                                <dl>
-                                    <dt>
-
-
-
-                                        Type of Data:
-
-                                    </dt>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaConfig.isXNumber" ng-value="false">Name or Category</label>
-                                        </div>
-                                    </dd>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaConfig.isXNumber" ng-value="true">Continuous Number</label>
-                                        </div>
-                                    </dd>
-                                    <div ng-show="nomaConfig.isXNumber">
-                                        <dt>
-
-
-
-                                            Data Binning:
-
-                                        </dt>
-                                        <dd>
-                                            <label label-default="label-default" class="checkbox-inline">
-                                                <input type="checkbox" ng-model="nomaConfig.isXDataBinning">Enable Data binning</label>
-                                        </dd>
-                                        <dd ng-show="nomaConfig.isXDataBinning">Input the number of bins:
-                                            <input type="number" name="inputXBinSize" ng-model="nomaConfig.XBinSize" min="0" max="100" class="form-control">
-                                            <span class="error" ng-show="DemoCtrl.inputXBinSize.$error.number">
-
-                                                Not valid number!</span>
-                                        </dd>
-                                    </div>
-                                    <dt ng-hide="nomaConfig.isXNumber">
-
+                                <div class="col-md-4">
+                                    <p>
                                         <label label-default="label-default" class="checkbox-inline">
+                                            <input type="checkbox" ng-model="nomaBorder">Border line</label>
+                                    </p>
 
-                                            <input type="checkbox" ng-model="isXCustomOrder" ng-init="false">Customize ordering
-
-                                        </label>
-
-                                    </dt>
-                                    <dd ng-show="isXCustomOrder">
-                                        <div class="container">
-                                            <h5>Drag and Drop for ordering</h5>
-                                            <ul ui-sortable="ui-sortable" ng-model="nomaConfig.dimOrder[nomaConfig.xDim]" class="list">
-                                                <li ng-repeat="item in nomaConfig.dimOrder[nomaConfig.xDim]" class="item">{{item}}</li>
-                                            </ul>
-                                        </div>
-                                    </dd>
-                                </dl>
-                            </div>
-                            <!--/span-->
-                            <div class="col-md-4">
-                                <h3>Y-axis:
-
-                                    <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
-
-                                        <option value="">-- undefined --</option>
-
-                                    </select>
-
-                                </h3>
-                                <p>
-                                </p>
-                                <div class="btn-toolbar">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'top'"><i class="glyphicon glyphicon-align-left"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'middle'"><i class="glyphicon glyphicon-align-center"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'bottom'"><i class="glyphicon glyphicon-align-right"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'justify'"><i class="glyphicon glyphicon-align-justify"></i>
-                                        </button>
-                                    </div>
                                 </div>
-                                <p></p>
-                                <dl>
-                                    <dt>
-
-
-
-                                        Type of Data:
-
-                                    </dt>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaConfig.isYNumber" ng-value="false">Name or Category</label>
-                                        </div>
-                                    </dd>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaConfig.isYNumber" ng-value="true">Continuous Number</label>
-                                        </div>
-                                    </dd>
-                                    <div ng-show="nomaConfig.isYNumber">
-                                        <dt>
-
-
-
-                                            Data Binning:
-
-                                        </dt>
-                                        <dd>
-                                            <label label-default="label-default" class="checkbox-inline">
-                                                <input type="checkbox" ng-model="nomaConfig.isYDataBinning">Enable Data binning</label>
-                                        </dd>
-                                        <dd ng-show="nomaConfig.isYDataBinning">Input the number of bins:
-                                            <input type="number" name="inputYBinSize" ng-model="nomaConfig.YBinSize" min="0" max="100" class="form-control">
-                                            <span class="error" ng-show="DemoCtrl.inputYBinSize.$error.number">
-
-                                                Not valid number!</span>
-                                        </dd>
-                                    </div>
-                                    <dt ng-hide="nomaConfig.isYNumber">
-
+                                <div class="col-md-4">
+                                    <p>
                                         <label label-default="label-default" class="checkbox-inline">
-
-                                            <input type="checkbox" ng-model="isYCustomOrder" ng-init="false">Customize ordering
-
-                                        </label>
-
-                                    </dt>
-                                    <dd ng-show="isYCustomOrder">
-                                        <div class="container">
-                                            <h5>Drag and Drop for ordering</h5>
-                                            <ul ui-sortable="ui-sortable" ng-model="nomaConfig.dimOrder[nomaConfig.yDim]" class="list">
-                                                <li ng-repeat="item in nomaConfig.dimOrder[nomaConfig.yDim]" class="item">{{item}}</li>
-                                            </ul>
-                                        </div>
-                                    </dd>
-                                </dl>
-                            </div>
-                            <!--/span-->
-                            <div class="col-md-4">
-                                <h3>Color:
-
-                                    <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
-
-                                        <option value="">-- undefined --</option>
-
-                                    </select>
-
-                                </h3>
-                                <p>
-                                </p>
-                                <div class="btn-toolbar">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'vertical'"><i class="glyphicon glyphicon-resize-vertical"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'horizontal'"><i class="glyphicon glyphicon-resize-horizontal"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="both"><i class="glyphicon glyphicon-resize-full"></i>
-                                        </button>
-                                    </div>
+                                            <input type="checkbox" ng-model="nomaRound">Round Edge</label>
+                                        {{nomaRound}}
+                                    </p>
                                 </div>
-                                <p></p>
-                                <p>
-                                    <label label-default="label-default" class="checkbox-inline">
-                                        <input type="checkbox" ng-model="nomaBorder">Border line</label>
-                                </p>
-                                <p>
-                                    <label label-default="label-default" class="radio-inline">Optimize :</label>
-                                    <label label-default="label-default" class="radio-inline">
-                                        <input type="radio" ng-model="nomaConfig.optimizeAspect" value="true">Aspect Ratio</label>
-                                    <label label-default="label-default" class="radio-inline">
-                                        <input type="radio" ng-model="nomaConfig.optimizeAspect" value="false">Margin</label>
-                                </p>
-                                <p>
-                                    <label label-default="label-default" class="checkbox-inline">
-                                        <input type="checkbox" ng-model="nomaRound">Round Edge</label>
-                                    {{nomaRound}}
-                                </p>
-                                <dl>
-                                    <dt>
+
+                                <div class="col-md-4">Input Width/Height:
+                                    <input type="number" name="inputWidth" ng-model="nomaConfig.SVGAspectRatio" min="0.4" max="3" class="form-control">
+                                    <span class="error" ng-show="DemoCtrl.inputWidth.$error.number">
+
+                                        Not valid number!</span>
+                                </div>
 
 
-
-                                        Settings for Chart:
-
-                                    </dt>
-                                    <dd>Input Width/Height:
-                                        <input type="number" name="inputWidth" ng-model="nomaConfig.SVGAspectRatio" min="0.4" max="3" class="form-control">
-                                        <span class="error" ng-show="DemoCtrl.inputWidth.$error.number">
-
-                                            Not valid number!</span>
-                                    </dd>
-                                    <dt>
-
-
-
-                                        Shape Rendering:
-
-                                    </dt>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaShapeRendering" ng-value="'auto'">auto</label>
-                                        </div>
-                                    </dd>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaShapeRendering" ng-value="'crispEdges'">Crisp Edges</label>
-                                        </div>
-                                    </dd>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaShapeRendering" ng-value="'optimizeSpeed'">Optimize Speed</label>
-                                        </div>
-                                    </dd>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaShapeRendering" ng-value="'geometricPrecision'">Geometric Precision</label>
-                                        </div>
-                                    </dd>
-                                    <dt>
-
-
-
-                                        Type of Data:
-
-                                    </dt>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaConfig.isColorNumber" ng-value="false">Name or Category</label>
-                                        </div>
-                                    </dd>
-                                    <dd>
-                                        <div class="checkbox">
-                                            <label label-default="label-default" class="">
-                                                <input type="radio" ng-model="nomaConfig.isColorNumber" ng-value="true">Continuous Number</label>
-                                        </div>
-                                    </dd>
-                                    <div ng-show="nomaConfig.isColorNumber">
-                                        <dt>
-
-
-
-                                            Data Binning:
-
-                                        </dt>
-                                        <dd>
-                                            <label label-default="label-default" class="checkbox-inline">
-                                                <input type="checkbox" ng-model="nomaConfig.isColorDataBinning">Enable Data binning</label>
-                                        </dd>
-                                        <dd ng-show="nomaConfig.isColorDataBinning">Input the number of bins:
-                                            <input type="number" name="inputColorBinSize" ng-model="nomaConfig.colorBinSize" min="0" max="100" class="form-control">
-                                            <span class="error" ng-show="DemoCtrl.inputColorBinSize.$error.number">
-
-                                                Not valid number!</span>
-                                        </dd>
-                                    </div>
-                                    <dt ng-hide="nomaConfig.isColorNumber">
-
-                                        <label label-default="label-default" class="checkbox-inline">
-
-                                            <input type="checkbox" ng-model="isColorCustomOrder" ng-init="false">Customize ordering
-
-                                        </label>
-
-                                    </dt>
-                                    <dd ng-show="isColorCustomOrder">
-                                        <div class="container">
-                                            <h5>Drag and Drop for ordering</h5>
-                                            <ul ui-sortable="ui-sortable" ng-model="nomaConfig.dimOrder[nomaConfig.colorDim]" class="list">
-                                                <li ng-repeat="item in nomaConfig.dimOrder[nomaConfig.colorDim]" class="item">{{item}}</li>
-                                            </ul>
-                                        </div>
-                                    </dd>
-                                </dl>
                             </div>
-                            <!--/span-->
+                            <div class="row ">
+
+
+                                <div class="col-md-4">
+                                    <h3>X-axis:
+
+                                    </h3>
+                                    <p>
+                                    </p>
+                                    <div class="btn-toolbar">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'left'"><i class="glyphicon glyphicon-align-left"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'center'"><i class="glyphicon glyphicon-align-center"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'right'"><i class="glyphicon glyphicon-align-right"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'justify'"><i class="glyphicon glyphicon-align-justify"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p></p>
+
+                                </div>
+                                <!--/span-->
+                                <div class="col-md-4">
+                                    <h3>Y-axis:
+
+                                    </h3>
+                                    <p>
+                                    </p>
+                                    <div class="btn-toolbar">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'top'"><i class="glyphicon glyphicon-align-left"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'middle'"><i class="glyphicon glyphicon-align-center"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'bottom'"><i class="glyphicon glyphicon-align-right"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'justify'"><i class="glyphicon glyphicon-align-justify"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p></p>
+
+                                </div>
+                                <!--/span-->
+                                <div class="col-md-4">
+                                    <h3>Color:
+
+
+                                    </h3>
+                                    <p>
+                                    </p>
+                                    <div class="btn-toolbar">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'vertical'"><i class="glyphicon glyphicon-resize-vertical"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'horizontal'"><i class="glyphicon glyphicon-resize-horizontal"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="both"><i class="glyphicon glyphicon-resize-full"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p></p>
+                                </div>
+                                <!--/span-->
+                            </div>
+                            <!--/row-->
                         </div>
-                        <!--/row-->
                     </accordion-group>
                 </accordion>
             </div>
             <!--/span-->
-            <div class="col-md-3">
-                <div class="well sidebar-nav">
-                    <h3>Examples</h3>
+            <div class="col-md-4">
+                <div class="sidebar-nav">
+                    <h3>Guided Tours</h3>
                     <accordion close-others="false">
+
+                        <accordion-group is-open="isCarsOpen">
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isCarsOpen, 'glyphicon-chevron-right': !isCarsOpen}"></i>
+                                Cars Dataset <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataCars()">Load</a>
+                            </accordion-heading>
+                            <div class="well">
+                                <p>This example introduces gatherplots..</p>
+                                <p>First, start with scatterplots. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsScatterplots()">Visualize</a>
+                                </p>
+                                <p>Normalization Applied to Binning continuous variables <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigContinuousBinningNor()">Visualize</a>
+                                </p>
+                            </div>
+                        </accordion-group>
+
+
                         <accordion-group is-open="isTitanicOpen">
                             <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isTitanicOpen, 'glyphicon-chevron-right': !isTitanicOpen}"></i>
                                 Survivor of Titanic <a class="pull-right btn btn-xs btn-default" href="" ng-click="changeActiveDataTitanic()">Load</a>
-                            </accordion-heading>This dataset shows the survivors of the Titanic.</accordion-group>
+                            </accordion-heading>
+                            <div class="well">
+                                Let's explore the dataset about the survivors of the Titanic.
+                                <ul>
+                                    <li>First begin with all the survivors. <a href="" class="pull-right btn btn-link btn-default" ng-click="settingForTitanicLoadAll()">Visualize</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </accordion-group>
+
                         <accordion-group is-open="isMammoOpen">
                             <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMammoOpen, 'glyphicon-chevron-right': !isMammoOpen}"></i>
                                 Bayesian Inference Mammogram <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataMammo()">Load</a>
@@ -457,16 +259,7 @@
                             <p>Normalization Applied to Binning continuous variables <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigContinuousBinningNor()">Visualize</a>
                             </p>
                         </accordion-group>
-                        <accordion-group is-open="isCarsOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isContinuousOpen, 'glyphicon-chevron-right': !isCarsOpen}"></i>
-                                Cars Dataset <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataCars()">Load</a>
-                            </accordion-heading>
-                            <p>This example shows how to handle continuous variables.</p>
-                            <p>Binning continuous variables <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigContinuousBinning()">Visualize</a>
-                            </p>
-                            <p>Normalization Applied to Binning continuous variables <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigContinuousBinningNor()">Visualize</a>
-                            </p>
-                        </accordion-group>
+
                     </accordion>
                 </div>
                 <!--/.well -->

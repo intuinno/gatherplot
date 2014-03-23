@@ -58172,44 +58172,10 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.nomaConfig = {
 
-                    //initial Data
-
-
-
                 };
 
-                // var tmpList = [];
 
-                // for (var i = 1; i <= 6; i++) {
-                //     tmpList.push({
-                //         text: 'Item ' + i,
-                //         value: i
-                //     });
-                // }
-
-                // $scope.list = tmpList;
-
-
-                // $scope.sortingLog = [];
-
-                $scope.sortableOptions = {
-                    // called after a node is dropped
-                    stop: function(e, ui) {
-                        // var logEntry = {
-                        //     ID: $scope.sortingLog.length + 1,
-                        //     Text: 'Moved element: ' + ui.item.scope().item.text
-                        // };
-                        // $scope.sortingLog.push(logEntry);
-                    }
-                };
-                $scope.nomaConfig.isXUniformSpacing = true;
-                $scope.nomaConfig.isYUniformSpacing = true;
-
-                $scope.loadedData = 'titanic';
-                $scope.nomaConfig.optimizeAspect = 'true';
-                $scope.nomaConfig.fillingDirection = 'vertical';
-                $scope.nomaConfig.XAlign = 'justify';
-                $scope.nomaConfig.YAlign = 'justify';
+                $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
 
                 $scope.nomaRound = true;
@@ -58219,12 +58185,25 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
+                $scope.alerts = [];
+                $scope.isPlotSelectFocused = false;
 
-                $scope.sliderOptions = {
-                    from: 1,
-                    to: 30,
-                    step: 1
+                $scope.addAlert = function(messageType, messageContent) {
+                    $scope.alerts.push({
+                        msg: messageContent,
+                        type: messageType
+                    });
                 };
+
+                $scope.closeAlert = function(index) {
+                    $scope.alerts.splice(index, 1);
+                };
+
+                $scope.focusElement = function(element) {
+                    $scope[element] = true;
+                };
+
+
 
 
                 $scope.changeActiveDataTitanic = function() {
@@ -58256,11 +58235,27 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     });
 
 
-
-
                 }; //End  $scope.changeActiveDataTitanic()
 
-                $scope.changeActiveDataTitanic();
+               
+
+                $scope.settingForTitanicLoadAll = function() {
+
+                    if ($scope.activeData !== 'Survivor of Titanic') {
+
+                        $scope.changeActiveDataTitanic();
+                    }
+
+
+
+                    $scope.nomaConfig.xDim = null;
+                    $scope.nomaConfig.yDim = null;
+                    $scope.nomaConfig.colorDim = null;
+
+                    $scope.addAlert('danger', 'Oh, snap! In scatterplots, everypoints converged over same place.  Check jittering and gathering.');
+                    $scope.focusElement("isPlotSelectFocused");
+
+                };
 
 
 
@@ -58487,9 +58482,6 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     $scope.activeData = 'Cars Data';
 
-
-
-
                     d3.csv('data/cars.csv', function(error, tdata) {
                         var count = 0;
 
@@ -58505,13 +58497,14 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = $scope.nomaConfig.dims[1];
-                        $scope.nomaConfig.yDim = $scope.nomaConfig.dims[2];
-                        $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[8];
+                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
 
-                        $scope.nomaConfig.isGather = 'scatter';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.isCarsOpen = true;
 
-                        //$scope.$apply();
+                        $scope.$apply();
 
 
 
@@ -58521,6 +58514,25 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
 
                 };
+
+                $scope.changeConfigCarsScatterplots = function() {
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Horesepower';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'gather';
+
+
+                };
+
+                 $scope.changeActiveDataCars();
 
 
             }

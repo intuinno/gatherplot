@@ -90,7 +90,7 @@ module.exports = function(grunt) {
       styles: {
         dest: './app/assets/app.css',
         src: [
-          'bower_components/jquery-ui/themes/base/jquery-ui.css',
+          // 'bower_components/jquery-ui/themes/base/jquery-ui.css',
           'bower_components/bootstrap/dist/css/bootstrap.css',
           'app/styles/gatherplot.css'
           //place your Stylesheet files here

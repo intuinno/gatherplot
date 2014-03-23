@@ -1,3 +1,17 @@
+.chart-instruction {
+  display: inline-block;
+}
+
+.tryMe {
+display: inline-block;
+   width: 250px;
+    border-style:solid;
+border-color: #ff0000;
+padding:10px;
+
+}
+
+
 .panel-default > .panel-heading {
   background-color: #FFF;
 }
@@ -6,11 +20,11 @@
   padding: 0px;
 }
 
-.well {
+/*.well {
   background-color: #FFF;
   border: none;
 }
-
+*/
 .jumbotron {
   background-color: #FFF;
 }
@@ -31,7 +45,7 @@ body {
         }
     }
 
-.animate-show {
+/*.animate-show {
   -webkit-transition:all linear 0.5s;
   transition:all linear 0.5s;
   line-height:20px;
@@ -50,7 +64,7 @@ body {
   line-height:0;
   opacity:0;
   padding:0 10px;
-}
+}*/
 
 .nomarect {
 
