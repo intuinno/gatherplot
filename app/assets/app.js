@@ -58627,38 +58627,33 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         $scope.changeActiveDataCars();
                     }
+                   
+                        // $scope.nomaRound = false;
 
-                    // $scope.nomaRound = false;
+                        $scope.nomaConfig.xDim = 'continous1';
+                        $scope.nomaConfig.yDim = 'continuous2';
+                        $scope.nomaConfig.colorDim = 'nominal';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+                        $scope.nomaConfig.isGather = 'gather';
 
-                    $scope.nomaConfig.xDim = 'continous1';
-                    $scope.nomaConfig.yDim = 'continuous2';
-                    $scope.nomaConfig.colorDim = 'nominal';
-                    $scope.nomaConfig.relativeMode = 'absolute';
-                    $scope.nomaConfig.isGather = 'gather';
+                        var promise = updateBinSizeDefer(7);
 
-                    var promise = updateBinSizeDefer(7);
-
-                    promise.then(function(greeting) {
-                        console.log('Success: ' + greeting);
+                        promise.then(function(greeting) {
+                            console.log('Success: ' + greeting);
 
 
-                    }, function(reason) {
-                        alert('Failed: ' + reason);
-                    }, function(update) {
-                        // alert('Got notification: ' + update);
+                        }, function(reason) {
+                            alert('Failed: ' + reason);
+                        }, function(update) {
+                            // alert('Got notification: ' + update);
+                            $scope.isAdvancedOptionOpen = true;
+                            $scope.addAlert('info', 'You can try different bin size at advanced options menu below.');
+                            $scope.focusElement("isBinSizeFocused");
+
+
+                        });
                         $scope.isAdvancedOptionOpen = true;
-                        $scope.addAlert('info', 'You can try different bin size at advanced options menu below.');
-                        $scope.focusElement("isBinSizeFocused");
-                        $scope.isAdvancedOptionOpen = true;
-                       
-                    });
-
-
-
-
-
-
-
+        
                 };
 
                 $scope.settingForContinuousGatherWithBinSizeRelative = function() {
