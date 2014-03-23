@@ -217,10 +217,20 @@
                                 Cars Dataset <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataCars()">Load</a>
                             </accordion-heading>
                             <div class="well">
-                                <p>This example introduces gatherplots..</p>
-                                <p>First, start with scatterplots. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsScatterplots()">Visualize</a>
+                                <p>This example introduces gatherplots.</p>
+                                <p>First, start with scatterplots. <a href="" class="pull-right btn btn-link btn-default chart-instruction" ng-click="changeConfigCarsScatterplots()">Visualize</a>
                                 </p>
-                                <p>Normalization Applied to Binning continuous variables <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigContinuousBinningNor()">Visualize</a>
+                                <p>Scatterplots produces overplotting with Cylinders. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsScatterOneNominal()">Visualize</a>
+                                </p>
+                                <p>Jittering can be help determine a size of each group. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsJitterOneNominal()">Visualize</a>
+                                </p>
+                                <p>However when there are multiple subgroups, it is hard to judge the distribution. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsJitterOneNominalWithColor()">Visualize</a>
+                                </p>
+                                <p>Gatherplot makes overview of the distribution easier. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsGatherOneNominalWithColor()">Visualize</a>
+                                </p>
+                                <p>It can be used with two nominal variables, too. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsGatherTwoNominalWithColor()">Visualize</a>
+                                </p>
+                                <p>Stacking nodes works with continuous variables as color dimension. <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsGatherTwoNominalWithContinuousColor()">Visualize</a>
                                 </p>
                             </div>
                         </accordion-group>

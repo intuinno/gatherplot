@@ -33,6 +33,7 @@
                         var thresholdNominal = 7; //Threshold for automatic nominal identification
                         var defaultBinSize = 10;
                         var xValue, yValue; //Function for getting value of X,Y position 
+                        var xOriginalValue, yOriginalValue;
                         var xScale, yScale;
                         var xMap, yMap;
                         var nest = {};
@@ -43,6 +44,7 @@
                         scope.config.dimSetting = {};
 
                         var svg, svgGroup, xAxisNodes, yAxisNodes;
+                        var tooltip;
 
                         var initializeSVG = function() {
 
@@ -58,6 +60,10 @@
 
                             yAxisNodes = svgGroup.append("g")
                                 .attr("class", "y axis");
+
+                            tooltip = d3.select("body").append("div")
+                                .attr("class", "tooltip")
+                                .style("opacity", 0);
 
                         };
 
@@ -148,7 +154,21 @@
                             svgGroup.selectAll(".dot")
                                 .data(scope.data)
                                 .enter().append("rect")
-                                .attr("class", "dot");
+                                .attr("class", "dot")
+                                .on("mouseover", function(d) {
+                                    tooltip.transition()
+                                        .duration(200)
+                                        .style("opacity", 0.9);
+
+                                    tooltip.html(d['Name'] + "<br/>" + scope.config.xDim + ":" + xOriginalValue(d) + "<br/> " + scope.config.yDim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d))
+                                        .style("left", (d3.event.pageX + 5) + "px")
+                                        .style("top", (d3.event.pageY - 28) + "px");
+                                })
+                                .on("mouseout", function(d) {
+                                    tooltip.transition()
+                                        .duration(500)
+                                        .style("opacity", 0);
+                                });
 
 
                             scope.config.dimOrder = {};
@@ -415,6 +435,22 @@
                                 return yScale(yValue(d));
                             };
 
+                        };
+
+                        xOriginalValue = function(d) {
+
+                            return d[scope.config.yDim];
+
+                        };
+
+                        yOriginalValue = function(d) {
+
+                            return d[scope.config.yDim];
+                        };
+
+                        var colorOriginalValue = function(d) {
+
+                            return d[scope.config.colorDim];
                         };
 
                         var xValueConsideringBinning = function() {
@@ -1020,6 +1056,9 @@
 
                         var writeNodesInSVG = function() {
                             // debugger;
+
+
+
                             svgGroup.selectAll(".dot")
                                 .data(scope.data, function(d) {
                                     return +d.id;

@@ -5784,6 +5784,13 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  pointer-events: none;
+}
+
 .chart-instruction {
   display: inline-block;
 }

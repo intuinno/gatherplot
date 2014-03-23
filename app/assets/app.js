@@ -58203,10 +58203,17 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     $scope[element] = true;
                 };
 
+                var resetTutMsg = function() {
+                    $scope.alerts = [];
+                    $scope.isPlotSelectFocused = false;
+                };
+
 
 
 
                 $scope.changeActiveDataTitanic = function() {
+
+                    resetTutMsg();
 
 
                     $scope.activeData = 'Survivor of Titanic';
@@ -58267,6 +58274,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 // change Active Data to the Bayesian Inference-Mammogram;
 
                 $scope.changeActiveDataMammo = function() {
+                    resetTutMsg();
 
                     //Config settings
                     var numberOfEntity = 4000;
@@ -58333,6 +58341,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.changeConfigMammoProblem = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Bayesian Inference - Mammogram') {
 
                         $scope.changeActiveDataMammo();
@@ -58348,6 +58358,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.changeConfigMammoAnswer = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Bayesian Inference - Mammogram') {
 
                         $scope.changeActiveDataMammo();
@@ -58361,6 +58373,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 };
 
                 $scope.changeActiveDataContinuous = function() {
+
+                    resetTutMsg();
 
                     //Config settings
                     var numberOfEntity = 5000;
@@ -58434,6 +58448,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.changeConfigContinuousBinning = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Continuous Variables') {
 
                         $scope.changeActiveDataContinuous();
@@ -58454,6 +58470,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 };
 
                 $scope.changeConfigContinuousBinningNor = function() {
+
+                    resetTutMsg();
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
@@ -58479,6 +58497,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.changeActiveDataCars = function() {
 
+                    resetTutMsg();
+
 
                     $scope.activeData = 'Cars Data';
 
@@ -58503,6 +58523,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         $scope.nomaConfig.isGather = 'gather';
                         $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
 
                         $scope.$apply();
 
@@ -58517,6 +58538,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.changeConfigCarsScatterplots = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Cars Data') {
 
                         $scope.changeActiveDataCars();
@@ -58524,13 +58547,133 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     // $scope.nomaRound = false;
 
-                    $scope.nomaConfig.xDim = 'Horesepower';
+                    $scope.nomaConfig.xDim = 'Horsepower';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
-                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.isGather = 'scatter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
 
 
                 };
+
+                $scope.changeConfigCarsScatterOneNominal =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = null;
+                        $scope.nomaConfig.isGather = 'scatter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsJitterOneNominal =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = null;
+                        $scope.nomaConfig.isGather = 'jitter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsJitterOneNominalWithColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'jitter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                 $scope.changeConfigCarsGatherOneNominalWithColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                 $scope.changeConfigCarsGatherTwoNominalWithColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'Origin';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                    $scope.addAlert('danger', 'Here Cylinders and Origin are both nominal variables. Try what happens with scatterplots or jittering.');
+                    $scope.focusElement("isPlotSelectFocused");
+
+                };
+
+                  $scope.changeConfigCarsGatherTwoNominalWithContinuousColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'Origin';
+                        $scope.nomaConfig.colorDim = 'Weight';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                    
+                };
+
 
                  $scope.changeActiveDataCars();
 

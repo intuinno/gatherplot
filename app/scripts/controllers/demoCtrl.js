@@ -38,10 +38,17 @@
                     $scope[element] = true;
                 };
 
+                var resetTutMsg = function() {
+                    $scope.alerts = [];
+                    $scope.isPlotSelectFocused = false;
+                };
+
 
 
 
                 $scope.changeActiveDataTitanic = function() {
+
+                    resetTutMsg();
 
 
                     $scope.activeData = 'Survivor of Titanic';
@@ -102,6 +109,7 @@
                 // change Active Data to the Bayesian Inference-Mammogram;
 
                 $scope.changeActiveDataMammo = function() {
+                    resetTutMsg();
 
                     //Config settings
                     var numberOfEntity = 4000;
@@ -168,6 +176,8 @@
 
                 $scope.changeConfigMammoProblem = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Bayesian Inference - Mammogram') {
 
                         $scope.changeActiveDataMammo();
@@ -183,6 +193,8 @@
 
                 $scope.changeConfigMammoAnswer = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Bayesian Inference - Mammogram') {
 
                         $scope.changeActiveDataMammo();
@@ -196,6 +208,8 @@
                 };
 
                 $scope.changeActiveDataContinuous = function() {
+
+                    resetTutMsg();
 
                     //Config settings
                     var numberOfEntity = 5000;
@@ -269,6 +283,8 @@
 
                 $scope.changeConfigContinuousBinning = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Continuous Variables') {
 
                         $scope.changeActiveDataContinuous();
@@ -289,6 +305,8 @@
                 };
 
                 $scope.changeConfigContinuousBinningNor = function() {
+
+                    resetTutMsg();
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
@@ -314,6 +332,8 @@
 
                 $scope.changeActiveDataCars = function() {
 
+                    resetTutMsg();
+
 
                     $scope.activeData = 'Cars Data';
 
@@ -338,6 +358,7 @@
 
                         $scope.nomaConfig.isGather = 'gather';
                         $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
 
                         $scope.$apply();
 
@@ -352,6 +373,8 @@
 
                 $scope.changeConfigCarsScatterplots = function() {
 
+                    resetTutMsg();
+
                     if ($scope.activeData !== 'Cars Data') {
 
                         $scope.changeActiveDataCars();
@@ -359,13 +382,133 @@
 
                     // $scope.nomaRound = false;
 
-                    $scope.nomaConfig.xDim = 'Horesepower';
+                    $scope.nomaConfig.xDim = 'Horsepower';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
-                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.isGather = 'scatter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
 
 
                 };
+
+                $scope.changeConfigCarsScatterOneNominal =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = null;
+                        $scope.nomaConfig.isGather = 'scatter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsJitterOneNominal =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = null;
+                        $scope.nomaConfig.isGather = 'jitter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsJitterOneNominalWithColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'jitter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                 $scope.changeConfigCarsGatherOneNominalWithColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                 $scope.changeConfigCarsGatherTwoNominalWithColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'Origin';
+                        $scope.nomaConfig.colorDim = 'Origin';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                    $scope.addAlert('danger', 'Here Cylinders and Origin are both nominal variables. Try what happens with scatterplots or jittering.');
+                    $scope.focusElement("isPlotSelectFocused");
+
+                };
+
+                  $scope.changeConfigCarsGatherTwoNominalWithContinuousColor =function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = false;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'Origin';
+                        $scope.nomaConfig.colorDim = 'Weight';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                    
+                };
+
 
                  $scope.changeActiveDataCars();
 
