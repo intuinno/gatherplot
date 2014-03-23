@@ -813,7 +813,7 @@
 
                         var isThemeRiverCondition = function(numElement) {
 
-                            if (numElement.numElementInLongEdge / numElement.numElementInShortEdge > 10) {
+                            if (numElement.numElementInLongEdge / numElement.numElementInShortEdge > 100) {
 
                                 return true;
                             } else {
