@@ -36,7 +36,7 @@
                         var xScale, yScale;
                         var xMap, yMap;
                         var nest = {};
-                        var marginForBorderOfAxis = 0.7; //Margin for Border Of Axis
+                        var marginForBorderOfAxis = 0.5; //Margin for Border Of Axis
                         scope.config.binSize = defaultBinSize;
 
                         var marginClusterRatio = 0.1; //Ratio of margin in the cluster length
@@ -486,6 +486,20 @@
 
                         };
 
+                        var getSortedIDs = function(dim) {
+
+                            var keyValue = getKeyValue(dim);
+
+                            var calculatedPosition = d3.map(keyValue)
+                                .entries()
+                                .map(function(d) {
+                                    return +d.value.sortedID;
+                                });
+
+                            return calculatedPosition;
+
+                        };
+
                         //Returns Extents of dimension 
                         //              Scatter         Jitter      Gather
                         // ordinal      orig            orig        calculatedPoints
@@ -506,6 +520,10 @@
 
                                 return getExtentFromOriginalExtent(dim);
 
+                            } else if (scope.config.dimSetting[dim].dimType === 'semiOrdinal') {
+
+                                return getExtentFromSortedID(dim);
+
                             } else {
 
                                 return getExtentFromCalculatedPoints(dim);
@@ -513,11 +531,66 @@
 
                         };
 
+                        var getDimType = function(dim) {
+
+                            return scope.config.dimSetting[dim].dimType;
+                        };
+
+                        var getExtentFromSortedID = function (dim) {
+
+                                var sortedID = getSortedIDs (dim);
+
+                                var extent = d3.extent(sortedID);
+
+                                return [extent[0]-marginForBorderOfAxis, extent[1] + marginForBorderOfAxis ];
+
+                        };
+
                         var getExtentFromCalculatedPoints = function(dim) {
 
-                            var calculatedPoints = getCalculatedPositions(dim);
-                            return d3.extent(calculatedPoints);
+                            calculatePositionOfCluster(dim);
 
+                            var calculatedPoints = getCalculatedPositions(dim);
+
+                            var max = calculatedPoints[calculatedPoints.length - 1];
+
+
+
+                            var maxPadding = getLastIncrement(dim);
+
+                            max = max + maxPadding;
+
+                            return [0, max];
+
+
+
+
+                        };
+
+                        var getLastIncrement = function(dim) {
+
+                            if (!dim) {
+
+                                return;
+                            }
+
+                            var keyValue = scope.config.dimSetting[dim].keyValue;
+                            var increment;
+                            var keyLength = d3.map(scope.config.dimSetting[dim].keyValue).values().length;
+
+                            var key = getKeyFromIndex(dim, keyLength - 1);
+
+                            if (keyValue[key].isMinimized === true) {
+
+                                increment = marginClusterRatio;
+
+                            } else {
+
+                                increment = 0.5;
+
+                            }
+
+                            return increment;
 
                         };
 
@@ -527,7 +600,9 @@
                                 return +d[dim];
                             });
 
-                            return d3.extent(originalValues);
+                            var extent = d3.extent(originalValues);
+
+                            return [extent[0] - marginForBorderOfAxis, extent[1] + marginForBorderOfAxis];
                         };
 
                         var prepareScale = function() {
@@ -536,14 +611,14 @@
                             var yRange = getExtent(scope.config.yDim);
 
                             xScale = d3.scale.linear().range([0, width]);
-                            xScale.domain([xRange[0] - marginForLeftBorderOfAxis, xRange[1] + marginForBorderOfAxis]);
+                            xScale.domain(xRange);
 
                             xMap = function(d) {
                                 return xScale(xValue(d));
                             };
 
                             yScale = d3.scale.linear().range([height, 0]);
-                            yScale.domain([yRange[0] - marginForBorderOfAxis, yRange[1] + marginForBorderOfAxis]);
+                            yScale.domain(yRange);
                             yMap = function(d) {
                                 return yScale(yValue(d));
                             };
@@ -621,22 +696,47 @@
 
                             var keyValue = scope.config.dimSetting[dim].keyValue;
                             var increment;
+                            var previousIncrement;
 
                             d3.map(keyValue).entries().forEach(function(d, i, all) {
                                 if (i === 0) {
+                                    if (d.value.isMinimized === true) {
+
+                                        d.value.calculatedPosition = marginClusterRatio;
+
+                                    } else {
+
+                                        d.value.calculatedPosition = 0.5;
+
+                                    }
+
+                                    d.value.calculatedPosition = d.value.calculatedPosition;
+
                                     return;
                                 }
-                                if (d.value.isMinimized === true) {
 
-                                    increment = 2 * marginClusterRatio;
+                                if (all[i - 1].value.isMinimized === true) {
+
+                                    previousIncrement = marginClusterRatio;
 
                                 } else {
 
-                                    increment = 1;
+                                    previousIncrement = 0.5;
 
                                 }
 
-                                d.value.calculatedPosition = all[i - 1].value.calculatedPosition + increment;
+
+                                if (d.value.isMinimized === true) {
+
+                                    increment = marginClusterRatio;
+
+                                } else {
+
+                                    increment = 0.5;
+
+                                }
+
+                                d.value.calculatedPosition = all[i - 1].value.calculatedPosition + increment + previousIncrement;
 
                             });
 
@@ -1457,9 +1557,14 @@
                             var dx = x1 - x2;
                             var dy = y1 - y2;
                             var len = Math.sqrt(dx * dx + dy * dy);
-                            dx = dx / len;
-                            dy = dy / len;
 
+                            if (len === 0) {
+                                dx = 0;
+                                dy = 0;
+                            } else {
+                                dx = dx / len;
+                                dy = dy / len;
+                            }
                             //Calculate Control Points of path,
                             var qx1 = x1 + q * w * dy;
                             var qy1 = y1 - q * w * dx;
@@ -1514,10 +1619,6 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
-                            var halfOfClusterWidth = getIndividualClusterBox().widthOfBox / 2;
-                            var halfOfClusterHeight = getIndividuaClusterBox().heightOfBox / 2;
-
-
 
                             var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
                                 .append("g")
@@ -1528,10 +1629,10 @@
                             xAxisBracketGroup.append("rect")
                                 .style("opacity", 0)
                                 .style("fill", "black")
-                                .attr("x", -box.widthOfBox / 2)
+                                .attr("x", xBracketGroup)
                                 .attr("y", 0)
-                                .attr("width", box.widthOfBox)
-                                .attr("height", 12)
+                                .attr("width", widthBracketGroup)
+                                .attr("height", 20)
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
@@ -1550,27 +1651,26 @@
                                 })
                                 .on("click", function(d, i) {
                                     console.log(d);
-                                    toggleMinimizeCluster(scope.config.xDim,i);
+                                    toggleMinimizeCluster(scope.config.xDim, i);
                                 });
 
                             xAxisBracketGroup.append("path")
-                                .attr("class", "bracket")
-                                .attr("d", function(d) {
-                                    console.log(d);
-                                    return makeCurlyBrace(-halfOfClusterWidth, 2, halfOfClusterWidth, 2, 10, 0.6);
-                                });
+                                .attr("class", "x bracket")
+                                .transition()
+                                .duration(500)
+                                .attr("d", pathXBracket);
 
 
                             yAxisNodes.selectAll(".tick")
                                 .append("path")
-                                .attr("class", "bracket")
-                                .attr("d", function(d) {
-                                    return makeCurlyBrace(-2, -halfOfClusterHeight, -2, halfOfClusterHeight, 10, 0.6);
-                                });
+                                .attr("class", "y bracket")
+                                .transition()
+                                .duration(500)
+                                .attr("d", pathYBracket);
 
                         };
 
-                        var toggleMinimizeCluster = function (dim, i) {
+                        var toggleMinimizeCluster = function(dim, i) {
 
 
                             var key = d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
@@ -1580,6 +1680,127 @@
                             keyObject.isMinimized = !keyObject.isMinimized;
 
                             drawPlot();
+
+                        };
+
+                        var pathXBracket = function(d, i) {
+
+                            var dim = scope.config.xDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = lengthOfCluster(dim, key, xScale);
+
+                            if (length === 0) {
+                                return ("M 0 0 " +
+                                    " L 0 " + 10);
+                            } else {
+
+                                return makeCurlyBrace(-length / 2, 2, length / 2, 2, 10, 0.6);
+                            }
+                        };
+
+                        var pathYBracket = function(d, i) {
+
+                            var dim = scope.config.yDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = lengthOfCluster(dim, key, yScale);
+
+
+
+                            return makeCurlyBrace(-2, length / 2, -2, -length / 2, 10, 0.6);
+                        };
+
+
+                        var xBracket = function(d, i) {
+
+                            var dim = scope.config.xDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = lengthOfCluster(dim, key, xScale);
+
+                            return length / 2 * (-1);
+
+                        };
+
+                        var xBracketGroup = function(d, i) {
+
+                            var dim = scope.config.xDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = lengthOfClusterIncludingMargin(dim, key, xScale);
+
+                            return length / 2 * (-1);
+
+                        };
+
+                        var widthBracket = function(d, i) {
+
+                            var dim = scope.config.xDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = lengthOfCluster(dim, key, xScale);
+
+                            return length;
+
+                        };
+
+                        var widthBracketGroup = function(d, i) {
+
+                            var dim = scope.config.xDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = lengthOfClusterIncludingMargin(dim, key, xScale);
+
+                            return length;
+
+                        };
+
+                        var lengthOfCluster = function(dim, key, scale) {
+
+                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+
+                            if (keyObject.isMinimized) {
+
+                                return 0;
+
+                            } else {
+
+                                return scale(1 - 2 * marginClusterRatio) - scale(0);
+                            }
+
+
+
+                        };
+
+                        var lengthOfClusterIncludingMargin = function(dim, key, scale) {
+
+                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+
+                            if (keyObject.isMinimized) {
+
+                                return scale(2 * marginClusterRatio) - scale(0);
+
+                            } else {
+
+                                return scale(1) - scale(0);
+                            }
+
+
+
+                        };
+
+
+
+                        var getKeyFromIndex = function(dim, i) {
+
+                            return d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
 
                         };
 
