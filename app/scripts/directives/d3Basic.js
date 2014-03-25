@@ -536,13 +536,13 @@
                             return scope.config.dimSetting[dim].dimType;
                         };
 
-                        var getExtentFromSortedID = function (dim) {
+                        var getExtentFromSortedID = function(dim) {
 
-                                var sortedID = getSortedIDs (dim);
+                            var sortedID = getSortedIDs(dim);
 
-                                var extent = d3.extent(sortedID);
+                            var extent = d3.extent(sortedID);
 
-                                return [extent[0]-marginForBorderOfAxis, extent[1] + marginForBorderOfAxis ];
+                            return [extent[0] - marginForBorderOfAxis, extent[1] + marginForBorderOfAxis];
 
                         };
 
@@ -1642,10 +1642,10 @@
                                         .duration(1500)
                                         .style("opacity", 0);
                                 });
-                                
+
                             var box = getClusterBox();
 
-                            
+
                             //     });
 
                             xAxisBracketGroup.append("rect")
@@ -1659,25 +1659,20 @@
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'blue')
-                                        .style("opacity", 0.7);
+                                    d3.select(this).style("fill", 'blue');
                                 })
                                 .on("mouseout", function(d) {
-                                    tooltip.transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
+                                    
 
-                                    d3.select(this).style("fill", 'black')
-                                        .transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
+                                    d3.select(this).style("fill", 'gray')
+                                       
                                 })
                                 .on("click", function(d, i) {
-                                 
+
                                     toggleMinimizeCluster(scope.config.xDim, i);
                                 });
 
-                                xAxisBracketGroup.append("rect")
+                            xAxisBracketGroup.append("rect")
                                 .style("opacity", 0)
                                 .style("fill", "black")
                                 .attr("x", xBracketGroup)
@@ -1688,22 +1683,18 @@
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'green')
-                                        .style("opacity", 0.7);
+                                    d3.select(this).style("fill", 'green');
                                 })
                                 .on("mouseout", function(d) {
-                                    tooltip.transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
+    
 
-                                    d3.select(this).style("fill", 'black')
-                                        .transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
+                                    d3.select(this).style("fill", 'gray')
+                                      
                                 })
                                 .on("click", function(d, i) {
                                     console.log(d);
                                     // toggleMinimizeCluster(scope.config.xDim, i);
+                                    toggleMaximizeCluster(scope.config.xDim, i)
                                 });
 
 
@@ -1722,6 +1713,8 @@
                                 .duration(500)
                                 .attr("d", pathYBracket);
 
+                                
+
                         };
 
                         var toggleMinimizeCluster = function(dim, i) {
@@ -1732,6 +1725,45 @@
                             var keyObject = scope.config.dimSetting[dim].keyValue[key];
 
                             keyObject.isMinimized = !keyObject.isMinimized;
+
+                            drawPlot();
+
+                        };
+
+                        var toggleMaximizeCluster = function(dim, i) {
+
+
+                            var key = d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
+
+                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+
+                            keyObject.isMaximized = !keyObject.isMaximized;
+
+                            var keyValue = d3.map(scope.config.dimSetting[dim].keyValue).values();
+
+
+                            if (keyObject.isMaximized === true) {
+
+
+                                keyValue.forEach(function(d) {
+
+                                    d.isMinimized = true;
+
+
+                                });
+
+                                keyObject.isMinimized = false;
+
+
+                            } else {
+                                keyValue.forEach(function(d) {
+
+                                    d.isMinimized = false;
+
+
+                                });
+
+                            }
 
                             drawPlot();
 
