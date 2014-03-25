@@ -536,7 +536,7 @@
                             var yRange = getExtent(scope.config.yDim);
 
                             xScale = d3.scale.linear().range([0, width]);
-                            xScale.domain([xRange[0] - marginForBorderOfAxis, xRange[1] + marginForBorderOfAxis]);
+                            xScale.domain([xRange[0] - marginForLeftBorderOfAxis, xRange[1] + marginForBorderOfAxis]);
 
                             xMap = function(d) {
                                 return xScale(xValue(d));
@@ -1514,8 +1514,8 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
-                            var halfOfClusterWidth = getClusterBox().widthOfBox / 2;
-                            var halfOfClusterHeight = getClusterBox().heightOfBox / 2;
+                            var halfOfClusterWidth = getIndividualClusterBox().widthOfBox / 2;
+                            var halfOfClusterHeight = getIndividuaClusterBox().heightOfBox / 2;
 
 
 
@@ -1550,7 +1550,7 @@
                                 })
                                 .on("click", function(d, i) {
                                     console.log(d);
-                                    minimizeCluster(scope.config.xDim,i);
+                                    toggleMinimizeCluster(scope.config.xDim,i);
                                 });
 
                             xAxisBracketGroup.append("path")
@@ -1570,14 +1570,14 @@
 
                         };
 
-                        var minimizeCluster = function (dim, i) {
+                        var toggleMinimizeCluster = function (dim, i) {
 
 
                             var key = d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
 
                             var keyObject = scope.config.dimSetting[dim].keyValue[key];
 
-                            keyObject.isMinimized = true;
+                            keyObject.isMinimized = !keyObject.isMinimized;
 
                             drawPlot();
 
