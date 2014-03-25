@@ -509,7 +509,7 @@
                     $scope.nomaConfig.isGather = 'gather';
 
 
-                    $scope.addAlert('info', 'You can try different bin size at advanced options menu below.');
+                    $scope.addAlert('info', 'Here you can see that the distributions of sparse regions are more visible. It makes spotting outliers much easier. Compare absolute and relative mode to feel this change.');
                     $scope.focusElement("isRelativeSelectFocused");
                 };
 

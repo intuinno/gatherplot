@@ -1,3 +1,10 @@
+.axis .tick line {
+  stroke: #FFF;
+  fill: none;
+}
+
+
+
 .tooltip {
   position: absolute;
   width: 200px;
