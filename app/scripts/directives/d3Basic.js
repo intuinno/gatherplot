@@ -266,7 +266,7 @@
 
                             if (!dim) {
 
-                                return [''];
+                                return '';
 
                             }
 
@@ -509,7 +509,7 @@
 
                             if (!dim) {
 
-                                return [0, 0];
+                                return [-0.5, 0.5];
                             }
 
                             if (scope.config.isGather === 'gather') {
@@ -787,7 +787,7 @@
 
                             if (dimType === 'nominal') {
 
-                                if (dimType === 'gather') {
+                                if (scope.config.isGather === 'gather') {
 
                                     return calculatedPositionValueFunc;
                                 } else {
@@ -1050,6 +1050,7 @@
 
                         };
 
+
                         var assignNodesOffsetByCluster = function(cluster, xKey, yKey) {
 
                             var box = getClusterBox();
@@ -1064,6 +1065,21 @@
                             }
 
                             updateNodesOffsetForMinimized(cluster, xKey, yKey);
+                            updateNodesSizeForMinimized(cluster, xKey, yKey);
+
+                        };
+
+                        var updateNodesSizeForMinimized = function(cluster, xKey, yKey) {
+
+                            if (isMinimized(scope.config.xDim, xKey)) {
+
+                                makeAbsoluteSize(cluster,'nodeWidth');
+                            }
+
+                            if (isMinimized(scope.config.yDim, yKey)) {
+
+                                makeAbsoluteSize(cluster, 'nodeHeight');
+                            }
 
                         };
 
@@ -1100,6 +1116,16 @@
 
                                 d[offset] = 0;
 
+                            });
+                        };
+                        var makeAbsoluteSize = function(cluster , nodeSize) {
+
+                            var absoulteSize = getNodesSizeForAbsolute();
+
+                            cluster.forEach(function(d) {
+
+                                d[nodeSize] = absoulteSize;
+                                
                             });
                         };
 
@@ -1448,11 +1474,11 @@
                                 };
                             } else {
 
-                                return function(d) {
+                                return function(d, i) {
 
 
 
-                                    return getKeys(dimName)[d];
+                                    return getKeys(dimName)[i];
 
                                 };
                             }
@@ -1662,10 +1688,10 @@
                                     d3.select(this).style("fill", 'blue');
                                 })
                                 .on("mouseout", function(d) {
-                                    
+
 
                                     d3.select(this).style("fill", 'gray')
-                                       
+
                                 })
                                 .on("click", function(d, i) {
 
@@ -1686,10 +1712,10 @@
                                     d3.select(this).style("fill", 'green');
                                 })
                                 .on("mouseout", function(d) {
-    
+
 
                                     d3.select(this).style("fill", 'gray')
-                                      
+
                                 })
                                 .on("click", function(d, i) {
                                     console.log(d);
@@ -1713,7 +1739,7 @@
                                 .duration(500)
                                 .attr("d", pathYBracket);
 
-                                
+
 
                         };
 
