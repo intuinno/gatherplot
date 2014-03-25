@@ -12,6 +12,7 @@
                         border: "=",
                         round: "=",
                         shapeRenderingMode: "=",
+                        onClick: '&'
                     },
 
                     link: function(scope, iElement, iAttrs) {
@@ -38,7 +39,6 @@
                         var marginForBorderOfAxis = 0.7; //Margin for Border Of Axis
                         scope.config.binSize = defaultBinSize;
 
-                        var marginCluster; // Actual margin for cluster
                         var marginClusterRatio = 0.1; //Ratio of margin in the cluster length
 
 
@@ -46,6 +46,9 @@
 
                         var svg, svgGroup, xAxisNodes, yAxisNodes;
                         var tooltip;
+                        var clusterControlBox;
+
+
 
                         var initializeSVG = function() {
 
@@ -64,6 +67,10 @@
 
                             tooltip = d3.select("body").append("div")
                                 .attr("class", "tooltip")
+                                .style("opacity", 0);
+
+                            clusterControlBox = d3.select("body").append("div")
+                                .attr("class", "clusterControlBox")
                                 .style("opacity", 0);
 
                         };
@@ -486,9 +493,9 @@
                         // nominal      calculatedP     calculatedP calculatedPoints
                         var getExtent = function(dim) {
 
-                            if(!dim) {
+                            if (!dim) {
 
-                                return [0,0];
+                                return [0, 0];
                             }
 
                             if (scope.config.isGather === 'gather') {
@@ -514,15 +521,17 @@
 
                         };
 
-                        var getExtentFromOriginalExtent = function (dim) {
+                        var getExtentFromOriginalExtent = function(dim) {
 
-                            var originalValues = scope.data.map(function(d) {return +d[dim];});
+                            var originalValues = scope.data.map(function(d) {
+                                return +d[dim];
+                            });
 
                             return d3.extent(originalValues);
                         };
 
                         var prepareScale = function() {
-                            
+
                             var xRange = getExtent(scope.config.xDim);
                             var yRange = getExtent(scope.config.yDim);
 
@@ -557,7 +566,7 @@
 
                         var dimOriginalValueConsideringBinning = function(dim) {
 
-                            if(!dim) {
+                            if (!dim) {
 
                                 return function(d) {
                                     return '';
@@ -607,7 +616,7 @@
 
                             if (!dim) {
 
-                               return ;
+                                return;
                             }
 
                             var keyValue = scope.config.dimSetting[dim].keyValue;
@@ -962,13 +971,13 @@
 
                             if (isMinimized(scope.config.xDim, xKey)) {
 
-                                makeZeroOffset(cluster, xOffset);
+                                makeZeroOffset(cluster, 'XOffset');
 
                             }
 
                             if (isMinimized(scope.config.yDim, yKey)) {
 
-                                makeZeroOffset(cluster, yOffset);
+                                makeZeroOffset(cluster, 'YOffset');
                             }
 
 
@@ -989,7 +998,7 @@
 
                             cluster.forEach(function(d) {
 
-                                d.offset = 0;
+                                d[offset] = 0;
 
                             });
                         };
@@ -1198,16 +1207,7 @@
 
                         };
 
-                        var getNominalBox = function() {
 
-
-
-                            return {
-                                widthOfBox: width / (getNumKeys(scope.config.xDim)),
-                                heightOfBox: height / (getNumKeys(scope.config.yDim))
-                            };
-
-                        };
 
                         var drawNodesInSVG = function() {
 
@@ -1519,13 +1519,47 @@
 
 
 
-                            xAxisNodes.selectAll(".tick")
-                                .append("path")
+                            var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
+                                .append("g")
+                                .attr("class", "x bracketGroup");
+
+                            var box = getClusterBox();
+
+                            xAxisBracketGroup.append("rect")
+                                .style("opacity", 0)
+                                .style("fill", "black")
+                                .attr("x", -box.widthOfBox / 2)
+                                .attr("y", 0)
+                                .attr("width", box.widthOfBox)
+                                .attr("height", 12)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).style("fill", 'blue')
+                                        .style("opacity", 0.7);
+                                })
+                                .on("mouseout", function(d) {
+                                    tooltip.transition()
+                                        .duration(500)
+                                        .style("opacity", 0);
+
+                                    d3.select(this).style("fill", 'black')
+                                        .transition()
+                                        .duration(500)
+                                        .style("opacity", 0);
+                                })
+                                .on("click", function(d, i) {
+                                    console.log(d);
+                                    minimizeCluster(scope.config.xDim,i);
+                                });
+
+                            xAxisBracketGroup.append("path")
                                 .attr("class", "bracket")
                                 .attr("d", function(d) {
                                     console.log(d);
                                     return makeCurlyBrace(-halfOfClusterWidth, 2, halfOfClusterWidth, 2, 10, 0.6);
                                 });
+
 
                             yAxisNodes.selectAll(".tick")
                                 .append("path")
@@ -1535,6 +1569,20 @@
                                 });
 
                         };
+
+                        var minimizeCluster = function (dim, i) {
+
+
+                            var key = d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
+
+                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+
+                            keyObject.isMinimized = true;
+
+                            drawPlot();
+
+                        };
+
 
                         var drawAxesLabel = function() {
 
