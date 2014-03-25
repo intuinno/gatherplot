@@ -479,14 +479,52 @@
 
                         };
 
-                        var prepareScale = function() {
-                            //debugger;
-                            //var nominalBox = getNominalBox();
-                            var xCalculatedPositions = getCalculatedPositions(scope.config.xDim);
-                            var yCalculatedPositions = getCalculatedPositions(scope.config.yDim);
+                        //Returns Extents of dimension 
+                        //              Scatter         Jitter      Gather
+                        // ordinal      orig            orig        calculatedPoints
+                        // semiordinal  calculatedP     calculatedP calculatedPoints
+                        // nominal      calculatedP     calculatedP calculatedPoints
+                        var getExtent = function(dim) {
 
-                            var xRange = d3.extent(xCalculatedPositions);
-                            var yRange = d3.extent(yCalculatedPositions);
+                            if(!dim) {
+
+                                return [0,0];
+                            }
+
+                            if (scope.config.isGather === 'gather') {
+
+                                return getExtentFromCalculatedPoints(dim);
+
+                            } else if (scope.config.dimSetting[dim].dimType === 'ordinal') {
+
+                                return getExtentFromOriginalExtent(dim);
+
+                            } else {
+
+                                return getExtentFromCalculatedPoints(dim);
+                            }
+
+                        };
+
+                        var getExtentFromCalculatedPoints = function(dim) {
+
+                            var calculatedPoints = getCalculatedPositions(dim);
+                            return d3.extent(calculatedPoints);
+
+
+                        };
+
+                        var getExtentFromOriginalExtent = function (dim) {
+
+                            var originalValues = scope.data.map(function(d) {return +d[dim];});
+
+                            return d3.extent(originalValues);
+                        };
+
+                        var prepareScale = function() {
+                            
+                            var xRange = getExtent(scope.config.xDim);
+                            var yRange = getExtent(scope.config.yDim);
 
                             xScale = d3.scale.linear().range([0, width]);
                             xScale.domain([xRange[0] - marginForBorderOfAxis, xRange[1] + marginForBorderOfAxis]);
@@ -518,6 +556,13 @@
 
 
                         var dimOriginalValueConsideringBinning = function(dim) {
+
+                            if(!dim) {
+
+                                return function(d) {
+                                    return '';
+                                };
+                            }
 
                             if (scope.config.dimSetting[dim].isBinned) {
 
@@ -559,6 +604,11 @@
                         };
 
                         var calculatePositionOfCluster = function(dim) {
+
+                            if (!dim) {
+
+                               return ;
+                            }
 
                             var keyValue = scope.config.dimSetting[dim].keyValue;
                             var increment;
@@ -927,6 +977,11 @@
 
                         var isMinimized = function(dim, key) {
 
+                            if (!dim) {
+
+                                return false;
+                            }
+
                             return (scope.config.dimSetting[dim].keyValue[key].isMinimized);
                         };
 
@@ -1130,8 +1185,8 @@
 
                         var getSDforJitter = function() {
 
-                            var nominalBox = getNominalBox();
-                            var probFactor = 0.1;
+                            var nominalBox = getClusterBox();
+                            var probFactor = 0.15;
 
                             var xSD = nominalBox.widthOfBox * probFactor;
                             var ySD = nominalBox.heightOfBox * probFactor;
@@ -1242,11 +1297,17 @@
                                 return function(d) {
                                     return '';
                                 };
-                            } else if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+                            } else if ((scope.config.dimSetting[dimName].dimType === 'ordinal')) {
 
-                                return function(d) {
+                                return function(d, i) {
 
                                     return +d;
+                                };
+                            } else if ((scope.config.dimSetting[dimName].dimType === 'semiOrdinal')) {
+
+                                return function(d, i) {
+
+                                    return d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i];
                                 };
                             } else {
 
@@ -1273,7 +1334,7 @@
 
                                 var binDistanceFormatter = d3.format("3,.0f");
 
-                                return function(d,i) {
+                                return function(d, i) {
 
                                     var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i];
 
