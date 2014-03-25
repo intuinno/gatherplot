@@ -823,7 +823,7 @@
 
                             return function(a, b) {
                                 var myDim = dim;
-                                return dimSetting.keyValue[a[myDim]] - dimSetting.keyValue[b[myDim]];
+                                return dimSetting.keyValue[a[myDim]].sortedID - dimSetting.keyValue[b[myDim]].sortedID;
                             };
 
                         };
