@@ -1659,6 +1659,8 @@
                                 .on("mouseover", function(d) {
                                     d3.select(this).selectAll("rect")
                                         .style("opacity", 0.7);
+                                         d3.select(this).selectAll("text")
+                                        .style("opacity", 0.7);
                                 })
                                 .on("mouseout", function(d) {
 
@@ -1667,21 +1669,50 @@
                                         .transition()
                                         .duration(1500)
                                         .style("opacity", 0);
+
+                                    d3.select(this).selectAll("text")
+                                        .transition()
+                                        .duration(1500)
+                                        .style("opacity", 0);
                                 });
 
                             var box = getClusterBox();
+
+                             xAxisBracketGroup.append("text")
+                                .style("opacity", 0)
+                                .style("fill", "black")
+                                .attr("x", 0)
+                                .attr("y", -30)
+                                .attr("class", "x controlButtonBracket")
+                                .attr("width", widthBracketGroup)
+                                .attr("height", 10)
+                                .attr("dy", 10)
+                                .style("text-anchor", "middle")
+                                .text("Minimize");
+
+                                 xAxisBracketGroup.append("text")
+                                .style("opacity", 0)
+                                .style("fill", "black")
+                                .attr("x", 0)
+                                .attr("y", -14)
+                                .attr("class", "x controlButtonBracket")
+                                .attr("width", widthBracketGroup)
+                                .attr("height", 10)
+                                .attr("dy", 10)
+                                .style("text-anchor", "middle")
+                                .text("Maximize");
 
 
                             //     });
 
                             xAxisBracketGroup.append("rect")
                                 .style("opacity", 0)
-                                .style("fill", "black")
+                                .style("fill", "gray")
                                 .attr("x", xBracketGroup)
-                                .attr("y", 2)
+                                .attr("y", -32)
                                 .attr("class", "x controlButtonBracket")
                                 .attr("width", widthBracketGroup)
-                                .attr("height", 10)
+                                .attr("height", 14)
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
@@ -1700,12 +1731,12 @@
 
                             xAxisBracketGroup.append("rect")
                                 .style("opacity", 0)
-                                .style("fill", "black")
+                                .style("fill", "gray")
                                 .attr("x", xBracketGroup)
-                                .attr("y", 14)
+                                .attr("y", -16)
                                 .attr("class", "x controlButtonBracket")
                                 .attr("width", widthBracketGroup)
-                                .attr("height", 10)
+                                .attr("height", 14)
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
