@@ -1622,17 +1622,40 @@
 
                             var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
                                 .append("g")
-                                .attr("class", "x bracketGroup");
+                                .attr("class", "x bracketGroup")
+                                .attr("x", xBracketGroup)
+                                .attr("y", 0)
+                                .attr("class", "x controlButtonBracketGroup")
+                                .attr("width", widthBracketGroup)
+                                .attr("height", 30)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).selectAll("rect")
+                                        .style("opacity", 0.7);
+                                })
+                                .on("mouseout", function(d) {
 
+
+                                    d3.select(this).selectAll("rect")
+                                        .transition()
+                                        .duration(1500)
+                                        .style("opacity", 0);
+                                });
+                                
                             var box = getClusterBox();
+
+                            
+                            //     });
 
                             xAxisBracketGroup.append("rect")
                                 .style("opacity", 0)
                                 .style("fill", "black")
                                 .attr("x", xBracketGroup)
-                                .attr("y", 0)
+                                .attr("y", 2)
+                                .attr("class", "x controlButtonBracket")
                                 .attr("width", widthBracketGroup)
-                                .attr("height", 20)
+                                .attr("height", 10)
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
@@ -1650,9 +1673,40 @@
                                         .style("opacity", 0);
                                 })
                                 .on("click", function(d, i) {
-                                    console.log(d);
+                                 
                                     toggleMinimizeCluster(scope.config.xDim, i);
                                 });
+
+                                xAxisBracketGroup.append("rect")
+                                .style("opacity", 0)
+                                .style("fill", "black")
+                                .attr("x", xBracketGroup)
+                                .attr("y", 14)
+                                .attr("class", "x controlButtonBracket")
+                                .attr("width", widthBracketGroup)
+                                .attr("height", 10)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).style("fill", 'green')
+                                        .style("opacity", 0.7);
+                                })
+                                .on("mouseout", function(d) {
+                                    tooltip.transition()
+                                        .duration(500)
+                                        .style("opacity", 0);
+
+                                    d3.select(this).style("fill", 'black')
+                                        .transition()
+                                        .duration(500)
+                                        .style("opacity", 0);
+                                })
+                                .on("click", function(d, i) {
+                                    console.log(d);
+                                    // toggleMinimizeCluster(scope.config.xDim, i);
+                                });
+
+
 
                             xAxisBracketGroup.append("path")
                                 .attr("class", "x bracket")
