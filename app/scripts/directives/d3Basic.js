@@ -1154,7 +1154,7 @@
 
                         var isThemeRiverCondition = function(longEdge, shortEdge, numElement) {
 
-                            if (longEdge/shortEdge > 7) {
+                            if (longEdge / shortEdge > 7) {
 
                                 return true;
                             } else {
@@ -1645,220 +1645,232 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
-
                             var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
-                                .append("g")
-                                .attr("x", xBracketGroup)
-                                .attr("y", 0)
-                                .attr("class", "x controlButtonBracketGroup")
-                                .attr("width", widthBracketGroup)
-                                .attr("height", 30)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).selectAll("rect")
-                                        .style("opacity", 0.7);
-                                    d3.select(this).selectAll("text")
-                                        .style("opacity", 0.7);
-                                })
-                                .on("mouseout", function(d) {
+                                    .append("g")
+                                    .attr("x", xBracketGroup)
+                                    .attr("y", 0)
+                                    .attr("class", "x controlButtonBracketGroup")
+                                    .attr("width", widthBracketGroup)
+                                    .attr("height", 30)
+                                    .attr("rx", 5)
+                                    .attr("ry", 5);
 
-
-                                    d3.select(this).selectAll("rect")
-                                        .transition()
-                                        .duration(1500)
-                                        .style("opacity", 0);
-
-                                    d3.select(this).selectAll("text")
-                                        .transition()
-                                        .duration(1500)
-                                        .style("opacity", 0);
-                                });
+                                var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
+                                    .append("g")
+                                    .attr("x", 0)
+                                    .attr("y", yBracketGroup)
+                                    .attr("class", "y controlButtonBracketGroup")
+                                    .attr("width", 80)
+                                    .attr("height", heightBracketGroup)
+                                    .attr("rx", 5)
+                                    .attr("ry", 5)
 
 
 
-                            xAxisBracketGroup.append("text")
-                                .style("opacity", 0)
-                                .style("fill", "black")
-                                .attr("x", 0)
-                                .attr("y", -30)
-                                .attr("class", "x controlButtonBracket")
-                                .attr("width", widthBracketGroup)
-                                .attr("height", 10)
-                                .attr("dy", 10)
-                                .style("text-anchor", "middle")
-                                .text("Minimize");
-
-                            xAxisBracketGroup.append("text")
-                                .style("opacity", 0)
-                                .style("fill", "black")
-                                .attr("x", 0)
-                                .attr("y", -14)
-                                .attr("class", "x controlButtonBracket")
-                                .attr("width", widthBracketGroup)
-                                .attr("height", 10)
-                                .attr("dy", 10)
-                                .style("text-anchor", "middle")
-                                .text("Maximize");
+                            if (scope.config.isInteractiveAxis) {
 
 
-                            //     });
-
-                            xAxisBracketGroup.append("rect")
-                                .style("opacity", 0)
-                                .style("fill", "gray")
-                                .attr("x", xBracketGroup)
-                                .attr("y", -32)
-                                .attr("class", "x controlButtonBracket")
-                                .attr("width", widthBracketGroup)
-                                .attr("height", 14)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'lightsteelblue');
-                                })
-                                .on("mouseout", function(d) {
+                                
+                                    xAxisBracketGroup
+                                    .on("mouseover", function(d) {
+                                        d3.select(this).selectAll("rect")
+                                            .style("opacity", 0.7);
+                                        d3.select(this).selectAll("text")
+                                            .style("opacity", 0.7);
+                                    })
+                                    .on("mouseout", function(d) {
 
 
-                                    d3.select(this).style("fill", 'lightgray')
+                                        d3.select(this).selectAll("rect")
+                                            .transition()
+                                            .duration(1500)
+                                            .style("opacity", 0);
 
-                                })
-                                .on("click", function(d, i) {
-
-                                    toggleMinimizeCluster(scope.config.xDim, i);
-                                });
-
-                            xAxisBracketGroup.append("rect")
-                                .style("opacity", 0)
-                                .style("fill", "gray")
-                                .attr("x", xBracketGroup)
-                                .attr("y", -16)
-                                .attr("class", "x controlButtonBracket")
-                                .attr("width", widthBracketGroup)
-                                .attr("height", 14)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'green');
-                                })
-                                .on("mouseout", function(d) {
-
-
-                                    d3.select(this).style("fill", 'lightgray')
-
-                                })
-                                .on("click", function(d, i) {
-                                    console.log(d);
-                                    // toggleMinimizeCluster(scope.config.xDim, i);
-                                    toggleMaximizeCluster(scope.config.xDim, i)
-                                });
-
-                            var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
-                                .append("g")
-                                .attr("x", 0)
-                                .attr("y", yBracketGroup)
-                                .attr("class", "y controlButtonBracketGroup")
-                                .attr("width", 80)
-                                .attr("height", heightBracketGroup)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).selectAll("rect")
-                                        .style("opacity", 0.9);
-                                    d3.select(this).selectAll("text")
-                                        .style("opacity", 0.9);
-                                })
-                                .on("mouseout", function(d) {
-
-
-                                    d3.select(this).selectAll("rect")
-                                        .transition()
-                                        .duration(2000)
-                                        .style("opacity", 0);
-
-                                    d3.select(this).selectAll("text")
-                                        .transition()
-                                        .duration(2000)
-                                        .style("opacity", 0);
-                                });
+                                        d3.select(this).selectAll("text")
+                                            .transition()
+                                            .duration(1500)
+                                            .style("opacity", 0);
+                                    });
 
 
 
-                            yAxisBracketGroup.append("text")
-                                .style("opacity", 0)
-                                .style("fill", "black")
-                                .attr("x", 20)
-                                .attr("y", 0)
-                                .attr("class", "y controlButtonBracket")
-                                .attr("width", 20)
-                                .attr("height", heightBracketGroup)
-                                .attr("dy", 10)
-                                .style("text-anchor", "left")
-                                .text("Minimize");
+                                xAxisBracketGroup.append("text")
+                                    .style("opacity", 0)
+                                    .style("fill", "black")
+                                    .attr("x", 0)
+                                    .attr("y", -30)
+                                    .attr("class", "x controlButtonBracket")
+                                    .attr("width", widthBracketGroup)
+                                    .attr("height", 10)
+                                    .attr("dy", 10)
+                                    .style("text-anchor", "middle")
+                                    .text("Minimize");
 
-                            yAxisBracketGroup.append("text")
-                                .style("opacity", 0)
-                                .style("fill", "black")
-                                .attr("x", 110)
-                                .attr("y", 0)
-                                .attr("class", "y controlButtonBracket")
-                                .attr("width", 10)
-                                .attr("height", heightBracketGroup)
-                                .attr("dy", 10)
-                                .style("text-anchor", "left")
-                                .text("Maximize");
-
-
-                            //     });
-
-                            yAxisBracketGroup.append("rect")
-                                .style("opacity", 0)
-                                .style("fill", "gray")
-                                .attr("x", 10)
-                                .attr("y", -2)
-                                .attr("class", "y controlButtonBracket")
-                                .attr("width", 80)
-                                .attr("height", 14)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'lightsteelblue');
-                                })
-                                .on("mouseout", function(d) {
+                                xAxisBracketGroup.append("text")
+                                    .style("opacity", 0)
+                                    .style("fill", "black")
+                                    .attr("x", 0)
+                                    .attr("y", -14)
+                                    .attr("class", "x controlButtonBracket")
+                                    .attr("width", widthBracketGroup)
+                                    .attr("height", 10)
+                                    .attr("dy", 10)
+                                    .style("text-anchor", "middle")
+                                    .text("Maximize");
 
 
-                                    d3.select(this).style("fill", 'lightgray')
+                                //     });
 
-                                })
-                                .on("click", function(d, i) {
-
-                                    toggleMinimizeCluster(scope.config.yDim, i);
-                                });
-
-                            yAxisBracketGroup.append("rect")
-                                .style("opacity", 0)
-                                .style("fill", "gray")
-                                .attr("x", 100)
-                                .attr("y", -2)
-                                .attr("class", "y controlButtonBracket")
-                                .attr("width", 80)
-                                .attr("height", 14)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'green');
-                                })
-                                .on("mouseout", function(d) {
+                                xAxisBracketGroup.append("rect")
+                                    .style("opacity", 0)
+                                    .style("fill", "gray")
+                                    .attr("x", xBracketGroup)
+                                    .attr("y", -32)
+                                    .attr("class", "x controlButtonBracket")
+                                    .attr("width", widthBracketGroup)
+                                    .attr("height", 14)
+                                    .attr("rx", 5)
+                                    .attr("ry", 5)
+                                    .on("mouseover", function(d) {
+                                        d3.select(this).style("fill", 'lightsteelblue');
+                                    })
+                                    .on("mouseout", function(d) {
 
 
-                                    d3.select(this).style("fill", 'lightgray')
+                                        d3.select(this).style("fill", 'lightgray')
 
-                                })
-                                .on("click", function(d, i) {
-                                    console.log(d);
-                                    // toggleMinimizeCluster(scope.config.xDim, i);
-                                    toggleMaximizeCluster(scope.config.yDim, i)
-                                });
+                                    })
+                                    .on("click", function(d, i) {
+
+                                        toggleMinimizeCluster(scope.config.xDim, i);
+                                    });
+
+                                xAxisBracketGroup.append("rect")
+                                    .style("opacity", 0)
+                                    .style("fill", "gray")
+                                    .attr("x", xBracketGroup)
+                                    .attr("y", -16)
+                                    .attr("class", "x controlButtonBracket")
+                                    .attr("width", widthBracketGroup)
+                                    .attr("height", 14)
+                                    .attr("rx", 5)
+                                    .attr("ry", 5)
+                                    .on("mouseover", function(d) {
+                                        d3.select(this).style("fill", 'green');
+                                    })
+                                    .on("mouseout", function(d) {
+
+
+                                        d3.select(this).style("fill", 'lightgray')
+
+                                    })
+                                    .on("click", function(d, i) {
+                                        console.log(d);
+                                        // toggleMinimizeCluster(scope.config.xDim, i);
+                                        toggleMaximizeCluster(scope.config.xDim, i)
+                                    });
+
+                                
+                                    yAxisBracketGroup
+                                    .on("mouseover", function(d) {
+                                        d3.select(this).selectAll("rect")
+                                            .style("opacity", 0.9);
+                                        d3.select(this).selectAll("text")
+                                            .style("opacity", 0.9);
+                                    })
+                                    .on("mouseout", function(d) {
+
+
+                                        d3.select(this).selectAll("rect")
+                                            .transition()
+                                            .duration(2000)
+                                            .style("opacity", 0);
+
+                                        d3.select(this).selectAll("text")
+                                            .transition()
+                                            .duration(2000)
+                                            .style("opacity", 0);
+                                    });
+
+
+
+                                yAxisBracketGroup.append("text")
+                                    .style("opacity", 0)
+                                    .style("fill", "black")
+                                    .attr("x", 20)
+                                    .attr("y", 0)
+                                    .attr("class", "y controlButtonBracket")
+                                    .attr("width", 20)
+                                    .attr("height", heightBracketGroup)
+                                    .attr("dy", 10)
+                                    .style("text-anchor", "left")
+                                    .text("Minimize");
+
+                                yAxisBracketGroup.append("text")
+                                    .style("opacity", 0)
+                                    .style("fill", "black")
+                                    .attr("x", 110)
+                                    .attr("y", 0)
+                                    .attr("class", "y controlButtonBracket")
+                                    .attr("width", 10)
+                                    .attr("height", heightBracketGroup)
+                                    .attr("dy", 10)
+                                    .style("text-anchor", "left")
+                                    .text("Maximize");
+
+
+                                //     });
+
+                                yAxisBracketGroup.append("rect")
+                                    .style("opacity", 0)
+                                    .style("fill", "gray")
+                                    .attr("x", 10)
+                                    .attr("y", -2)
+                                    .attr("class", "y controlButtonBracket")
+                                    .attr("width", 80)
+                                    .attr("height", 14)
+                                    .attr("rx", 5)
+                                    .attr("ry", 5)
+                                    .on("mouseover", function(d) {
+                                        d3.select(this).style("fill", 'lightsteelblue');
+                                    })
+                                    .on("mouseout", function(d) {
+
+
+                                        d3.select(this).style("fill", 'lightgray')
+
+                                    })
+                                    .on("click", function(d, i) {
+
+                                        toggleMinimizeCluster(scope.config.yDim, i);
+                                    });
+
+                                yAxisBracketGroup.append("rect")
+                                    .style("opacity", 0)
+                                    .style("fill", "gray")
+                                    .attr("x", 100)
+                                    .attr("y", -2)
+                                    .attr("class", "y controlButtonBracket")
+                                    .attr("width", 80)
+                                    .attr("height", 14)
+                                    .attr("rx", 5)
+                                    .attr("ry", 5)
+                                    .on("mouseover", function(d) {
+                                        d3.select(this).style("fill", 'green');
+                                    })
+                                    .on("mouseout", function(d) {
+
+
+                                        d3.select(this).style("fill", 'lightgray')
+
+                                    })
+                                    .on("click", function(d, i) {
+                                        console.log(d);
+                                        // toggleMinimizeCluster(scope.config.xDim, i);
+                                        toggleMaximizeCluster(scope.config.yDim, i)
+                                    });
+
+                            }
 
 
 
@@ -1963,7 +1975,7 @@
                                     " L -10 " + 0);
                             } else {
 
-                            return makeCurlyBrace(-2, length / 2, -2, -length / 2, 10, 0.6);
+                                return makeCurlyBrace(-2, length / 2, -2, -length / 2, 10, 0.6);
                             }
 
 

@@ -22,6 +22,7 @@
                 $scope.nomaConfig.binSize = 10;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
+                $scope.nomaConfig.isInteractiveAxis = true;
 
                 $scope.addAlert = function(messageType, messageContent) {
                     $scope.alerts.push({
