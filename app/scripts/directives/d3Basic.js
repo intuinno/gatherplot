@@ -1073,7 +1073,7 @@
 
                             if (isMinimized(scope.config.xDim, xKey)) {
 
-                                makeAbsoluteSize(cluster,'nodeWidth');
+                                makeAbsoluteSize(cluster, 'nodeWidth');
                             }
 
                             if (isMinimized(scope.config.yDim, yKey)) {
@@ -1118,14 +1118,14 @@
 
                             });
                         };
-                        var makeAbsoluteSize = function(cluster , nodeSize) {
+                        var makeAbsoluteSize = function(cluster, nodeSize) {
 
                             var absoulteSize = getNodesSizeForAbsolute();
 
                             cluster.forEach(function(d) {
 
                                 d[nodeSize] = absoulteSize;
-                                
+
                             });
                         };
 
@@ -1648,7 +1648,6 @@
 
                             var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
                                 .append("g")
-                                .attr("class", "x bracketGroup")
                                 .attr("x", xBracketGroup)
                                 .attr("y", 0)
                                 .attr("class", "x controlButtonBracketGroup")
@@ -1659,7 +1658,7 @@
                                 .on("mouseover", function(d) {
                                     d3.select(this).selectAll("rect")
                                         .style("opacity", 0.7);
-                                         d3.select(this).selectAll("text")
+                                    d3.select(this).selectAll("text")
                                         .style("opacity", 0.7);
                                 })
                                 .on("mouseout", function(d) {
@@ -1676,9 +1675,9 @@
                                         .style("opacity", 0);
                                 });
 
-                            var box = getClusterBox();
 
-                             xAxisBracketGroup.append("text")
+
+                            xAxisBracketGroup.append("text")
                                 .style("opacity", 0)
                                 .style("fill", "black")
                                 .attr("x", 0)
@@ -1690,7 +1689,7 @@
                                 .style("text-anchor", "middle")
                                 .text("Minimize");
 
-                                 xAxisBracketGroup.append("text")
+                            xAxisBracketGroup.append("text")
                                 .style("opacity", 0)
                                 .style("fill", "black")
                                 .attr("x", 0)
@@ -1716,12 +1715,12 @@
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
-                                    d3.select(this).style("fill", 'blue');
+                                    d3.select(this).style("fill", 'lightsteelblue');
                                 })
                                 .on("mouseout", function(d) {
 
 
-                                    d3.select(this).style("fill", 'gray')
+                                    d3.select(this).style("fill", 'lightgray')
 
                                 })
                                 .on("click", function(d, i) {
@@ -1745,7 +1744,7 @@
                                 .on("mouseout", function(d) {
 
 
-                                    d3.select(this).style("fill", 'gray')
+                                    d3.select(this).style("fill", 'lightgray')
 
                                 })
                                 .on("click", function(d, i) {
@@ -1753,6 +1752,114 @@
                                     // toggleMinimizeCluster(scope.config.xDim, i);
                                     toggleMaximizeCluster(scope.config.xDim, i)
                                 });
+
+                            var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
+                                .append("g")
+                                .attr("x", 0)
+                                .attr("y", yBracketGroup)
+                                .attr("class", "y controlButtonBracketGroup")
+                                .attr("width", 80)
+                                .attr("height", heightBracketGroup)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).selectAll("rect")
+                                        .style("opacity", 0.9);
+                                    d3.select(this).selectAll("text")
+                                        .style("opacity", 0.9);
+                                })
+                                .on("mouseout", function(d) {
+
+
+                                    d3.select(this).selectAll("rect")
+                                        .transition()
+                                        .duration(2000)
+                                        .style("opacity", 0);
+
+                                    d3.select(this).selectAll("text")
+                                        .transition()
+                                        .duration(2000)
+                                        .style("opacity", 0);
+                                });
+
+
+
+                            yAxisBracketGroup.append("text")
+                                .style("opacity", 0)
+                                .style("fill", "black")
+                                .attr("x", 20)
+                                .attr("y", 0)
+                                .attr("class", "y controlButtonBracket")
+                                .attr("width", 20)
+                                .attr("height", heightBracketGroup)
+                                .attr("dy", 10)
+                                .style("text-anchor", "left")
+                                .text("Minimize");
+
+                            yAxisBracketGroup.append("text")
+                                .style("opacity", 0)
+                                .style("fill", "black")
+                                .attr("x", 110)
+                                .attr("y", 0)
+                                .attr("class", "y controlButtonBracket")
+                                .attr("width", 10)
+                                .attr("height", heightBracketGroup)
+                                .attr("dy", 10)
+                                .style("text-anchor", "left")
+                                .text("Maximize");
+
+
+                            //     });
+
+                            yAxisBracketGroup.append("rect")
+                                .style("opacity", 0)
+                                .style("fill", "gray")
+                                .attr("x", 10)
+                                .attr("y", -2)
+                                .attr("class", "y controlButtonBracket")
+                                .attr("width", 80)
+                                .attr("height", 14)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).style("fill", 'lightsteelblue');
+                                })
+                                .on("mouseout", function(d) {
+
+
+                                    d3.select(this).style("fill", 'lightgray')
+
+                                })
+                                .on("click", function(d, i) {
+
+                                    toggleMinimizeCluster(scope.config.yDim, i);
+                                });
+
+                            yAxisBracketGroup.append("rect")
+                                .style("opacity", 0)
+                                .style("fill", "gray")
+                                .attr("x", 100)
+                                .attr("y", -2)
+                                .attr("class", "y controlButtonBracket")
+                                .attr("width", 80)
+                                .attr("height", 14)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).style("fill", 'green');
+                                })
+                                .on("mouseout", function(d) {
+
+
+                                    d3.select(this).style("fill", 'lightgray')
+
+                                })
+                                .on("click", function(d, i) {
+                                    console.log(d);
+                                    // toggleMinimizeCluster(scope.config.xDim, i);
+                                    toggleMaximizeCluster(scope.config.yDim, i)
+                                });
+
 
 
 
@@ -1905,6 +2012,55 @@
 
                         };
 
+                        var yBracket = function(d, i) {
+
+                            var dim = scope.config.yDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = -lengthOfCluster(dim, key, yScale);
+
+                            return length / 2 * (-1);
+
+                        };
+
+                        var yBracketGroup = function(d, i) {
+
+                            var dim = scope.config.yDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = -lengthOfClusterIncludingMargin(dim, key, yScale);
+
+                            return length / 2 * (-1);
+
+                        };
+
+                        var heightBracket = function(d, i) {
+
+                            var dim = scope.config.yDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = -lengthOfCluster(dim, key, yScale);
+
+                            return length;
+
+                        };
+
+                        var heightBracketGroup = function(d, i) {
+
+                            var dim = scope.config.yDim;
+
+                            var key = getKeyFromIndex(dim, i);
+
+                            var length = -lengthOfClusterIncludingMargin(dim, key, yScale);
+
+                            return length;
+
+                        };
+
+
                         var lengthOfCluster = function(dim, key, scale) {
 
                             var keyObject = scope.config.dimSetting[dim].keyValue[key];
@@ -1942,6 +2098,17 @@
 
 
                         var getKeyFromIndex = function(dim, i) {
+
+                            if (!scope.config.dimSetting[dim].keyValue) {
+
+                                debugger;
+                                console.log(dim);
+                            }
+                            if (!d3.map(scope.config.dimSetting[dim].keyValue).values()[i]) {
+
+                                debugger;
+                                console.log(dim);
+                            }
 
                             return d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
 
