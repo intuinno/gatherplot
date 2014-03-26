@@ -1,6 +1,6 @@
 .clusterGuideBox {
 
-  pointer-events: none; 
+  pointer-events: fill; 
   opacity: 0.04;
   fill: gray;
 
@@ -21,7 +21,7 @@ div.clusterControlBox {
 }
 
 
-.clusterControlBracket {   
+.controlButtonBracket {   
       
   text-align: center;           
   width: 60px;                  

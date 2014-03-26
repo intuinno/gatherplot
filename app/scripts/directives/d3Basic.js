@@ -1683,7 +1683,7 @@
                                 .attr("x", 0)
                                 .attr("y", yBracketGroup)
                                 .attr("class", "y controlButtonBracketGroup")
-                                .attr("width", 80)
+                                .attr("width", 40)
                                 .attr("height", heightBracketGroup)
                                 .attr("rx", 5)
                                 .attr("ry", 5)
@@ -1712,15 +1712,6 @@
                                 .attr("class", "clusterGuideBox")
                                 .attr("width", widthBracket)
                                 .attr("height", height);
-                                // .on("mouseover", function(d) {
-                                //     d3.select(this).style("fill", 'lightsteelorange');
-                                // })
-                                // .on("mouseout", function(d) {
-
-
-                                //     d3.select(this).style("fill", 'lightgray')
-
-                                // })
 
 
                             yAxisBracketGroup.append("rect")
@@ -1730,6 +1721,7 @@
                                 .attr("width", width)
                                 .attr("height", heightBracket);
 
+                                
                             xAxisBracketGroup.append("text")
                                 .style("opacity", 0)
                                 .style("fill", "black")
