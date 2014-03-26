@@ -5784,6 +5784,15 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
+.clusterGuideBox {
+
+  pointer-events: none; 
+  opacity: 0.04;
+  fill: gray;
+
+}
+
+
 div.clusterControlBox {   
          
   text-align: center;           
