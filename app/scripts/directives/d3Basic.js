@@ -1958,9 +1958,16 @@
 
                             var length = lengthOfCluster(dim, key, yScale);
 
-
+                            if (length === 0) {
+                                return ("M 0 0 " +
+                                    " L -10 " + 0);
+                            } else {
 
                             return makeCurlyBrace(-2, length / 2, -2, -length / 2, 10, 0.6);
+                            }
+
+
+
                         };
 
 
