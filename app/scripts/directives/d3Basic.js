@@ -526,7 +526,7 @@
 
                             } else {
 
-                                return getExtentFromCalculatedPoints(dim);
+                                return getExtentFromSortedID(dim);
                             }
 
                         };
