@@ -441,20 +441,16 @@
 
                         var drawPlot = function() {
 
-                            prepareScale();
-
-                            calculateParametersOfNodes();
-
+                            drawNodes();
                             drawAxes();
                             drawLegends();
-
-                            drawNodes();
-                            
 
                         };
 
                         var drawNodes = function() {
-                            
+                            prepareScale();
+
+                            calculateParametersOfNodes();
 
                             drawNodesInSVG();
 
@@ -464,8 +460,6 @@
 
                             calculatePositionOfNodes();
                             calculateOffsetOfNodes();
-                            getColorOfNodes();
-                            getShapeOfNodes();
 
                         };
 
@@ -1343,7 +1337,8 @@
 
                         var drawNodesInSVG = function() {
 
-                            
+                            getColorOfNodes();
+                            getShapeOfNodes();
                             writeNodesInSVG();
 
 
@@ -1661,67 +1656,27 @@
                                 .attr("rx", 5)
                                 .attr("ry", 5)
                                 .on("mouseover", function(d) {
-                                    d3.select(this).selectAll(".controlButtonBracket")
-                                        .transition()
-                                        .duration(200)
+                                    d3.select(this).selectAll("rect")
                                         .style("opacity", 0.7);
-
+                                    d3.select(this).selectAll("text")
+                                        .style("opacity", 0.7);
                                 })
                                 .on("mouseout", function(d) {
 
 
-                                    d3.select(this).selectAll(".controlButtonBracket")
+                                    d3.select(this).selectAll("rect")
                                         .transition()
                                         .duration(1500)
                                         .style("opacity", 0);
 
-                                  
-                                });
-
-                              var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
-                                .append("g")
-                                .attr("x", 0)
-                                .attr("y", yBracketGroup)
-                                .attr("class", "y controlButtonBracketGroup")
-                                .attr("width", 40)
-                                .attr("height", heightBracketGroup)
-                                .attr("rx", 5)
-                                .attr("ry", 5)
-                                .on("mouseover", function(d) {
-                                    d3.select(this).selectAll(".controlButtonBracket")
-                                        .transition()
-                                        .duration(200)
-                                        .style("opacity", 0.7);
-
-                                })
-                                .on("mouseout", function(d) {
-
-
-                                    d3.select(this).selectAll(".controlButtonBracket")
+                                    d3.select(this).selectAll("text")
                                         .transition()
                                         .duration(1500)
                                         .style("opacity", 0);
-
-                                  
                                 });
 
 
-                            xAxisBracketGroup.append("rect")
-                                .attr("x", xBracket)
-                                .attr("y", -height)
-                                .attr("class", "clusterGuideBox")
-                                .attr("width", widthBracket)
-                                .attr("height", height);
 
-
-                            yAxisBracketGroup.append("rect")
-                                .attr("x", 0)
-                                .attr("y", yBracket)
-                                .attr("class", "clusterGuideBox")
-                                .attr("width", width)
-                                .attr("height", heightBracket);
-
-                                
                             xAxisBracketGroup.append("text")
                                 .style("opacity", 0)
                                 .style("fill", "black")
@@ -1798,7 +1753,35 @@
                                     toggleMaximizeCluster(scope.config.xDim, i)
                                 });
 
-                          
+                            var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
+                                .append("g")
+                                .attr("x", 0)
+                                .attr("y", yBracketGroup)
+                                .attr("class", "y controlButtonBracketGroup")
+                                .attr("width", 80)
+                                .attr("height", heightBracketGroup)
+                                .attr("rx", 5)
+                                .attr("ry", 5)
+                                .on("mouseover", function(d) {
+                                    d3.select(this).selectAll("rect")
+                                        .style("opacity", 0.9);
+                                    d3.select(this).selectAll("text")
+                                        .style("opacity", 0.9);
+                                })
+                                .on("mouseout", function(d) {
+
+
+                                    d3.select(this).selectAll("rect")
+                                        .transition()
+                                        .duration(2000)
+                                        .style("opacity", 0);
+
+                                    d3.select(this).selectAll("text")
+                                        .transition()
+                                        .duration(2000)
+                                        .style("opacity", 0);
+                                });
+
 
 
                             yAxisBracketGroup.append("text")

@@ -5784,15 +5784,6 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
-.clusterGuideBox {
-
-  pointer-events: fill; 
-  opacity: 0.04;
-  fill: gray;
-
-}
-
-
 div.clusterControlBox {   
          
   text-align: center;           
@@ -5807,7 +5798,7 @@ div.clusterControlBox {
 }
 
 
-.controlButtonBracket {   
+.clusterControlBracket {   
       
   text-align: center;           
   width: 60px;                  
