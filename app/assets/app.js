@@ -58215,12 +58215,18 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 };
 
 
+
+
                 $scope.changeActiveDataTitanic = function() {
 
                     resetTutMsg();
 
 
                     $scope.activeData = 'Survivor of Titanic';
+
+                    var lowMeanHighSDRandomNumberGenerator = d3.random.normal(30, 5);
+                    var highMeanLowSDRandomNumberGenerator = d3.random.normal(50, 10);
+
 
 
                     d3.tsv('data/Titanic.txt', function(error, tdata) {
@@ -58229,7 +58235,131 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         tdata.map(function(d) {
                             d.id = count;
                             count += 1;
+
+                            if (d.Survived === 'Yes') {
+
+                                var a = Math.random();
+
+                                if (d.Class === 'First') {
+
+
+
+                                    if (a < 0.202325) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.26496) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.61064) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                } else if (d.Class === 'Second') {
+
+                                    if (a < 0.202325) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.26496) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.61064) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                } else if (d.Class === 'Third') {
+
+                                    if (a < 0.431254) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.51303) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.74983) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                } else if (d.Class === 'Crew') {
+
+                                    if (a < 0.278968) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.50005) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.75641) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                }
+
+
+                            } else {
+                                if (Math.random() > 0.5) {
+                                    d.Port = 'Southhampton';
+                                    d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                } else if (Math.random() > 0.4) {
+                                    d.Port = 'Queenstown';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                } else if (Math.random() > 0.5) {
+
+                                    d.Port = 'Cherbourg';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                } else {
+
+                                    d.Port = 'Belfast';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                }
+
+                            }
+
                         });
+
+
 
                         $scope.nomaData = tdata;
                         $scope.nomaConfig.dims = d3.keys(tdata[0]);

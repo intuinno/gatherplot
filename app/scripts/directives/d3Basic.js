@@ -1135,7 +1135,7 @@
                         var assignNodesOffsetLongShortEdge = function(longEdge, shortEdge, cluster) {
 
                             var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length);
-                            if (isThemeRiverCondition(numElement)) {
+                            if (isThemeRiverCondition(longEdge, shortEdge, numElement)) {
 
                                 numElement = getNumOfElementForThemeRiver(longEdge, shortEdge, cluster.length);
                             }
@@ -1152,9 +1152,9 @@
 
                         };
 
-                        var isThemeRiverCondition = function(numElement) {
+                        var isThemeRiverCondition = function(longEdge, shortEdge, numElement) {
 
-                            if (numElement.numElementInLongEdge / numElement.numElementInShortEdge > 100) {
+                            if (longEdge/shortEdge > 7) {
 
                                 return true;
                             } else {
@@ -1165,7 +1165,7 @@
 
                         var getNumOfElementForThemeRiver = function(longEdge, shortEdge, numElement) {
 
-                            var numElementInShortEdge = (shortEdge / getNodesSizeForAbsolute());
+                            var numElementInShortEdge = Math.ceil(shortEdge / getNodesSizeForAbsolute());
                             var numElementInLongEdge = Math.ceil(numElement / numElementInShortEdge);
 
                             return {
