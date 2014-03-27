@@ -92,7 +92,7 @@
 
 
 
-                    d3.csv('data/TitanicPort3.csv', function(error, tdata) {
+                    d3.csv('data/TitanicPort2.csv', function(error, tdata) {
                         var count = 0;
 
                        
@@ -105,9 +105,8 @@
                         $scope.nomaConfig.xDim = 'Survived';
                         $scope.nomaConfig.yDim = 'Class';
                         $scope.nomaConfig.colorDim = 'Port';
-                        $scope.nomaConfig.isGather = 'jitter';
+                        $scope.nomaConfig.isGather = 'gather';
                         $scope.nomaConfig.isInteractiveAxis = false;
-                        $scope.nomaConfig.relativeMode = 'relative';
 
                         $scope.$apply();
 
