@@ -1464,7 +1464,7 @@
 
                                     var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i];
 
-                                    return binDistanceFormatter(+binValue) + '±' + binDistanceFormatter(+scope.config.dimSetting[dimName].halfOfBinDistance);
+                                    return binDistanceFormatter(+binValue) + '\u00B1' + binDistanceFormatter(+scope.config.dimSetting[dimName].halfOfBinDistance);
                                 };
                             } else if (scope.config.dimSetting[dimName].dimType === 'semiOrdinal') {
 
@@ -1538,6 +1538,23 @@
                                 drawAxesLinesAndTicksForScatter();
                             }
 
+                            setStylesForAxesAndTicks();
+
+
+                        };
+
+                        var setStylesForAxesAndTicks = function() {
+
+                            svg.selectAll(".domain")
+                                .style("stroke","black")
+                                .style("stroke-width", 1)
+                                .style("fill","none");
+
+                            svg.selectAll(".bracket")
+                                .style("stroke","black")
+                                .style("stroke-width", 1)
+                                .style("fill","none");
+
 
                         };
 
@@ -1572,6 +1589,10 @@
 
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 12);
+
+                            svg.selectAll(".tick line")
+                                .style("stroke-width",1)
+                                .style("stroke","black");
 
                         };
 
@@ -1645,6 +1666,10 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
+                             svg.selectAll(".tick line")
+                                .style("stroke-width",1)
+                                .style("stroke","white");
+
                             var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
                                     .append("g")
                                     .attr("x", xBracketGroup)
@@ -1663,7 +1688,7 @@
                                     .attr("width", 80)
                                     .attr("height", heightBracketGroup)
                                     .attr("rx", 5)
-                                    .attr("ry", 5)
+                                    .attr("ry", 5);
 
 
 
