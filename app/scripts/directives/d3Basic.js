@@ -334,7 +334,7 @@
 
                         var isSemiOrdinalDim = function(dim) {
 
-                            if (getRawNumberOfKeys(dim) < defaultBinSize) {
+                            if (getRawNumberOfKeys(dim) < 60) {
                                 return true;
                             } else {
                                 return false;
@@ -1154,7 +1154,7 @@
 
                         var isThemeRiverCondition = function(longEdge, shortEdge, numElement) {
 
-                            if (longEdge / shortEdge > 7) {
+                            if (longEdge / shortEdge > 3) {
 
                                 return true;
                             } else {
@@ -1723,7 +1723,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "black")
                                     .attr("x", 0)
-                                    .attr("y", -30)
+                                    .attr("y", 60-30)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 10)
@@ -1735,7 +1735,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "black")
                                     .attr("x", 0)
-                                    .attr("y", -14)
+                                    .attr("y", 60-14)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 10)
@@ -1750,7 +1750,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "gray")
                                     .attr("x", xBracketGroup)
-                                    .attr("y", -32)
+                                    .attr("y", 60-32)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 14)
@@ -1774,7 +1774,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "gray")
                                     .attr("x", xBracketGroup)
-                                    .attr("y", -16)
+                                    .attr("y", 60-16)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 14)

@@ -116,7 +116,13 @@
                                     <div ng-class="{tryMe: isBinSizeFocused}">
 
                                         Data Binning Size: {{nomaConfig.binSize}}
-                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px">
+                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px" class="chart-instruction"> 
+
+                                        <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="chart-instruction form-control">
+                                    <span class="error" ng-show="DemoCtrl.binSize.$error.number">
+
+                                        Not valid number!</span>
+
 
 
                                     </div>
@@ -257,7 +263,7 @@
                                     <tr>
 
                                         <td>
-                                            Jittering can be help determine a size of each group.
+                                            Jittering can help determine a size of each group.
                                         </td>
                                         <td>
                                             <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsJitterOneNominal()">Visualize
@@ -267,7 +273,7 @@
                                     <tr>
                                         <td>
 
-                                            However when there are multiple subgroups, it is hard to judge the distribution.
+                                            However, when there are multiple subgroups, it is hard to judge the distribution.
                                         </td>
                                         <td>
                                             <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsJitterOneNominalWithColor()">Visualize
@@ -276,7 +282,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Gatherplot makes overview of the distribution easier.
+                                            Gatherplots make overview of the distribution easier.
                                         </td>
                                         <td>
                                             <a href="" class="pull-right btn btn-link btn-default" ng-click="changeConfigCarsGatherOneNominalWithColor()">Visualize
@@ -317,7 +323,7 @@
                                 <table class="table table-hover table-condensed">
 
                                     <tr>
-                                        Let's explore advanced feature of Gatherplot.
+                                        Let's explore advanced features of gatherplots.
                                     </tr>
                                     <td>First begin with all the people on board.
                                     </td>
@@ -341,7 +347,7 @@
                                         <td>
 
                                             <p>
-                                                Is there Gender-wise difference?
+                                                Is there gender-wise difference?
                                             </p>
                                         </td>
                                         <td>
@@ -476,6 +482,7 @@
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
         </script>
+
         <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
         </noscript>
         <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
@@ -483,10 +490,21 @@
         <!-- <footer>
             <p>© <a href="http://www.intuinno.com" > Intuinno</a> at PivotLab in Purdue University 2013</p>
         </footer> -->
+
+        <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-35545255-2', 'gatherplot.org');
+  ga('send', 'pageview');
+
+</script>
+
     </div>
     <script src="./assets/app.js"></script>
     <script src="./scripts/directives/d3Basic.js"></script>
-    <script src="//localhost:7777/livereload.js"></script>
 
 </body>
 

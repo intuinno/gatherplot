@@ -58177,12 +58177,13 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
+                $scope.onlyNumbers = /^\d+$/;
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
                 $scope.nomaShapeRendering = 'auto';
                 $scope.nomaConfig.isGather = 'scatter';
-                $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
+                $scope.nomaConfig.relativeModes = [false, true];
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
                 $scope.alerts = [];
@@ -58223,7 +58224,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     resetTutMsg();
 
 
-                    $scope.activeData = 'Survivor of Titanic';
+                    $scope.activeData = 'Survivors of Titanic';
 
                     var lowMeanHighSDRandomNumberGenerator = d3.random.normal(30, 5);
                     var highMeanLowSDRandomNumberGenerator = d3.random.normal(50, 10);
@@ -58386,7 +58387,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     resetTutMsg();
 
 
-                    if ($scope.activeData !== 'Survivor of Titanic') {
+                    if ($scope.activeData !== 'Survivors of Titanic') {
 
                         $scope.changeActiveDataTitanic();
                     }
@@ -58411,7 +58412,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     resetTutMsg();
 
 
-                    if ($scope.activeData !== 'Survivor of Titanic') {
+                    if ($scope.activeData !== 'Survivors of Titanic') {
 
                         $scope.changeActiveDataTitanic();
                     }
@@ -58435,7 +58436,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     resetTutMsg();
 
 
-                    if ($scope.activeData !== 'Survivor of Titanic') {
+                    if ($scope.activeData !== 'Survivors of Titanic') {
 
                         $scope.changeActiveDataTitanic();
                     }
@@ -58461,7 +58462,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     resetTutMsg();
 
 
-                    if ($scope.activeData !== 'Survivor of Titanic') {
+                    if ($scope.activeData !== 'Survivors of Titanic') {
 
                         $scope.changeActiveDataTitanic();
                     }
@@ -58484,7 +58485,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     resetTutMsg();
 
 
-                    if ($scope.activeData !== 'Survivor of Titanic') {
+                    if ($scope.activeData !== 'Survivors of Titanic') {
 
                         $scope.changeActiveDataTitanic();
                     }
@@ -58496,10 +58497,13 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     $scope.nomaConfig.colorDim = 'Survived';
 
                     $scope.nomaConfig.isGather = 'gather';
-                    $scope.nomaConfig.relativeMode = 'relative';
+                    $scope.nomaConfig.relativeMode = true;
 
-                    $scope.addAlert('info', 'The size of nodes changes to make the entire group size same in order to make comparison between groups easier.  Now we can see that "male Crew" has better survival rate than "male 2nd" or "male 3rd.');
+                    $scope.addAlert('info', 'The size of nodes changes to make the entire group size same in order to make comparison between groups easier.  Now we can see that "male Crew" has better survival rate than "male 2nd" or "male 3rd.  Try abolute and relative mode yourself and please leave a feedback about your experience.');
                     $scope.focusElement("isRelativeSelectFocused");
+
+
+
 
                 };
 
@@ -58541,18 +58545,18 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             temp.cancer = 'Cancer';
 
                             if (Math.random() > 0.8) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
 
                         } else {
-                            temp.cancer = 'No Cancer';
+                            temp.cancer = 'No cancer';
 
                             if (Math.random() > 0.096) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
                         }
 
@@ -58567,9 +58571,11 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     var index = $scope.nomaConfig.dims.indexOf('id');
                     $scope.nomaConfig.dims.splice(index, 1);
 
-                    $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
-                    $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
-                    $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+                    $scope.nomaConfig.xDim = null;
+                    $scope.nomaConfig.yDim = null;
+                    $scope.nomaConfig.colorDim = null;
+
+                    $scope.nomaConfig.relativeMode = 'absolute';
 
                     // $scope.$apply();
 
@@ -58594,7 +58600,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     $scope.nomaConfig.yDim = null;
                     $scope.nomaConfig.colorDim = 'mammo';
 
-                    $scope.nomaConfig.relativeMode = 'relative';
+                    $scope.nomaConfig.relativeMode = 'absolute';
                     $scope.nomaConfig.isGather = 'gather';
 
                 };
@@ -58613,7 +58619,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     $scope.nomaConfig.yDim = null;
                     $scope.nomaConfig.colorDim = 'cancer';
 
-                    $scope.nomaConfig.relativeMode = 'relative';
+                    $scope.nomaConfig.relativeMode = 'absolute';
                     $scope.nomaConfig.isGather = 'gather';
 
                 };
@@ -58641,17 +58647,17 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                         if (Math.random() > 0.7) {
                             temp.nominal = 'A';
-                            temp.continous1 = highMeanLowSDRandomNumberGenerator();
+                            temp.continuous1 = highMeanLowSDRandomNumberGenerator();
 
                         } else if (Math.random() > 0.5) {
                             temp.nominal = 'B';
-                            temp.continous1 = lowMeanHighSDRandomNumberGenerator();
+                            temp.continuous1 = lowMeanHighSDRandomNumberGenerator();
 
 
                         } else {
 
                             temp.nominal = 'C';
-                            temp.continous1 = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                            temp.continuous1 = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
                         }
 
@@ -58668,7 +58674,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     var index = $scope.nomaConfig.dims.indexOf('id');
                     $scope.nomaConfig.dims.splice(index, 1);
 
-                    $scope.nomaConfig.xDim = 'continous1';
+                    $scope.nomaConfig.xDim = 'continuous1';
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
@@ -58684,12 +58690,12 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
-                        $scope.changeActiveDataCars();
+                        $scope.changeActiveDataContinuous();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = 'absolute';
 
-                    $scope.nomaConfig.xDim = 'continous1';
+                    $scope.nomaConfig.xDim = 'continuous1';
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
@@ -58705,18 +58711,18 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
-                        $scope.changeActiveDataCars();
+                        $scope.changeActiveDataContinuous();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
-                    $scope.nomaConfig.xDim = 'continous1';
+                    $scope.nomaConfig.xDim = 'continuous1';
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
                     $scope.nomaConfig.isGather = 'gather';
 
-                    $scope.addAlert('info', 'The trend over the region where overplotting was severe is now clear. However the other regions where there were only small number of nodes were is barely visible.');
+                    $scope.addAlert('info', 'The trend over the region where overplotting was severe is now clear. However the other regions where there were only small number of nodes were is barely visible. ');
 
                 };
 
@@ -58758,12 +58764,12 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
-                        $scope.changeActiveDataCars();
+                        $scope.changeActiveDataContinuous;
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
-                    $scope.nomaConfig.xDim = 'continous1';
+                    $scope.nomaConfig.xDim = 'continuous1';
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
@@ -58795,20 +58801,21 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
-                        $scope.changeActiveDataCars();
+                        $scope.changeActiveDataContinuous();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
-                    $scope.nomaConfig.xDim = 'continous1';
+                    $scope.nomaConfig.xDim = 'continuous1';
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
-                    $scope.nomaConfig.relativeMode = 'relative';
+                    $scope.nomaConfig.relativeMode = true;
                     $scope.nomaConfig.isGather = 'gather';
 
 
-                    $scope.addAlert('info', 'Here you can see that the distributions of sparse regions are more visible. It makes spotting outliers much easier. Compare absolute and relative mode to feel this change.');
+                    $scope.addAlert('info', 'Here you can see that the distributions of sparse regions are more visible. It makes spotting outliers much easier. Compare absolute and relative mode to feel this change. Can you tell what is the underlying distribution of these random variables?');
                     $scope.focusElement("isRelativeSelectFocused");
+               
                 };
 
 
@@ -58872,7 +58879,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
                     $scope.nomaConfig.xDim = 'Horsepower';
                     $scope.nomaConfig.yDim = 'MPG';
@@ -58892,7 +58899,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
                     $scope.nomaConfig.xDim = 'Cylinders';
                     $scope.nomaConfig.yDim = 'MPG';
@@ -58911,7 +58918,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = 'absolute';
 
                     $scope.nomaConfig.xDim = 'Cylinders';
                     $scope.nomaConfig.yDim = 'MPG';
@@ -58930,7 +58937,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = 'absolute';
 
                     $scope.nomaConfig.xDim = 'Cylinders';
                     $scope.nomaConfig.yDim = 'MPG';
@@ -58949,7 +58956,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
                     $scope.nomaConfig.xDim = 'Cylinders';
                     $scope.nomaConfig.yDim = 'MPG';
@@ -58968,7 +58975,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
                     $scope.nomaConfig.xDim = 'Cylinders';
                     $scope.nomaConfig.yDim = 'Origin';
@@ -58990,7 +58997,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.changeActiveDataCars();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = 'absolute';
 
                     $scope.nomaConfig.xDim = 'Cylinders';
                     $scope.nomaConfig.yDim = 'Origin';
