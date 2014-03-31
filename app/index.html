@@ -63,7 +63,7 @@
                     <div>
                         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
                     </div>
-                    <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" ></div>
+                    <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
                     <div class="chart-simple-interface">
                         <h5>Show me
 
@@ -81,7 +81,7 @@
 
                             </br>
                             </br>
-                            Mark nodes with color according to 
+                            Mark nodes with color according to
 
                             <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
 
@@ -116,12 +116,12 @@
                                     <div ng-class="{tryMe: isBinSizeFocused}">
 
                                         Data Binning Size: {{nomaConfig.binSize}}
-                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px" class="chart-instruction"> 
+                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px" class="chart-instruction">
 
                                         <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="chart-instruction form-control">
-                                    <span class="error" ng-show="DemoCtrl.binSize.$error.number">
+                                        <span class="error" ng-show="DemoCtrl.binSize.$error.number">
 
-                                        Not valid number!</span>
+                                            Not valid number!</span>
 
 
 
@@ -129,96 +129,19 @@
                                     <alert class="chart-instruction" ng-show="isBinSizeFocused" close="isBinSizeFocused=false">
                                         Try different values for a bin size.</alert>
                                 </div>
-                                <div class="col-md-4">
-                                    <p>
-                                        <label label-default="label-default" class="checkbox-inline">
-                                            <input type="checkbox" ng-model="nomaBorder">Border line</label>
-                                    </p>
+
+
+
+
+                                <div class="col-md-8">
+
+                                    If you want more option, you can see it<a href="http://gatherplot.herokuapp.com" class="btn btn-link btn-default">here
+                                </a>!
 
                                 </div>
-                                <div class="col-md-4">
-                                    <p>
-                                        <label label-default="label-default" class="checkbox-inline">
-                                            <input type="checkbox" ng-model="nomaRound">Round Edge</label>
-                                        {{nomaRound}}
-                                    </p>
-                                </div>
-
-                                <div class="col-md-4">Input Width/Height:
-                                    <input type="number" name="inputWidth" ng-model="nomaConfig.SVGAspectRatio" min="0.4" max="3" class="form-control">
-                                    <span class="error" ng-show="DemoCtrl.inputWidth.$error.number">
-
-                                        Not valid number!</span>
-                                </div>
 
 
-                            </div>
-                            <div class="row ">
 
-
-                                <div class="col-md-4">
-                                    <h3>X-axis:
-
-                                    </h3>
-                                    <p>
-                                    </p>
-                                    <div class="btn-toolbar">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'left'"><i class="glyphicon glyphicon-align-left"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'center'"><i class="glyphicon glyphicon-align-center"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'right'"><i class="glyphicon glyphicon-align-right"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.XAlign" btn-radio="'justify'"><i class="glyphicon glyphicon-align-justify"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p></p>
-
-                                </div>
-                                <!--/span-->
-                                <div class="col-md-4">
-                                    <h3>Y-axis:
-
-                                    </h3>
-                                    <p>
-                                    </p>
-                                    <div class="btn-toolbar">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'top'"><i class="glyphicon glyphicon-align-left"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'middle'"><i class="glyphicon glyphicon-align-center"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'bottom'"><i class="glyphicon glyphicon-align-right"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.YAlign" btn-radio="'justify'"><i class="glyphicon glyphicon-align-justify"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p></p>
-
-                                </div>
-                                <!--/span-->
-                                <div class="col-md-4">
-                                    <h3>Color:
-
-
-                                    </h3>
-                                    <p>
-                                    </p>
-                                    <div class="btn-toolbar">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'vertical'"><i class="glyphicon glyphicon-resize-vertical"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="'horizontal'"><i class="glyphicon glyphicon-resize-horizontal"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-default" ng-model="nomaConfig.fillingDirection" btn-radio="both"><i class="glyphicon glyphicon-resize-full"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <p></p>
-                                </div>
                                 <!--/span-->
                             </div>
                             <!--/row-->
@@ -241,7 +164,7 @@
                                     <tr>
                                         <td>This example introduces gatherplots.
                                         </td>
-                                      
+
                                     </tr>
                                     <tr>
                                         <td>
@@ -443,7 +366,7 @@
                                     <tr>
                                         <td>
                                             <p>
-                                                Relative mode shows distributions of subgroups in minor groups enlarged. 
+                                                Relative mode shows distributions of subgroups in minor groups enlarged.
                                             </p>
                                         </td>
                                         <td>
@@ -451,7 +374,7 @@
                                 </a>
                                         </td>
                                     </tr>
-                                    
+
                                 </table>
 
                             </div>
@@ -492,15 +415,21 @@
         </footer> -->
 
         <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-  ga('create', 'UA-35545255-2', 'gatherplot.org');
-  ga('send', 'pageview');
-
-</script>
+        ga('create', 'UA-35545255-2', 'gatherplot.org');
+        ga('send', 'pageview');
+        </script>
 
     </div>
     <script src="./assets/app.js"></script>
