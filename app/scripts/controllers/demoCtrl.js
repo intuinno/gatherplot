@@ -188,11 +188,14 @@
                                 } else {
 
                                     d.Port = 'Belfast';
-                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                    d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator())*0.7);
 
                                 }
 
                             }
+
+                            d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator())*0.7);
+
 
                         });
 
