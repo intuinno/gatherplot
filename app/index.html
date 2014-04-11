@@ -109,43 +109,72 @@
                         <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i>
                             Under the Hood (Advanced Option)</accordion-heading>
                         <div class="well">
-                            <div class="row ">
+                            <div>
+                                <table class="table table-hover ">
+                                    <tr>
+                                        <td>
+                                            <form class="form-inline" role="form">
+                                                <div class="form-group">
+                                                    <div ng-class="{tryMe: isBinSizeFocused}">
 
+                                                        Data Binning Size: <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="input-mini ">
+                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1"  >
 
-                                <div class="col-md-4">
-                                    <div ng-class="{tryMe: isBinSizeFocused}">
+                                                        
+                                                        <span class="error" ng-show="DemoCtrl.binSize.$error.number">
 
-                                        Data Binning Size: {{nomaConfig.binSize}}
-                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1" style="width: 140px" class="chart-instruction">
-
-                                        <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="chart-instruction form-control">
-                                        <span class="error" ng-show="DemoCtrl.binSize.$error.number">
-
-                                            Not valid number!</span>
-
-
-
-                                    </div>
-                                    <alert class="chart-instruction" ng-show="isBinSizeFocused" close="isBinSizeFocused=false">
-                                        Try different values for a bin size.</alert>
-                                </div>
+                                                            Not valid number!</span>
 
 
 
+                                                    </div>
+                                                    <alert class="chart-instruction" ng-show="isBinSizeFocused" close="isBinSizeFocused=false">
+                                                        Try different values for a bin size.</alert>
 
-                                <div class="col-md-8">
-
-                                    If you want more option, you can see it<a href="http://gatherplot.herokuapp.com" class="btn btn-link btn-default">here
-                                </a>!
-
-                                </div>
+                                                </div>
 
 
+                                            </form>
+                                        </td>
 
-                                <!--/span-->
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div name="CSVurlForm">
+
+                                                Load CSV: {{customCSV}} <br> 
+
+                                                <input clas="input-xxlarge search-query" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV"> 
+                                                <a  href="" class="btn btn-sm btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
+
+                                                <alert class="error" ng-show="csvInput.$error.url">Not valid url!</alert>
+
+
+
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>
+
+                                            <div>
+
+                                                If you want to try more option, you can use a dev version <a href="http://gatherplot.herokuapp.com" class="btn btn-link btn-default">here</a>!
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+
                             </div>
-                            <!--/row-->
+
+                            <!--/span-->
                         </div>
+                        <!--/row-->
                     </accordion-group>
                 </accordion>
             </div>

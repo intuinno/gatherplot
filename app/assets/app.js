@@ -58174,6 +58174,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 };
 
+                $scope.customCSV = "";
+
 
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
@@ -58216,8 +58218,48 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     alert(item.name);
                 };
 
+                $scope.changeActiveDataCustomCSV = function(customCSV) {
+
+                    resetTutMsg();
 
 
+                    $scope.activeData = 'Cars Data';
+
+                    d3.csv(customCSV, function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+
+                        index = $scope.nomaConfig.dims.indexOf('Name');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+
+                        $scope.nomaConfig.xDim = null;
+                        $scope.nomaConfig.yDim = null;
+                        $scope.nomaConfig.colorDim = null;
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                        $scope.$apply();
+
+
+                    });
+
+
+
+
+                };
 
                 $scope.changeActiveDataTitanic = function() {
 
@@ -58353,13 +58395,13 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                                 } else {
 
                                     d.Port = 'Belfast';
-                                    d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator())*0.7);
+                                    d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
 
                                 }
 
                             }
 
-                            d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator())*0.7);
+                            d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
 
 
                         });
@@ -58818,7 +58860,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                     $scope.addAlert('info', 'Here you can see that the distributions of sparse regions are more visible. It makes spotting outliers much easier. Compare absolute and relative mode to feel this change. Can you tell what is the underlying distribution of these random variables?');
                     $scope.focusElement("isRelativeSelectFocused");
-               
+
                 };
 
 
