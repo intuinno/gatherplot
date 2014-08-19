@@ -40,8 +40,7 @@
                         var marginForBorderOfAxis = 0.5; //Margin for Border Of Axis
                         scope.config.binSize = defaultBinSize;
 
-                        var marginClusterRatio = 0.1; //Ratio of margin in the cluster length
-
+                        var marginClusterRatio = 0.1; //Ratio of margin in the cluster 
 
                         scope.config.dimSetting = {};
 
@@ -513,8 +512,6 @@
                                 return [-0.5, 0.5];
                             }
 
-
-
                             if (scope.config.dimSetting[dim].dimType === 'ordinal') {
 
                                 return getExtentFromOriginalExtent(dim);
@@ -722,11 +719,28 @@
                                 range = yScale.range();
                                 height = range[0] - range[1];
                                 getOptimalBinSize(scope.config.yDim, clusterSize.widthOfBox, height);
+                                updateYScale();
+                                calculatePositionOfCluster(scope.config.xDim);
                             } else {
                                 range = xScale.range();
                                 height = range[1] - range[0];
                                 getOptimalBinSize(scope.config.xDim, clusterSize.heightOfBox, height);
+                                updateXScale();
+                                calculatePostitionOfCluster(scope.config.yDim);
                             }
+
+
+                        };
+
+                        var updateYScale = function () {
+
+                            var yRange = getExtentFromCalculatedPoints(scope.config.yDim);
+
+                            yScale = d3.scale.linear().range([height, 0]);
+                            yScale.domain(yRange);
+                            yMap = function(d) {
+                                return yScale(yValue(d));
+                            };
 
 
                         };
@@ -1119,10 +1133,31 @@
 
                         var getClusterBox = function() {
 
+                            var Xmargin, Ymargin;
+                            var typeOfXYDim = findTypeOfXYDim();
+
+                            if (typeOfXYDim === 'NomNom') {
+
+                                Xmargin = marginClusterRatio;
+                                Ymargin = marginClusterRatio;
+                            } else if (typeOfXYDim === 'XNomYOrd') {
+
+                                Xmargin = marginClusterRatio;
+                                Ymargin = 0;
+                            } else if (typeOfXYDim === 'XOrdYNom') {
+
+                                Xmargin = 0;
+                                Ymargin = marginClusterRatio;
+                            } else if (typeOfXYDim === 'OrdOrd') {
+
+                                Xmargin = 0;
+                                Ymargin = 0;
+                            }
+
 
                             return {
-                                widthOfBox: xScale(1 - 2 * marginClusterRatio) - xScale(0),
-                                heightOfBox: yScale(0) - yScale(1 - 2 * marginClusterRatio)
+                                widthOfBox: xScale(1 - 2 * Xmargin) - xScale(0),
+                                heightOfBox: yScale(0) - yScale(1 - 2 * Ymargin)
                             };
 
                         };
