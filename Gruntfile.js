@@ -37,13 +37,13 @@ module.exports = function(grunt) {
       },
       webserver: {
         options: {
-          port: 8888,
+          port: 8887,
           keepalive: true
         }
       },
       devserver: {
         options: {
-          port: 8888
+          port: 8887
         }
       },
       testserver: {
@@ -134,7 +134,7 @@ module.exports = function(grunt) {
 
     open: {
       devserver: {
-        path: 'http://localhost:8888'
+        path: 'http://localhost:8887'
       },
       coverage: {
         path: 'http://localhost:5555'
