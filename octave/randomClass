@@ -1,0 +1,19 @@
+a = rand(4,2,4);
+
+
+   for i=1:4
+   for j=1:2
+   sum(i,j) = a(i,j,1)+a(i,j,2)+a(i,j,3) + a(i,j,4);
+   for k=1:4
+   a(i,j,k)=a(i,j,k)/sum(i,j);
+   end
+   end
+   end
+   for i=1:4
+   for j=1:2
+   a(i,j,1)=a(i,j,1);
+   a(i,j,2)=(a(i,j,1)+a(i,j,2));
+   a(i,j,3)=(a(i,j,2)+a(i,j,3));
+   a(i,j,4)=(a(i,j,3)+a(i,j,4));
+   end
+   end

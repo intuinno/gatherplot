@@ -14,8 +14,8 @@
     "noarg": true,
     "regexp": true,
     "undef": false,
-    "unused": false,
-    "trailing": true,
+    "unused": true,
+    "trailing": false,
     "smarttabs": true,
     "globals": {
         "angular": false

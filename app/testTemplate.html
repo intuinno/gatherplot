@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatherplot</title>
+    <meta name="description" content="nomarect">
+    <link rel="stylesheet" type="text/css" href="./styles/gatherplotTest.css">
+</head>
+
+<body data-ng-app="myApp">
+
+    <div ng-controller="test1Ctrl">
+        <h2 class="chart-title">{{activeData}}</h2>
+        <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
+
+
+
+        <script src="./assets/app.js"></script>
+        <script src="./scripts/directives/d3Basic.js"></script>
+
+        <script>
+        (function() {
+            'use strict';
+
+            angular.module('myApp.controllers')
+                .controller('test1Ctrl', ['$scope',
+                    function($scope) {
+
+                        $scope.nomaConfig = {};
+
+                        $scope.loadedData = 'titanic';
+                        $scope.nomaConfig.SVGAspectRatio = 1.4;
+
+                        $scope.nomaRound = true;
+                        $scope.nomaBorder = false;
+                        $scope.nomaShapeRendering = 'auto';
+                        $scope.nomaConfig.isGather = 'jitter';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+                        $scope.nomaConfig.binSize = 10;
+
+                        var nullObject = null; 
+
+
+                        $scope.changeActiveDataTitanic = function() {
+
+
+                            $scope.activeData = 'Survivor of Titanic';
+
+
+                            d3.tsv('data/Titanic.txt', function(error, tdata) {
+                                var count = 0;
+
+                                tdata.map(function(d) {
+                                    d.id = count;
+                                    count += 1;
+                                });
+
+                                $scope.nomaData = tdata;
+                                $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                                var index = $scope.nomaConfig.dims.indexOf('id');
+                                $scope.nomaConfig.dims.splice(index, 1);
+
+                                $scope.nomaConfig.xDim = 'Sex';
+                                $scope.nomaConfig.yDim = null ;
+                                $scope.nomaConfig.colorDim = 'Survived';
+
+                                $scope.$apply();
+
+                            });
+
+
+
+
+                        }; //End  $scope.changeActiveDataTitanic()
+
+                        $scope.changeActiveDataTitanic();
+
+                    }
+                ]);
+        })();
+        </script>
+</body>
+
+</html>

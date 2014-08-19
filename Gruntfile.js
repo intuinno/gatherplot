@@ -25,6 +25,9 @@ module.exports = function(grunt) {
       },
       bootstrap_font_copy: {
         command: 'cp -R bower_components/bootstrap/dist/fonts app/fonts'
+      },
+      www_server_copy: {
+        command: 'cp -R ./app /Volumes/park573/www/app/gatherplot'
       }
     },
 
@@ -87,7 +90,7 @@ module.exports = function(grunt) {
       styles: {
         dest: './app/assets/app.css',
         src: [
-          'bower_components/jquery-ui/themes/base/jquery-ui.css',
+          // 'bower_components/jquery-ui/themes/base/jquery-ui.css',
           'bower_components/bootstrap/dist/css/bootstrap.css',
           'app/styles/gatherplot.css'
           //place your Stylesheet files here
@@ -135,6 +138,9 @@ module.exports = function(grunt) {
       },
       coverage: {
         path: 'http://localhost:5555'
+      },
+      PurdueServer: {
+        path: 'http://web.ics.purdue.edu/~park573/app/gatherplot/jitter.html'
       }
     },
 
@@ -188,6 +194,10 @@ module.exports = function(grunt) {
 
   //development
   grunt.registerTask('dev', ['update', 'connect:devserver', 'open:devserver', 'watch:assets']);
+
+  //development
+  grunt.registerTask('purdue', ['shell:www_server_copy',  'open:PurdueServer']);
+
 
   //server daemon
   grunt.registerTask('serve', ['connect:webserver']);

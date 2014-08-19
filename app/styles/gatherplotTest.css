@@ -1,0 +1,105 @@
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  display: none;
+}
+
+
+.axis .tick line {
+  stroke: #FFF;
+  fill: none;
+}
+
+
+
+body {
+        padding-top: 0px;
+        padding-bottom: 5px;
+    }
+    .sidebar-nav {
+        padding: 9px 0;
+    }
+    @media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+            float: none;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    }
+
+.animate-show {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+  line-height:20px;
+  opacity:1;
+  padding:10px;
+  border:1px solid black;
+  background:white;
+}
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove {
+  display:block!important;
+}
+
+.animate-show.ng-hide {
+  line-height:0;
+  opacity:0;
+  padding:0 10px;
+}
+
+
+
+.hero-unit {
+    padding: 0px;
+    padding-top:  10px;
+    background-color: #FFFFFF;
+}
+
+.chart-title {
+    text-align: center;
+    margin-bottom: 0px;
+    margin-top: 0px;
+
+}
+
+.chart-instruction {
+  display: inline-block;
+}
+
+.chart-simple-interface {
+    width: 600px;
+    text-align: center;
+    margin-bottom: 5px;
+    margin-top: 5px;
+/*    border-style:solid;
+border-color: #0000ff;*/
+margin:0 auto;
+padding:10px;
+}
+
+svg {
+    max-width: 100%;
+    height: 100%;
+
+}
+
+.axislabel {
+  font: 20px sans-serif;
+
+}
+
+.axis path,
+.axis line {
+ fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+  shape-rendering: geometricPrecision;
+}
+
+.dot {
+  stroke-width: 1;
+}
+

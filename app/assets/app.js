@@ -54272,20 +54272,6 @@ var styleDirective = valueFn({
 })(window, document);
 
 !angular.$$csp() && angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}</style>');;/*
- AngularJS v1.2.15
- (c) 2010-2014 Google, Inc. http://angularjs.org
- License: MIT
-*/
-(function(p,h,q){'use strict';function E(a){var e=[];s(e,h.noop).chars(a);return e.join("")}function k(a){var e={};a=a.split(",");var d;for(d=0;d<a.length;d++)e[a[d]]=!0;return e}function F(a,e){function d(a,b,d,g){b=h.lowercase(b);if(t[b])for(;f.last()&&u[f.last()];)c("",f.last());v[b]&&f.last()==b&&c("",b);(g=w[b]||!!g)||f.push(b);var l={};d.replace(G,function(a,b,e,c,d){l[b]=r(e||c||d||"")});e.start&&e.start(b,l,g)}function c(a,b){var c=0,d;if(b=h.lowercase(b))for(c=f.length-1;0<=c&&f[c]!=b;c--);
-if(0<=c){for(d=f.length-1;d>=c;d--)e.end&&e.end(f[d]);f.length=c}}var b,g,f=[],l=a;for(f.last=function(){return f[f.length-1]};a;){g=!0;if(f.last()&&x[f.last()])a=a.replace(RegExp("(.*)<\\s*\\/\\s*"+f.last()+"[^>]*>","i"),function(b,a){a=a.replace(H,"$1").replace(I,"$1");e.chars&&e.chars(r(a));return""}),c("",f.last());else{if(0===a.indexOf("\x3c!--"))b=a.indexOf("--",4),0<=b&&a.lastIndexOf("--\x3e",b)===b&&(e.comment&&e.comment(a.substring(4,b)),a=a.substring(b+3),g=!1);else if(y.test(a)){if(b=a.match(y))a=
-a.replace(b[0],""),g=!1}else if(J.test(a)){if(b=a.match(z))a=a.substring(b[0].length),b[0].replace(z,c),g=!1}else K.test(a)&&(b=a.match(A))&&(a=a.substring(b[0].length),b[0].replace(A,d),g=!1);g&&(b=a.indexOf("<"),g=0>b?a:a.substring(0,b),a=0>b?"":a.substring(b),e.chars&&e.chars(r(g)))}if(a==l)throw L("badparse",a);l=a}c()}function r(a){if(!a)return"";var e=M.exec(a);a=e[1];var d=e[3];if(e=e[2])n.innerHTML=e.replace(/</g,"&lt;"),e="textContent"in n?n.textContent:n.innerText;return a+e+d}function B(a){return a.replace(/&/g,
-"&amp;").replace(N,function(a){return"&#"+a.charCodeAt(0)+";"}).replace(/</g,"&lt;").replace(/>/g,"&gt;")}function s(a,e){var d=!1,c=h.bind(a,a.push);return{start:function(a,g,f){a=h.lowercase(a);!d&&x[a]&&(d=a);d||!0!==C[a]||(c("<"),c(a),h.forEach(g,function(d,f){var g=h.lowercase(f),k="img"===a&&"src"===g||"background"===g;!0!==O[g]||!0===D[g]&&!e(d,k)||(c(" "),c(f),c('="'),c(B(d)),c('"'))}),c(f?"/>":">"))},end:function(a){a=h.lowercase(a);d||!0!==C[a]||(c("</"),c(a),c(">"));a==d&&(d=!1)},chars:function(a){d||
-c(B(a))}}}var L=h.$$minErr("$sanitize"),A=/^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,z=/^<\s*\/\s*([\w:-]+)[^>]*>/,G=/([\w:-]+)(?:\s*=\s*(?:(?:"((?:[^"])*)")|(?:'((?:[^'])*)')|([^>\s]+)))?/g,K=/^</,J=/^<\s*\//,H=/\x3c!--(.*?)--\x3e/g,y=/<!DOCTYPE([^>]*?)>/i,I=/<!\[CDATA\[(.*?)]]\x3e/g,N=/([^\#-~| |!])/g,w=k("area,br,col,hr,img,wbr");p=k("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr");q=k("rp,rt");var v=h.extend({},q,p),t=h.extend({},p,k("address,article,aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul")),
-u=h.extend({},q,k("a,abbr,acronym,b,bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,samp,small,span,strike,strong,sub,sup,time,tt,u,var")),x=k("script,style"),C=h.extend({},w,t,u,v),D=k("background,cite,href,longdesc,src,usemap"),O=h.extend({},D,k("abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,scope,scrolling,shape,size,span,start,summary,target,title,type,valign,value,vspace,width")),
-n=document.createElement("pre"),M=/^(\s*)([\s\S]*?)(\s*)$/;h.module("ngSanitize",[]).provider("$sanitize",function(){this.$get=["$$sanitizeUri",function(a){return function(e){var d=[];F(e,s(d,function(c,b){return!/^unsafe/.test(a(c,b))}));return d.join("")}}]});h.module("ngSanitize").filter("linky",["$sanitize",function(a){var e=/((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>]/,d=/^mailto:/;return function(c,b){function g(a){a&&m.push(E(a))}function f(a,c){m.push("<a ");h.isDefined(b)&&
-(m.push('target="'),m.push(b),m.push('" '));m.push('href="');m.push(a);m.push('">');g(c);m.push("</a>")}if(!c)return c;for(var l,k=c,m=[],n,p;l=k.match(e);)n=l[0],l[2]==l[3]&&(n="mailto:"+n),p=l.index,g(k.substr(0,p)),f(n,l[0].replace(d,"")),k=k.substring(p+l[0].length);g(k);return a(m.join(""))}}])})(window,window.angular);
-//# sourceMappingURL=angular-sanitize.min.js.map
-;/*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
@@ -58140,7 +58126,6 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
     // create the angular app
     angular.module('myApp', [
-        // 'ngSlider',
         'myApp.controllers',
         'myApp.directives'
     ]);
@@ -58182,70 +58167,110 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('DemoCtrl', ['$scope',
-            function($scope) {
+        .controller('DemoCtrl', ['$scope', '$q',
+            function($scope, $q) {
 
                 $scope.nomaConfig = {
 
-                    //initial Data
-
-
-
                 };
 
-                // var tmpList = [];
-
-                // for (var i = 1; i <= 6; i++) {
-                //     tmpList.push({
-                //         text: 'Item ' + i,
-                //         value: i
-                //     });
-                // }
-
-                // $scope.list = tmpList;
+                $scope.customCSV = "";
 
 
-                // $scope.sortingLog = [];
-
-                $scope.sortableOptions = {
-                    // called after a node is dropped
-                    stop: function(e, ui) {
-                        // var logEntry = {
-                        //     ID: $scope.sortingLog.length + 1,
-                        //     Text: 'Moved element: ' + ui.item.scope().item.text
-                        // };
-                        // $scope.sortingLog.push(logEntry);
-                    }
-                };
-                $scope.nomaConfig.isXUniformSpacing = true;
-                $scope.nomaConfig.isYUniformSpacing = true;
-
-                $scope.loadedData = 'titanic';
-                $scope.nomaConfig.optimizeAspect = 'true';
-                $scope.nomaConfig.fillingDirection = 'vertical';
-                $scope.nomaConfig.XAlign = 'justify';
-                $scope.nomaConfig.YAlign = 'justify';
+                $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
+                $scope.onlyNumbers = /^\d+$/;
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
                 $scope.nomaShapeRendering = 'auto';
                 $scope.nomaConfig.isGather = 'scatter';
-                $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
+                $scope.nomaConfig.relativeModes = [false, true];
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
+                $scope.alerts = [];
+                $scope.isPlotSelectFocused = false;
+                $scope.nomaConfig.isInteractiveAxis = true;
 
-                $scope.sliderOptions = {
-                    from: 1,
-                    to: 30,
-                    step: 1
+                $scope.addAlert = function(messageType, messageContent) {
+                    $scope.alerts.push({
+                        msg: messageContent,
+                        type: messageType
+                    });
                 };
 
+                $scope.closeAlert = function(index) {
+                    $scope.alerts.splice(index, 1);
+                };
+
+                $scope.focusElement = function(element) {
+                    $scope[element] = true;
+                };
+
+                var resetTutMsg = function() {
+                    $scope.alerts = [];
+                    $scope.isPlotSelectFocused = false;
+                    $scope.isRelativeSelectFocused = false;
+                    $scope.isBinSizeFocused = false;
+                };
+
+                $scope.d3OnClick = function(item) {
+                    alert(item.name);
+                };
+
+                $scope.changeActiveDataCustomCSV = function(customCSV) {
+
+                    resetTutMsg();
+
+
+                    $scope.activeData = 'Cars Data';
+
+                    d3.csv(customCSV, function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+
+                        index = $scope.nomaConfig.dims.indexOf('Name');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+
+                        $scope.nomaConfig.xDim = null;
+                        $scope.nomaConfig.yDim = null;
+                        $scope.nomaConfig.colorDim = null;
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                        $scope.$apply();
+
+
+                    });
+
+
+
+
+                };
 
                 $scope.changeActiveDataTitanic = function() {
 
+                    resetTutMsg();
 
-                    $scope.activeData = 'Survivor of Titanic';
+
+                    $scope.activeData = 'Survivors of Titanic';
+
+                    var lowMeanHighSDRandomNumberGenerator = d3.random.normal(30, 5);
+                    var highMeanLowSDRandomNumberGenerator = d3.random.normal(50, 10);
+
 
 
                     d3.tsv('data/Titanic.txt', function(error, tdata) {
@@ -58254,7 +58279,134 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         tdata.map(function(d) {
                             d.id = count;
                             count += 1;
+
+                            if (d.Survived === 'Yes') {
+
+                                var a = Math.random();
+
+                                if (d.Class === 'First') {
+
+
+
+                                    if (a < 0.202325) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.26496) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.61064) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                } else if (d.Class === 'Second') {
+
+                                    if (a < 0.202325) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.26496) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.61064) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                } else if (d.Class === 'Third') {
+
+                                    if (a < 0.431254) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.51303) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.74983) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                } else if (d.Class === 'Crew') {
+
+                                    if (a < 0.278968) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                    } else if (a < 0.50005) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.75641) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                }
+
+
+                            } else {
+                                if (Math.random() > 0.5) {
+                                    d.Port = 'Southhampton';
+                                    d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                } else if (Math.random() > 0.4) {
+                                    d.Port = 'Queenstown';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                } else if (Math.random() > 0.5) {
+
+                                    d.Port = 'Cherbourg';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                } else {
+
+                                    d.Port = 'Belfast';
+                                    d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
+
+                                }
+
+                            }
+
+                            d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
+
+
                         });
+
+
 
                         $scope.nomaData = tdata;
                         $scope.nomaConfig.dims = d3.keys(tdata[0]);
@@ -58271,12 +58423,134 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     });
 
 
-
-
                 }; //End  $scope.changeActiveDataTitanic()
 
-                $scope.changeActiveDataTitanic();
 
+
+                $scope.settingForTitanicLoadAll = function() {
+
+                    resetTutMsg();
+
+
+                    if ($scope.activeData !== 'Survivors of Titanic') {
+
+                        $scope.changeActiveDataTitanic();
+                    }
+
+
+
+                    $scope.nomaConfig.xDim = null;
+                    $scope.nomaConfig.yDim = null;
+                    $scope.nomaConfig.colorDim = null;
+
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+
+                    $scope.addAlert('info', 'Here X and Y axes are not defined. Gatherplots make it easy to have an undefined axis.  Check scatterplots and jittering when there is undefined axis.');
+                    $scope.focusElement("isPlotSelectFocused");
+
+                };
+
+                $scope.settingForTitanicLoadAllSurvived = function() {
+
+                    resetTutMsg();
+
+
+                    if ($scope.activeData !== 'Survivors of Titanic') {
+
+                        $scope.changeActiveDataTitanic();
+                    }
+
+
+
+                    $scope.nomaConfig.xDim = null;
+                    $scope.nomaConfig.yDim = null;
+                    $scope.nomaConfig.colorDim = 'Survived';
+
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+
+
+                };
+
+
+                $scope.settingForTitanicGenderSurvived = function() {
+
+                    resetTutMsg();
+
+
+                    if ($scope.activeData !== 'Survivors of Titanic') {
+
+                        $scope.changeActiveDataTitanic();
+                    }
+
+
+
+                    $scope.nomaConfig.xDim = 'Sex';
+                    $scope.nomaConfig.yDim = null;
+                    $scope.nomaConfig.colorDim = 'Survived';
+
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                    $scope.addAlert('info', 'It looks like woman had survived more likely. Is this pattern clear in jittered scatterplots?');
+                    $scope.focusElement("isPlotSelectFocused");
+
+
+
+                };
+
+                $scope.settingForTitanicClassGenderSurvived = function() {
+
+                    resetTutMsg();
+
+
+                    if ($scope.activeData !== 'Survivors of Titanic') {
+
+                        $scope.changeActiveDataTitanic();
+                    }
+
+
+
+                    $scope.nomaConfig.xDim = 'Class';
+                    $scope.nomaConfig.yDim = 'Sex';
+                    $scope.nomaConfig.colorDim = 'Survived';
+
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                    $scope.addAlert('info', 'The different number of elements in the group makes it difficult to compare the percentage directly. Especially male groups of Second, Third and Crew looks similar.');
+
+                };
+
+                $scope.settingForTitanicClassGenderSurvivedRelative = function() {
+
+                    resetTutMsg();
+
+
+                    if ($scope.activeData !== 'Survivors of Titanic') {
+
+                        $scope.changeActiveDataTitanic();
+                    }
+
+
+
+                    $scope.nomaConfig.xDim = 'Class';
+                    $scope.nomaConfig.yDim = 'Sex';
+                    $scope.nomaConfig.colorDim = 'Survived';
+
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = true;
+
+                    $scope.addAlert('info', 'The size of nodes changes to make the entire group size same in order to make comparison between groups easier.  Now we can see that "male Crew" has better survival rate than "male 2nd" or "male 3rd.  Try abolute and relative mode yourself and please leave a feedback about your experience.');
+                    $scope.focusElement("isRelativeSelectFocused");
+
+
+
+
+                };
 
 
 
@@ -58287,6 +58561,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                 // change Active Data to the Bayesian Inference-Mammogram;
 
                 $scope.changeActiveDataMammo = function() {
+                    resetTutMsg();
 
                     //Config settings
                     var numberOfEntity = 4000;
@@ -58315,18 +58590,18 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                             temp.cancer = 'Cancer';
 
                             if (Math.random() > 0.8) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
 
                         } else {
-                            temp.cancer = 'No Cancer';
+                            temp.cancer = 'No cancer';
 
                             if (Math.random() > 0.096) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
                         }
 
@@ -58341,9 +58616,11 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     var index = $scope.nomaConfig.dims.indexOf('id');
                     $scope.nomaConfig.dims.splice(index, 1);
 
-                    $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
-                    $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
-                    $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+                    $scope.nomaConfig.xDim = null;
+                    $scope.nomaConfig.yDim = null;
+                    $scope.nomaConfig.colorDim = null;
+
+                    $scope.nomaConfig.relativeMode = 'absolute';
 
                     // $scope.$apply();
 
@@ -58353,6 +58630,10 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
                 $scope.changeConfigMammoProblem = function() {
 
+                    resetTutMsg();
+
+
+
                     if ($scope.activeData !== 'Bayesian Inference - Mammogram') {
 
                         $scope.changeActiveDataMammo();
@@ -58361,12 +58642,17 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
 
                     $scope.nomaConfig.xDim = 'cancer';
-                    $scope.nomaConfig.yDim = '';
+                    $scope.nomaConfig.yDim = null;
                     $scope.nomaConfig.colorDim = 'mammo';
+
+                    $scope.nomaConfig.relativeMode = 'absolute';
+                    $scope.nomaConfig.isGather = 'gather';
 
                 };
 
                 $scope.changeConfigMammoAnswer = function() {
+
+                    resetTutMsg();
 
                     if ($scope.activeData !== 'Bayesian Inference - Mammogram') {
 
@@ -58375,12 +58661,17 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
 
                     $scope.nomaConfig.xDim = 'mammo';
-                    $scope.nomaConfig.yDim = '';
+                    $scope.nomaConfig.yDim = null;
                     $scope.nomaConfig.colorDim = 'cancer';
+
+                    $scope.nomaConfig.relativeMode = 'absolute';
+                    $scope.nomaConfig.isGather = 'gather';
 
                 };
 
                 $scope.changeActiveDataContinuous = function() {
+
+                    resetTutMsg();
 
                     //Config settings
                     var numberOfEntity = 5000;
@@ -58389,8 +58680,8 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     $scope.activeData = 'Continuous Variables';
                     var data = [];
 
-                    var lowMeanHighSDRandomNumberGenerator = d3.random.normal(0.3, 2);
-                    var highMeanLowSDRandomNumberGenerator = d3.random.normal(0.8, 0.5);
+                    var lowMeanHighSDRandomNumberGenerator = d3.random.normal(1, 2);
+                    var highMeanLowSDRandomNumberGenerator = d3.random.normal(4, 2);
 
                     for (var count = 0; count < numberOfEntity; count++) {
 
@@ -58399,35 +58690,25 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         temp.id = count;
 
 
-                        if (Math.random() > 0.3) {
-                            temp.gender = 'Male';
-                        } else {
-                            temp.gender = 'Female';
-                        }
+                        if (Math.random() > 0.7) {
+                            temp.nominal = 'A';
+                            temp.continuous1 = highMeanLowSDRandomNumberGenerator();
 
-                        if (Math.random() > 0.99) {
-                            temp.cancer = 'Cancer';
+                        } else if (Math.random() > 0.5) {
+                            temp.nominal = 'B';
+                            temp.continuous1 = lowMeanHighSDRandomNumberGenerator();
 
-                            if (Math.random() > 0.8) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
-                                temp.mammo = 'Positive Mamo';
-                            }
 
                         } else {
-                            temp.cancer = 'No Cancer';
 
-                            if (Math.random() > 0.096) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
-                                temp.mammo = 'Positive Mamo';
-                            }
+                            temp.nominal = 'C';
+                            temp.continuous1 = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
                         }
 
 
-                        temp.continous_variable1 = lowMeanHighSDRandomNumberGenerator();
-                        temp.continous_variable2 = highMeanLowSDRandomNumberGenerator();
-                        temp.age = Math.round(Math.random() * (numDiscreteVar - 1));
+
+                        temp.continuous2 = (Math.random() * (numDiscreteVar - 1));
 
                         data.push(temp);
                     }
@@ -58438,72 +58719,163 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                     var index = $scope.nomaConfig.dims.indexOf('id');
                     $scope.nomaConfig.dims.splice(index, 1);
 
-                    $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
-                    $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
-                    $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+                    $scope.nomaConfig.xDim = 'continuous1';
+                    $scope.nomaConfig.yDim = 'continuous2';
+                    $scope.nomaConfig.colorDim = 'nominal';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+                    $scope.nomaConfig.isGather = 'scatter';
 
-
-
-
-                    // $scope.$apply();
-
+                    resetTutMsg();
 
                 };
 
+                $scope.settingForContinuousScatter = function() {
 
-
-                $scope.changeConfigContinuousBinning = function() {
+                    resetTutMsg();
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
                         $scope.changeActiveDataContinuous();
                     }
 
-                    $scope.nomaConfig.isXUniformSpacing = true;
-                    $scope.nomaConfig.isYUniformSpacing = true;
+                    // $scope.nomaRound = 'absolute';
 
-                    $scope.nomaConfig.xDim = 'gender';
-                    $scope.nomaConfig.yDim = 'age';
-                    $scope.nomaConfig.colorDim = 'mammo';
+                    $scope.nomaConfig.xDim = 'continuous1';
+                    $scope.nomaConfig.yDim = 'continuous2';
+                    $scope.nomaConfig.colorDim = 'nominal';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+                    $scope.nomaConfig.isGather = 'scatter';
 
-                    $scope.nomaConfig.XAlign = 'left';
-                    $scope.nomaConfig.YAlign = 'left';
-
-                    $scope.nomaConfig.isYNumber = true;
+                    $scope.addAlert('info', 'There is a severe overplotting over the range where X value is near 4.');
 
                 };
 
-                $scope.changeConfigContinuousBinningNor = function() {
+                $scope.settingForContinuousGather = function() {
+
+                    resetTutMsg();
 
                     if ($scope.activeData !== 'Continuous Variables') {
 
                         $scope.changeActiveDataContinuous();
                     }
 
-                    // $scope.nomaRound = false;
+                    // $scope.nomaRound = absolute;
 
-                    $scope.nomaConfig.isXUniformSpacing = true;
-                    $scope.nomaConfig.isYUniformSpacing = true;
+                    $scope.nomaConfig.xDim = 'continuous1';
+                    $scope.nomaConfig.yDim = 'continuous2';
+                    $scope.nomaConfig.colorDim = 'nominal';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+                    $scope.nomaConfig.isGather = 'gather';
 
-                    $scope.nomaConfig.xDim = 'gender';
-                    $scope.nomaConfig.yDim = 'age';
-                    $scope.nomaConfig.colorDim = 'mammo';
-
-                    $scope.nomaConfig.XAlign = 'justify';
-                    $scope.nomaConfig.YAlign = 'left';
-
-                    $scope.nomaConfig.isYNumber = true;
-
+                    $scope.addAlert('info', 'The trend over the region where overplotting was severe is now clear. However the other regions where there were only small number of nodes were is barely visible. ');
 
                 };
+
+                var updateBinSize = function(binSize) {
+
+                    $scope.nomaConfig.binSize = binSize;
+                    return 'success intuinno';
+                };
+
+                var updateBinSizeDefer = function(binSize) {
+
+
+
+                    var deferred = $q.defer();
+
+                    setTimeout(function() {
+                        // since this fn executes async in a future turn of the event loop, we need to wrap
+                        // our code into an $apply call so that the model changes are properly observed.
+                        $scope.$apply(function() {
+                            deferred.notify('About to greet ' + binSize + '.');
+
+                            if (updateBinSize(binSize)) {
+                                deferred.resolve('Success!');
+                            } else {
+                                deferred.reject('Failure');
+                            }
+                        });
+                    }, 1000);
+
+                    return deferred.promise;
+
+                };
+
+
+                $scope.settingForContinuousGatherWithBinSize = function() {
+
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Continuous Variables') {
+
+                        $scope.changeActiveDataContinuous;
+                    }
+
+                    // $scope.nomaRound = absolute;
+
+                    $scope.nomaConfig.xDim = 'continuous1';
+                    $scope.nomaConfig.yDim = 'continuous2';
+                    $scope.nomaConfig.colorDim = 'nominal';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+                    $scope.nomaConfig.isGather = 'gather';
+
+                    var promise = updateBinSizeDefer(7);
+
+                    promise.then(function(greeting) {
+                        console.log('Success: ' + greeting);
+
+
+                    }, function(reason) {
+                        alert('Failed: ' + reason);
+                    }, function(update) {
+                        // alert('Got notification: ' + update);
+                        $scope.isAdvancedOptionOpen = true;
+                        $scope.addAlert('info', 'You can try different bin size at advanced options menu below.');
+                        $scope.focusElement("isBinSizeFocused");
+
+
+                    });
+                    $scope.isAdvancedOptionOpen = true;
+
+                };
+
+                $scope.settingForContinuousGatherWithBinSizeRelative = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Continuous Variables') {
+
+                        $scope.changeActiveDataContinuous();
+                    }
+
+                    // $scope.nomaRound = absolute;
+
+                    $scope.nomaConfig.xDim = 'continuous1';
+                    $scope.nomaConfig.yDim = 'continuous2';
+                    $scope.nomaConfig.colorDim = 'nominal';
+                    $scope.nomaConfig.relativeMode = true;
+                    $scope.nomaConfig.isGather = 'gather';
+
+
+                    $scope.addAlert('info', 'Here you can see that the distributions of sparse regions are more visible. It makes spotting outliers much easier. Compare absolute and relative mode to feel this change. Can you tell what is the underlying distribution of these random variables?');
+                    $scope.focusElement("isRelativeSelectFocused");
+
+                };
+
+
+
+
+
+
+
 
                 $scope.changeActiveDataCars = function() {
 
+                    resetTutMsg();
+
 
                     $scope.activeData = 'Cars Data';
-
-
-
 
                     d3.csv('data/cars.csv', function(error, tdata) {
                         var count = 0;
@@ -58520,13 +58892,19 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = $scope.nomaConfig.dims[1];
-                        $scope.nomaConfig.yDim = $scope.nomaConfig.dims[2];
-                        $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[8];
+                        index = $scope.nomaConfig.dims.indexOf('Name');
+                        $scope.nomaConfig.dims.splice(index, 1);
 
-                        $scope.nomaConfig.isGather = 'scatter';
 
-                        //$scope.$apply();
+                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.colorDim = 'Origin';
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                        $scope.$apply();
 
 
 
@@ -58536,6 +58914,151 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
 
                 };
+
+                $scope.changeConfigCarsScatterplots = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = absolute;
+
+                    $scope.nomaConfig.xDim = 'Horsepower';
+                    $scope.nomaConfig.yDim = 'MPG';
+                    $scope.nomaConfig.colorDim = 'Origin';
+                    $scope.nomaConfig.isGather = 'scatter';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+
+                };
+
+                $scope.changeConfigCarsScatterOneNominal = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = absolute;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                    $scope.nomaConfig.yDim = 'MPG';
+                    $scope.nomaConfig.colorDim = null;
+                    $scope.nomaConfig.isGather = 'scatter';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsJitterOneNominal = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = 'absolute';
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                    $scope.nomaConfig.yDim = 'MPG';
+                    $scope.nomaConfig.colorDim = null;
+                    $scope.nomaConfig.isGather = 'jitter';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsJitterOneNominalWithColor = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = 'absolute';
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                    $scope.nomaConfig.yDim = 'MPG';
+                    $scope.nomaConfig.colorDim = 'Origin';
+                    $scope.nomaConfig.isGather = 'jitter';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsGatherOneNominalWithColor = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = absolute;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                    $scope.nomaConfig.yDim = 'MPG';
+                    $scope.nomaConfig.colorDim = 'Origin';
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                };
+
+                $scope.changeConfigCarsGatherTwoNominalWithColor = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = absolute;
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                    $scope.nomaConfig.yDim = 'Origin';
+                    $scope.nomaConfig.colorDim = 'Origin';
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                    $scope.addAlert('info', 'Here Cylinders and Origin are both nominal variables. Try what happens with scatterplots or jittering.');
+                    $scope.focusElement("isPlotSelectFocused");
+
+                };
+
+                $scope.changeConfigCarsGatherTwoNominalWithContinuousColor = function() {
+
+                    resetTutMsg();
+
+                    if ($scope.activeData !== 'Cars Data') {
+
+                        $scope.changeActiveDataCars();
+                    }
+
+                    // $scope.nomaRound = 'absolute';
+
+                    $scope.nomaConfig.xDim = 'Cylinders';
+                    $scope.nomaConfig.yDim = 'Origin';
+                    $scope.nomaConfig.colorDim = 'Weight';
+                    $scope.nomaConfig.isGather = 'gather';
+                    $scope.nomaConfig.relativeMode = 'absolute';
+
+                    $scope.addAlert('info', 'Here the color of nodes represent a weight, which is continuous. Having ordered arrangement makes it easier to discern minute changes in colors.  Compare with scatterplots or jittering.');
+                    $scope.focusElement("isPlotSelectFocused");
+
+
+
+                };
+
+
+                $scope.changeActiveDataCars();
 
 
             }
