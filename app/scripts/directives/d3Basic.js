@@ -20,6 +20,7 @@
                         //Constants and Setting Environment variables 
 
                         var margin = 80;
+                        var maxDotSize = 5;
                         var width = 1040;
                         var height = 820;
                         var outerWidth = width + 2 * margin;
@@ -204,7 +205,7 @@
 
                             if (currentDimSetting.dimType === 'ordinal') {
 
-                                doBinningAndSetKeys(dim);
+                                //doBinningAndSetKeys(dim);
                                 currentDimSetting.isBinned = true;
 
 
@@ -219,15 +220,15 @@
                         };
 
 
-                        var doBinningAndSetKeys = function(dimName) {
+                        var doBinningAndSetKeys = function(dimName,numBin) {
 
                             var currentDimSetting = scope.config.dimSetting[dimName];
 
-                            currentDimSetting.binnedData = scope.data.map(binningFunc(dimName));
+                            currentDimSetting.binnedData = scope.data.map(binningFunc(dimName,numBin));
 
                         };
 
-                        var binningFunc = function(dimName) {
+                        var binningFunc = function(dimName, numBin) {
 
                             var minValue = d3.min(scope.data, function(d) {
                                 return +d[dimName];
@@ -237,14 +238,14 @@
                             });
 
                             var encodingBinScale = d3.scale.linear()
-                                .range([0, scope.config.binSize - 1])
+                                .range([0, numBin - 1])
                                 .domain([minValue, maxValue]);
 
                             var decodingBinScale = d3.scale.linear()
-                                .domain([0, scope.config.binSize - 1])
+                                .domain([0, numBin - 1])
                                 .range([minValue, maxValue]);
 
-                            var binKeys = d3.range(0, scope.config.binSize, 1);
+                            var binKeys = d3.range(0, numBin, 1);
 
                             binKeys = binKeys.map(function(d) {
                                 return decodingBinScale(d + 0.5);
@@ -503,7 +504,7 @@
                         //Returns Extents of dimension 
                         //              Scatter         Jitter      Gather
                         // ordinal      orig            orig        calculatedPoints
-                        // semiordinal  calculatedP     calculatedP calculatedPoints
+                        // semiordinal  SortedID        SortedID    calculatedPoints
                         // nominal      calculatedP     calculatedP calculatedPoints
                         var getExtent = function(dim) {
 
@@ -512,11 +513,9 @@
                                 return [-0.5, 0.5];
                             }
 
-                            if (scope.config.isGather === 'gather') {
 
-                                return getExtentFromCalculatedPoints(dim);
 
-                            } else if (scope.config.dimSetting[dim].dimType === 'ordinal') {
+                            if (scope.config.dimSetting[dim].dimType === 'ordinal') {
 
                                 return getExtentFromOriginalExtent(dim);
 
@@ -526,7 +525,13 @@
 
                             } else {
 
-                                return getExtentFromSortedID(dim);
+                                if (scope.config.isGather === 'gather') {
+
+                                    return getExtentFromCalculatedPoints(dim);
+
+                                } else
+
+                                    return getExtentFromSortedID(dim);
                             }
 
                         };
@@ -545,6 +550,7 @@
                             return [extent[0] - marginForBorderOfAxis, extent[1] + marginForBorderOfAxis];
 
                         };
+
 
                         var getExtentFromCalculatedPoints = function(dim) {
 
@@ -678,14 +684,116 @@
 
                             if (scope.config.isGather === 'gather') {
 
-                                calculatePositionOfCluster(scope.config.xDim);
-                                calculatePositionOfCluster(scope.config.yDim);
+                                calculatePositionOfNodesForGather();
 
                             }
+
                             xValue = getPositionValueFunc(scope.config.xDim);
                             yValue = getPositionValueFunc(scope.config.yDim);
 
+
                         };
+
+                        var calculatePositionOfNodesForGather = function() {
+
+                            var typeOfXYDim = findTypeOfXYDim();
+
+                            if (typeOfXYDim === 'NomNom') {
+
+                                calculatePostitionOfNodesForNomNomGather();
+
+                            } else if (typeOfXYDim === 'OrdOrd') {
+
+                            } else {
+                                //Only one of them are ordinal -> binned gatherplot 
+
+                                calculatePositionOfNodesForBinnedGather();
+
+                            }
+                        };
+
+                        var calculatePositionOfNodesForBinnedGather = function() {
+
+                            var typeOfXYDim = findTypeOfXYDim();
+                            var clusterSize = getClusterBox();
+                            var range, height;
+
+                            if (typeOfXYDim === 'XNomYOrd') {
+                                range = yScale.range();
+                                height = range[0] - range[1];
+                                getOptimalBinSize(scope.config.yDim, clusterSize.widthOfBox, height);
+                            } else {
+                                range = xScale.range();
+                                height = range[1] - range[0];
+                                getOptimalBinSize(scope.config.xDim, clusterSize.heightOfBox, height);
+                            }
+
+
+                        };
+
+                        var getOptimalBinSize = function(dim, norDimLength, ordDimLength) {
+
+                            var numBin = Math.floor(ordDimLength / maxDotSize);
+
+                            var dotSize = maxDotSize;
+
+                            var maxCrowdedBinCount = getMaxCrowdedBinCount(dim, numBin);
+
+                            while (maxCrowdedBinCount * dotSize > norDimLength) {
+
+                                numBin = numBin + 1; 
+
+                                maxCrowdedBinCount = getMaxCrowdedBinCount (dim, numBin);
+
+                                dotSize = ordDimLength/numBin;
+                            } 
+
+                            doBinningAndSetKeys(dim, numBin);
+
+                        };
+
+                        var getMaxCrowdedBinCount  = function(dim, binCount) {
+                            var values = scope.data.map(function(d) {
+                                return +d[dim];
+                            });
+
+                            var data = d3.layout.histogram()
+                                .bins(binCount)
+                                (values);
+
+                            var maxCount = d3.max(data, function(d) {
+                                return +d.y;
+                            });
+
+                            return maxCount;
+                        }
+
+                        var findTypeOfXYDim = function() {
+
+                            var xDim = scope.config.xDim;
+                            var xDimType = scope.config.dimSetting[xDim].dimType;
+
+                            var yDim = scope.config.yDim;
+                            var yDimType = scope.config.dimSetting[yDim].dimType;
+
+                            if (xDimType === 'ordinal' && yDimType === 'ordinal') {
+                                return 'OrdOrd';
+                            } else if (xDimType !== 'ordinal' && yDimType !== 'ordinal') {
+                                return 'NomNom';
+                            } else if (xDimType === 'ordinal' && yDimType !== 'ordinal') {
+                                return 'XOrdYNom';
+                            } else if (xDimType !== 'ordinal' && yDimType === 'ordinal') {
+                                return 'XNomYOrd';
+                            }
+
+                        };
+
+                        var calculatePostitionOfNodesForNomNomGather = function() {
+
+                            calculatePositionOfCluster(scope.config.xDim);
+                            calculatePositionOfCluster(scope.config.yDim);
+
+                        }
 
                         var calculatePositionOfCluster = function(dim) {
 
@@ -860,8 +968,8 @@
 
                             scope.data.forEach(function(d) {
 
-                                d.nodeWidth = 5;
-                                d.nodeHeight = 5;
+                                d.nodeWidth = maxDotSize;
+                                d.nodeHeight = maxDotSize;
 
                             });
                         };
@@ -1546,14 +1654,14 @@
                         var setStylesForAxesAndTicks = function() {
 
                             svg.selectAll(".domain")
-                                .style("stroke","black")
+                                .style("stroke", "black")
                                 .style("stroke-width", 1)
-                                .style("fill","none");
+                                .style("fill", "none");
 
                             svg.selectAll(".bracket")
-                                .style("stroke","black")
+                                .style("stroke", "black")
                                 .style("stroke-width", 1)
-                                .style("fill","none");
+                                .style("fill", "none");
 
 
                         };
@@ -1591,8 +1699,8 @@
                                 .style("font-size", 12);
 
                             svg.selectAll(".tick line")
-                                .style("stroke-width",1)
-                                .style("stroke","black");
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
 
                         };
 
@@ -1640,14 +1748,14 @@
                                 .tickValues(tickValueGeneratorForGather(scope.config.xDim))
                                 .tickFormat(labelGeneratorForGather(scope.config.xDim))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
-                            .orient("bottom");
+                                .orient("bottom");
 
                             var yAxis = d3.svg.axis()
                                 .scale(yScale)
                                 .tickValues(tickValueGeneratorForGather(scope.config.yDim))
                                 .tickFormat(labelGeneratorForGather(scope.config.yDim))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
-                            .orient("left");
+                                .orient("left");
 
                             svg.selectAll(".axis").remove();
 
@@ -1666,37 +1774,37 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
-                             svg.selectAll(".tick line")
-                                .style("stroke-width",1)
-                                .style("stroke","white");
+                            svg.selectAll(".tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "white");
 
                             var xAxisBracketGroup = xAxisNodes.selectAll(".tick")
-                                    .append("g")
-                                    .attr("x", xBracketGroup)
-                                    .attr("y", 0)
-                                    .attr("class", "x controlButtonBracketGroup")
-                                    .attr("width", widthBracketGroup)
-                                    .attr("height", 30)
-                                    .attr("rx", 5)
-                                    .attr("ry", 5);
+                                .append("g")
+                                .attr("x", xBracketGroup)
+                                .attr("y", 0)
+                                .attr("class", "x controlButtonBracketGroup")
+                                .attr("width", widthBracketGroup)
+                                .attr("height", 30)
+                                .attr("rx", 5)
+                                .attr("ry", 5);
 
-                                var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
-                                    .append("g")
-                                    .attr("x", 0)
-                                    .attr("y", yBracketGroup)
-                                    .attr("class", "y controlButtonBracketGroup")
-                                    .attr("width", 80)
-                                    .attr("height", heightBracketGroup)
-                                    .attr("rx", 5)
-                                    .attr("ry", 5);
+                            var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
+                                .append("g")
+                                .attr("x", 0)
+                                .attr("y", yBracketGroup)
+                                .attr("class", "y controlButtonBracketGroup")
+                                .attr("width", 80)
+                                .attr("height", heightBracketGroup)
+                                .attr("rx", 5)
+                                .attr("ry", 5);
 
 
 
                             if (scope.config.isInteractiveAxis) {
 
 
-                                
-                                    xAxisBracketGroup
+
+                                xAxisBracketGroup
                                     .on("mouseover", function(d) {
                                         d3.select(this).selectAll("rect")
                                             .style("opacity", 0.7);
@@ -1723,7 +1831,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "black")
                                     .attr("x", 0)
-                                    .attr("y", 60-30)
+                                    .attr("y", 60 - 30)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 10)
@@ -1735,7 +1843,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "black")
                                     .attr("x", 0)
-                                    .attr("y", 60-14)
+                                    .attr("y", 60 - 14)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 10)
@@ -1750,7 +1858,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "gray")
                                     .attr("x", xBracketGroup)
-                                    .attr("y", 60-32)
+                                    .attr("y", 60 - 32)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 14)
@@ -1774,7 +1882,7 @@
                                     .style("opacity", 0)
                                     .style("fill", "gray")
                                     .attr("x", xBracketGroup)
-                                    .attr("y", 60-16)
+                                    .attr("y", 60 - 16)
                                     .attr("class", "x controlButtonBracket")
                                     .attr("width", widthBracketGroup)
                                     .attr("height", 14)
@@ -1795,8 +1903,8 @@
                                         toggleMaximizeCluster(scope.config.xDim, i)
                                     });
 
-                                
-                                    yAxisBracketGroup
+
+                                yAxisBracketGroup
                                     .on("mouseover", function(d) {
                                         d3.select(this).selectAll("rect")
                                             .style("opacity", 0.9);
