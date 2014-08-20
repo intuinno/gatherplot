@@ -1733,7 +1733,7 @@
                                 .style("font-size", 12);
 
 
-                            svg.selectAll(".tick line")
+                            svg.selectAll(".x .tick line")
                                 .style("stroke-width", 1)
                                 .style("stroke", "black");
                         };
@@ -1753,7 +1753,7 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 12);
 
-                            svg.selectAll(".tick line")
+                            svg.selectAll(".y .tick line")
                                 .style("stroke-width", 1)
                                 .style("stroke", "black");
 
@@ -1837,6 +1837,8 @@
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("bottom");
 
+                            svg.selectAll(".axis").remove();
+
                             xAxisNodes = svgGroup.append("g")
                                 .attr("class", "x axis")
                                 .attr("transform", "translate(0," + (height) + ")")
@@ -1845,7 +1847,7 @@
                             xAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
-                            svg.selectAll(".tick line")
+                            d3.selectAll(".x .tick line")
                                 .style("stroke-width", 1)
                                 .style("stroke", "white");
 
@@ -2001,7 +2003,7 @@
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
-                            svg.selectAll(".tick line")
+                            d3.selectAll(".y .tick line")
                                 .style("stroke-width", 1)
                                 .style("stroke", "white");
 
