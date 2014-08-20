@@ -1634,6 +1634,23 @@
 
                         };
 
+                        var labelGeneratorForOrdinalGather = function(dimName) {
+
+                                var samplingRate = getSamplingRateForOrdinalGather(dimName);
+                        
+                                var binDistanceFormatter = d3.format("3,.0f");
+
+                                return function(d, i) {
+
+                                    var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i * samplingRate];
+
+                                    return binDistanceFormatter(+binValue);
+                                };
+                        
+
+
+                        };
+
                         var tickGenerator = function(dimName) {
 
                             if (!dimName) {
@@ -1665,6 +1682,37 @@
                             return getCalculatedPositions(dimName);
 
                         };
+
+                        var tickValueGeneratorForOrdinalGather = function(dimName) {
+
+                            if (!dimName) {
+                                return [];
+
+                            }
+
+
+                            var originalPositions = getCalculatedPositions(dimName);
+
+
+                            var samplingRate = getSamplingRateForOrdinalGather(dimName);
+
+                            var sampledPositions = originalPositions.filter(function(d,i) {
+                                return (i % samplingRate === 0);
+                            });
+
+                            return sampledPositions;
+
+                        };
+
+                        var getSamplingRateForOrdinalGather = function (dimName) {
+
+                            var originalPositions = getCalculatedPositions(dimName);
+
+                            var dimLength = originalPositions.length;
+
+                            return Math.round(dimLength / 8);
+
+                        }
 
 
                         var drawAxes = function() {
@@ -1738,6 +1786,40 @@
                                 .style("stroke", "black");
                         };
 
+                        var drawYAxisLinesAndTicksForOrdinalGather = function() {
+
+                            // var yAxis = d3.svg.axis()
+                            //     .scale(yScale)
+                            //     .ticks(5)
+                            //     .tickValues([0, 1, 2, 3, 4])
+                            //     .orient("left");
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .tickValues(tickValueGeneratorForOrdinalGather(scope.config.yDim))
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
+                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
+                                .orient("left");
+
+                            // var yAxis = d3.svg.axis()
+                            //     .scale(yScale)
+                            //     .ticks(tickGenerator(scope.config.yDim))
+                            //     .tickFormat(labelGenerator(scope.config.yDim))
+                            //     .orient("left");
+
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+                            yAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+                            svg.selectAll(".y .tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
+
+                        };
+
                         var drawYAxisLinesAndTicksForScatter = function() {
 
                             var yAxis = d3.svg.axis()
@@ -1797,7 +1879,7 @@
 
                         var drawAxesLinesAndTicksForGather = function() {
 
-                              svg.selectAll(".axis").remove();
+                            svg.selectAll(".axis").remove();
 
                             drawXAxisLinesAndTicksForGather();
                             drawYAxisLinesAndTicksForGather();
@@ -1811,20 +1893,20 @@
                                 drawXAxisLinesAndTicksForNominalGather();
                             } else {
 
-                                drawXAxisLinesAndTicksForScatter();
+                                drawXAxisLinesAndTicksForOrdinalGather();
                             }
                         };
 
                         var drawYAxisLinesAndTicksForGather = function() {
 
-                          
+
 
                             if (getDimType(scope.config.yDim) !== 'ordinal') {
 
                                 drawYAxisLinesAndTicksForNominalGather();
                             } else {
 
-                                drawYAxisLinesAndTicksForScatter();
+                                drawYAxisLinesAndTicksForOrdinalGather();
                             }
                         };
 
