@@ -702,7 +702,7 @@
 
                             if (typeOfXYDim === 'NomNom') {
 
-                                calculatePostitionOfNodesForNomNomGather();
+                                calculatePositionOfNodesForNomNomGather();
 
                             } else if (typeOfXYDim === 'OrdOrd') {
 
@@ -731,7 +731,7 @@
                                 height = range[1] - range[0];
                                 getOptimalBinSize(scope.config.xDim, clusterSize.heightOfBox, height);
                                 updateXScale();
-                                calculatePostitionOfCluster(scope.config.yDim);
+                                calculatePositionOfCluster(scope.config.yDim);
                             }
 
 
@@ -747,6 +747,17 @@
                                 return yScale(yValue(d));
                             };
 
+                        };
+
+                        var updateXScale = function() {
+
+                            var xRange = getExtentFromCalculatedPoints(scope.config.xDim);
+
+                            xScale = d3.scale.linear().range([0, width]);
+                            xScale.domain(xRange);
+                            xMap = function(d) {
+                                return xScale(xValue(d));
+                            };
 
                         };
 
@@ -807,7 +818,7 @@
 
                         };
 
-                        var calculatePostitionOfNodesForNomNomGather = function() {
+                        var calculatePosiitionOfNodesForNomNomGather = function() {
 
                             calculatePositionOfCluster(scope.config.xDim);
                             calculatePositionOfCluster(scope.config.yDim);
@@ -936,7 +947,7 @@
                             } else if (dimType === 'ordinal') {
 
 
-                                if (scope.config.isGather === 'gather') {
+                                if (scope.config.isGather === 'gather' && findTypeOfXYDim() !== "OrdOrd") {
                                     return calculatedPositionWithBinValueFunc;
 
                                 } else {
@@ -964,8 +975,14 @@
 
                             } else if (scope.config.isGather === 'gather') {
 
-                                setOffsetOfNodesForGather();
+                                if (findTypeOfXYDim() === "OrdOrd") {
 
+                                    setOffsetOfNodesForScatter();
+
+                                } else {
+
+                                    setOffsetOfNodesForGather();
+                                }
                             }
 
                         };
@@ -1636,17 +1653,17 @@
 
                         var labelGeneratorForOrdinalGather = function(dimName) {
 
-                                var samplingRate = getSamplingRateForOrdinalGather(dimName);
-                        
-                                var binDistanceFormatter = d3.format("3,.0f");
+                            var samplingRate = getSamplingRateForOrdinalGather(dimName);
 
-                                return function(d, i) {
+                            var binDistanceFormatter = d3.format("3,.0f");
 
-                                    var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i * samplingRate];
+                            return function(d, i) {
 
-                                    return binDistanceFormatter(+binValue);
-                                };
-                        
+                                var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i * samplingRate];
+
+                                return binDistanceFormatter(+binValue);
+                            };
+
 
 
                         };
@@ -1655,17 +1672,9 @@
 
                             if (!dimName) {
                                 return 0;
-                            } else if (isDimTypeNumerical(scope.config.dimSetting[dimName].dimType)) {
+                            } else if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
 
-                                var numKeys = getKeys(dimName).length;
-
-                                if (numKeys > 10) {
-
-                                    return 10;
-                                } else {
-
-                                    return numKeys;
-                                }
+                                return 8;
 
                             } else {
 
@@ -1696,7 +1705,7 @@
 
                             var samplingRate = getSamplingRateForOrdinalGather(dimName);
 
-                            var sampledPositions = originalPositions.filter(function(d,i) {
+                            var sampledPositions = originalPositions.filter(function(d, i) {
                                 return (i % samplingRate === 0);
                             });
 
@@ -1704,7 +1713,7 @@
 
                         };
 
-                        var getSamplingRateForOrdinalGather = function (dimName) {
+                        var getSamplingRateForOrdinalGather = function(dimName) {
 
                             var originalPositions = getCalculatedPositions(dimName);
 
@@ -1725,7 +1734,7 @@
 
                         var drawAxesLinesAndTicks = function() {
 
-                            if (scope.config.isGather === 'gather') {
+                            if (scope.config.isGather === 'gather' && findTypeOfXYDim() !== 'OrdOrd') {
 
                                 drawAxesLinesAndTicksForGather();
 
@@ -1786,40 +1795,6 @@
                                 .style("stroke", "black");
                         };
 
-                        var drawYAxisLinesAndTicksForOrdinalGather = function() {
-
-                            // var yAxis = d3.svg.axis()
-                            //     .scale(yScale)
-                            //     .ticks(5)
-                            //     .tickValues([0, 1, 2, 3, 4])
-                            //     .orient("left");
-
-                            var yAxis = d3.svg.axis()
-                                .scale(yScale)
-                                .tickValues(tickValueGeneratorForOrdinalGather(scope.config.yDim))
-                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
-                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
-                                .orient("left");
-
-                            // var yAxis = d3.svg.axis()
-                            //     .scale(yScale)
-                            //     .ticks(tickGenerator(scope.config.yDim))
-                            //     .tickFormat(labelGenerator(scope.config.yDim))
-                            //     .orient("left");
-
-                            yAxisNodes = svgGroup.append("g")
-                                .attr("class", "y axis")
-                                .call(yAxis);
-
-                            yAxisNodes.selectAll('text')
-                                .style("font-size", 12);
-
-                            svg.selectAll(".y .tick line")
-                                .style("stroke-width", 1)
-                                .style("stroke", "black");
-
-                        };
-
                         var drawYAxisLinesAndTicksForScatter = function() {
 
                             var yAxis = d3.svg.axis()
@@ -1840,6 +1815,53 @@
                                 .style("stroke", "black");
 
                         };
+
+                        var drawXAxisLinesAndTicksForOrdinalGather = function() {
+
+                            var xAxis = d3.svg.axis()
+                                .scale(xScale)
+                                .tickValues(tickValueGeneratorForOrdinalGather(scope.config.xDim))
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.xDim))
+                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
+                                .orient("bottom");
+
+                            xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + (height) + ")")
+                                .call(xAxis);
+
+                            xAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+                            svg.selectAll(".x .tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
+
+                        };
+
+                        var drawYAxisLinesAndTicksForOrdinalGather = function() {
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .tickValues(tickValueGeneratorForOrdinalGather(scope.config.yDim))
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
+                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
+                                .orient("left");
+                            
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+                            yAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+                            svg.selectAll(".y .tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
+
+                        };
+
+
 
                         //returns path string d for <path d="This string">
                         //a curly brace between x1,y1 and x2,y2, w pixels wide 
