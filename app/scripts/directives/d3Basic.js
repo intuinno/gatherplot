@@ -1708,6 +1708,14 @@
 
                         var drawAxesLinesAndTicksForScatter = function() {
 
+                            svg.selectAll(".axis").remove();
+
+                            drawXAxisLinesAndTicksForScatter();
+                            drawYAxisLinesAndTicksForScatter();
+
+                        };
+
+                        var drawXAxisLinesAndTicksForScatter = function() {
 
                             var xAxis = d3.svg.axis()
                                 .scale(xScale)
@@ -1715,25 +1723,32 @@
                                 .tickFormat(labelGenerator(scope.config.xDim))
                                 .orient("bottom");
 
-                            var yAxis = d3.svg.axis()
-                                .scale(yScale)
-                                .ticks(tickGenerator(scope.config.yDim))
-                                .tickFormat(labelGenerator(scope.config.yDim))
-                                .orient("left");
-
-                            svg.selectAll(".axis").remove();
 
                             xAxisNodes = svgGroup.append("g")
                                 .attr("class", "x axis")
                                 .attr("transform", "translate(0," + (height) + ")")
                                 .call(xAxis);
 
+                            xAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+
+                            svg.selectAll(".tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
+                        };
+
+                        var drawYAxisLinesAndTicksForScatter = function() {
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .ticks(tickGenerator(scope.config.yDim))
+                                .tickFormat(labelGenerator(scope.config.yDim))
+                                .orient("left");
+
                             yAxisNodes = svgGroup.append("g")
                                 .attr("class", "y axis")
                                 .call(yAxis);
-
-                            xAxisNodes.selectAll('text')
-                                .style("font-size", 12);
 
                             yAxisNodes.selectAll('text')
                                 .style("font-size", 12);
@@ -1782,6 +1797,38 @@
 
                         var drawAxesLinesAndTicksForGather = function() {
 
+                              svg.selectAll(".axis").remove();
+
+                            drawXAxisLinesAndTicksForGather();
+                            drawYAxisLinesAndTicksForGather();
+
+                        };
+
+                        var drawXAxisLinesAndTicksForGather = function() {
+
+                            if (getDimType(scope.config.xDim) !== 'ordinal') {
+
+                                drawXAxisLinesAndTicksForNominalGather();
+                            } else {
+
+                                drawXAxisLinesAndTicksForScatter();
+                            }
+                        };
+
+                        var drawYAxisLinesAndTicksForGather = function() {
+
+                          
+
+                            if (getDimType(scope.config.yDim) !== 'ordinal') {
+
+                                drawYAxisLinesAndTicksForNominalGather();
+                            } else {
+
+                                drawYAxisLinesAndTicksForScatter();
+                            }
+                        };
+
+                        var drawXAxisLinesAndTicksForNominalGather = function() {
 
                             var xAxis = d3.svg.axis()
                                 .scale(xScale)
@@ -1790,28 +1837,12 @@
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("bottom");
 
-                            var yAxis = d3.svg.axis()
-                                .scale(yScale)
-                                .tickValues(tickValueGeneratorForGather(scope.config.yDim))
-                                .tickFormat(labelGeneratorForGather(scope.config.yDim))
-                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
-                                .orient("left");
-
-                            svg.selectAll(".axis").remove();
-
                             xAxisNodes = svgGroup.append("g")
                                 .attr("class", "x axis")
                                 .attr("transform", "translate(0," + (height) + ")")
                                 .call(xAxis);
 
-                            yAxisNodes = svgGroup.append("g")
-                                .attr("class", "y axis")
-                                .call(yAxis);
-
                             xAxisNodes.selectAll('text')
-                                .style("font-size", 10);
-
-                            yAxisNodes.selectAll('text')
                                 .style("font-size", 10);
 
                             svg.selectAll(".tick line")
@@ -1827,18 +1858,6 @@
                                 .attr("height", 30)
                                 .attr("rx", 5)
                                 .attr("ry", 5);
-
-                            var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
-                                .append("g")
-                                .attr("x", 0)
-                                .attr("y", yBracketGroup)
-                                .attr("class", "y controlButtonBracketGroup")
-                                .attr("width", 80)
-                                .attr("height", heightBracketGroup)
-                                .attr("rx", 5)
-                                .attr("ry", 5);
-
-
 
                             if (scope.config.isInteractiveAxis) {
 
@@ -1944,6 +1963,63 @@
                                     });
 
 
+
+                            }
+
+
+
+
+                            xAxisBracketGroup.append("path")
+                                .attr("class", "x bracket")
+                                .transition()
+                                .duration(500)
+                                .attr("d", pathXBracket);
+
+
+
+
+                        };
+
+
+                        var drawYAxisLinesAndTicksForNominalGather = function() {
+
+
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .tickValues(tickValueGeneratorForGather(scope.config.yDim))
+                                .tickFormat(labelGeneratorForGather(scope.config.yDim))
+                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
+                                .orient("left");
+
+
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+
+                            yAxisNodes.selectAll('text')
+                                .style("font-size", 10);
+
+                            svg.selectAll(".tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "white");
+
+
+                            var yAxisBracketGroup = yAxisNodes.selectAll(".tick")
+                                .append("g")
+                                .attr("x", 0)
+                                .attr("y", yBracketGroup)
+                                .attr("class", "y controlButtonBracketGroup")
+                                .attr("width", 80)
+                                .attr("height", heightBracketGroup)
+                                .attr("rx", 5)
+                                .attr("ry", 5);
+
+
+
+                            if (scope.config.isInteractiveAxis) {
+
                                 yAxisBracketGroup
                                     .on("mouseover", function(d) {
                                         d3.select(this).selectAll("rect")
@@ -2044,16 +2120,6 @@
                                     });
 
                             }
-
-
-
-
-                            xAxisBracketGroup.append("path")
-                                .attr("class", "x bracket")
-                                .transition()
-                                .duration(500)
-                                .attr("d", pathXBracket);
-
 
                             yAxisNodes.selectAll(".tick")
                                 .append("path")
