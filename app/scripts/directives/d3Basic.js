@@ -219,11 +219,11 @@
                         };
 
 
-                        var doBinningAndSetKeys = function(dimName,numBin) {
+                        var doBinningAndSetKeys = function(dimName, numBin) {
 
                             var currentDimSetting = scope.config.dimSetting[dimName];
 
-                            currentDimSetting.binnedData = scope.data.map(binningFunc(dimName,numBin));
+                            currentDimSetting.binnedData = scope.data.map(binningFunc(dimName, numBin));
 
                         };
 
@@ -512,7 +512,18 @@
                                 return [-0.5, 0.5];
                             }
 
-                            if (scope.config.dimSetting[dim].dimType === 'ordinal') {
+                            if (scope.config.isGather === 'gather') {
+
+                                if (scope.config.dimSetting[dim].dimType === 'ordinal') {
+
+                                    return getExtentFromOriginalExtent(dim);
+
+                                } else {
+
+                                    return getExtentFromCalculatedPoints(dim);
+
+                                }
+                            } else if (scope.config.dimSetting[dim].dimType === 'ordinal') {
 
                                 return getExtentFromOriginalExtent(dim);
 
@@ -522,13 +533,7 @@
 
                             } else {
 
-                                if (scope.config.isGather === 'gather') {
-
-                                    return getExtentFromCalculatedPoints(dim);
-
-                                } else
-
-                                    return getExtentFromSortedID(dim);
+                                return getExtentFromSortedID(dim);
                             }
 
                         };
@@ -732,7 +737,7 @@
 
                         };
 
-                        var updateYScale = function () {
+                        var updateYScale = function() {
 
                             var yRange = getExtentFromCalculatedPoints(scope.config.yDim);
 
@@ -755,18 +760,18 @@
 
                             while (maxCrowdedBinCount * dotSize > norDimLength) {
 
-                                numBin = numBin + 1; 
+                                numBin = numBin + 1;
 
-                                maxCrowdedBinCount = getMaxCrowdedBinCount (dim, numBin);
+                                maxCrowdedBinCount = getMaxCrowdedBinCount(dim, numBin);
 
-                                dotSize = ordDimLength/numBin;
-                            } 
+                                dotSize = ordDimLength / numBin;
+                            }
 
                             doBinningAndSetKeys(dim, numBin);
 
                         };
 
-                        var getMaxCrowdedBinCount  = function(dim, binCount) {
+                        var getMaxCrowdedBinCount = function(dim, binCount) {
                             var values = scope.data.map(function(d) {
                                 return +d[dim];
                             });
