@@ -1464,20 +1464,30 @@
                                 numElementInLongEdge,
                                 sizeNode, lengthCandidate;
 
-                            do {
+                            if (findTypeOfXYDim === "NomNom") {
 
-                                numElementInShortEdge++;
-                                sizeNode = shortEdge / numElementInShortEdge;
-                                lengthCandidate = sizeNode * number / numElementInShortEdge;
+                                do {
 
-                            } while (lengthCandidate > longEdge);
+                                    numElementInShortEdge++;
+                                    sizeNode = shortEdge / numElementInShortEdge;
+                                    lengthCandidate = sizeNode * number / numElementInShortEdge;
 
-                            numElementInLongEdge = Math.ceil(number / numElementInShortEdge);
+                                } while (lengthCandidate > longEdge);
 
-                            return {
-                                numElementInShortEdge: numElementInShortEdge,
-                                numElementInLongEdge: numElementInLongEdge
-                            };
+                                numElementInLongEdge = Math.ceil(number / numElementInShortEdge);
+
+                                return {
+                                    numElementInShortEdge: numElementInShortEdge,
+                                    numElementInLongEdge: numElementInLongEdge
+                                };
+
+                            } else {
+
+                                return {
+                                    numElementInShortEdge: 1,
+                                    numElementInLongEdge: number
+                                };
+                            }
 
                         };
 
@@ -1847,7 +1857,7 @@
                                 .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("left");
-                            
+
                             yAxisNodes = svgGroup.append("g")
                                 .attr("class", "y axis")
                                 .call(yAxis);
