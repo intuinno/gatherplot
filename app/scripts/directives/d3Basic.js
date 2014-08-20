@@ -723,13 +723,13 @@
                             if (typeOfXYDim === 'XNomYOrd') {
                                 range = yScale.range();
                                 height = range[0] - range[1];
-                                getOptimalBinSize(scope.config.yDim, clusterSize.widthOfBox, height);
+                                getOptimalBinSize(scope.config.yDim, scope.config.xDim, clusterSize.widthOfBox, height);
                                 updateYScale();
                                 calculatePositionOfCluster(scope.config.xDim);
                             } else {
                                 range = xScale.range();
                                 height = range[1] - range[0];
-                                getOptimalBinSize(scope.config.xDim, clusterSize.heightOfBox, height);
+                                getOptimalBinSize(scope.config.xDim, scope.config.yDim, clusterSize.heightOfBox, height);
                                 updateXScale();
                                 calculatePositionOfCluster(scope.config.yDim);
                             }
@@ -761,41 +761,71 @@
 
                         };
 
-                        var getOptimalBinSize = function(dim, norDimLength, ordDimLength) {
+                        var getOptimalBinSize = function(ordDim, nomDim, norDimLength, ordDimLength) {
 
                             var numBin = Math.floor(ordDimLength / maxDotSize);
 
                             var dotSize = maxDotSize;
 
-                            var maxCrowdedBinCount = getMaxCrowdedBinCount(dim, numBin);
+                            var maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
 
                             while (maxCrowdedBinCount * dotSize > norDimLength) {
 
                                 numBin = numBin + 1;
 
-                                maxCrowdedBinCount = getMaxCrowdedBinCount(dim, numBin);
+                                maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim,nomDim, numBin);
 
                                 dotSize = ordDimLength / numBin;
                             }
 
-                            doBinningAndSetKeys(dim, numBin);
+                            doBinningAndSetKeys(ordDim, numBin);
 
                         };
 
-                        var getMaxCrowdedBinCount = function(dim, binCount) {
+                        var getMaxCrowdedBinCount = function(ordDim, nomDim, binCount) {
+
                             var values = scope.data.map(function(d) {
-                                return +d[dim];
+                                return +d[ordDim];
                             });
 
-                            var data = d3.layout.histogram()
-                                .bins(binCount)
-                                (values);
+                            var ordinalScaleForGather = d3.scale.linear().domain(d3.extent(values));
 
-                            var maxCount = d3.max(data, function(d) {
-                                return +d.y;
+
+                            var nestedData = d3.nest()
+                                .key(function(d) {
+                                    return d[nomDim];
+                                })
+                                .entries(scope.data);
+
+                            var maxValues = nestedData.map(function(d) {
+
+                                var values = d.values.map(function(d) {
+                                    return +d[ordDim];
+                                });
+
+                                var data = d3.layout.histogram()
+                                    .bins(ordinalScaleForGather.ticks(binCount))
+                                    (values);
+
+                                return d3.max(data, function(d) {
+                                    return +d.y;
+                                });
                             });
 
-                            return maxCount;
+                            return d3.max(maxValues);
+
+
+
+
+                            // var data = d3.layout.histogram()
+                            //     .bins(binCount)
+                            //     (values);
+
+                            // var maxCount = d3.max(data, function(d) {
+                            //     return +d.y;
+                            // });
+
+                            // return maxCount;
                         }
 
                         var findTypeOfXYDim = function() {
