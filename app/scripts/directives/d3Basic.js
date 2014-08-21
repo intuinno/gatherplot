@@ -551,7 +551,12 @@
 
                         var getDimType = function(dim) {
 
-                            return scope.config.dimSetting[dim].dimType;
+                            if (!dim) {
+                                return 'ordinal';
+                            } else {
+
+                                return scope.config.dimSetting[dim].dimType;
+                            }
                         };
 
                         var getExtentFromSortedID = function(dim) {
@@ -594,7 +599,7 @@
 
                             var max = calculatedPoints[calculatedPoints.length - 1];
 
-                            return [0-0.5, max+0.5];
+                            return [0 - 0.5, max + 0.5];
 
 
 
@@ -859,11 +864,8 @@
 
                         var findTypeOfXYDim = function() {
 
-                            var xDim = scope.config.xDim;
-                            var xDimType = scope.config.dimSetting[xDim].dimType;
-
-                            var yDim = scope.config.yDim;
-                            var yDimType = scope.config.dimSetting[yDim].dimType;
+                            var xDimType = getDimType(scope.config.xDim);
+                            var yDimType = getDimType(scope.config.yDim);
 
                             if (xDimType === 'ordinal' && yDimType === 'ordinal') {
                                 return 'OrdOrd';
@@ -1758,7 +1760,7 @@
                                     return a - b;
                                 });
 
-                                var binDistanceFormatter = d3.format("3,.0f");
+                            var binDistanceFormatter = d3.format("3,.0f");
 
 
                             return function(d, i) {
@@ -1811,10 +1813,14 @@
                                 return (i % samplingRate === 0);
                             });
 
+
+
                             sampledPositions = sampledPositions.map(function(d) {
-                                return d + Math.floor(samplingRate/2);
+                                return d + Math.floor(samplingRate / 2);
                             })
 
+                            sampledPositions.pop();
+                            
                             return sampledPositions;
 
                         };
@@ -1825,7 +1831,7 @@
 
                             var dimLength = originalPositions.length;
 
-                            return Math.round(dimLength / 8);
+                            return Math.floor(dimLength / 7);
 
                         }
 
