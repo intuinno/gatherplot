@@ -552,7 +552,7 @@
                         var getDimType = function(dim) {
 
                             if (!dim) {
-                                return 'ordinal';
+                                return 'nominal';
                             } else {
 
                                 return scope.config.dimSetting[dim].dimType;
@@ -1820,7 +1820,7 @@
                             })
 
                             sampledPositions.pop();
-                            
+
                             return sampledPositions;
 
                         };
