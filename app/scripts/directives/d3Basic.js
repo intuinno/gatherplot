@@ -1751,7 +1751,7 @@
 
                         var labelGeneratorForOrdinalGather = function(dim) {
 
-                            var keyValue = scope.config.dimSetting[scope.config.yDim].keyValue;
+                            var keyValue = scope.config.dimSetting[dim].keyValue;
 
                             var keys = Object.keys(keyValue)
                                 .sort(function(a, b) {
@@ -1929,7 +1929,7 @@
                             var xAxis = d3.svg.axis()
                                 .scale(xScale)
                                 .tickValues(ticks)
-                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.xDim, ticks))
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.xDim))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("bottom");
 
@@ -1954,7 +1954,7 @@
                             var yAxis = d3.svg.axis()
                                 .scale(yScale)
                                 .tickValues(ticks)
-                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim, ticks))
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("left");
 
