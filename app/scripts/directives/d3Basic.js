@@ -877,7 +877,7 @@
 
                         };
 
-                        var calculatePosiitionOfNodesForNomNomGather = function() {
+                        var calculatePositionOfNodesForNomNomGather = function() {
 
                             calculatePositionOfCluster(scope.config.xDim);
                             calculatePositionOfCluster(scope.config.yDim);
@@ -1552,7 +1552,7 @@
                                 numElementInLongEdge,
                                 sizeNode, lengthCandidate;
 
-                            if (findTypeOfXYDim === "NomNom") {
+                            if (findTypeOfXYDim() === "NomNom") {
 
                                 do {
 
