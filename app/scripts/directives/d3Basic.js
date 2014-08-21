@@ -482,9 +482,20 @@
                                     return +d.value.calculatedPosition;
                                 });
 
+                            if (isDimTypeNumerical(getDimType(dim))) {
+
+                                calculatedPosition.sort(function(a, b) {
+                                    return a - b;
+                                });
+
+                            }
+
                             return calculatedPosition;
 
+
                         };
+
+
 
                         var getSortedIDs = function(dim) {
 
@@ -569,6 +580,21 @@
                             max = max + maxPadding;
 
                             return [0, max];
+
+
+
+
+                        };
+
+                        var getExtentFromCalculatedPointsForBinnedGather = function(dim) {
+
+                            calculatePositionOfClusterForBinnedGather(dim);
+
+                            var calculatedPoints = getCalculatedPositions(dim);
+
+                            var max = calculatedPoints[calculatedPoints.length - 1];
+
+                            return [0-0.5, max+0.5];
 
 
 
@@ -724,22 +750,25 @@
                                 range = yScale.range();
                                 height = range[0] - range[1];
                                 getOptimalBinSize(scope.config.yDim, scope.config.xDim, clusterSize.widthOfBox, height);
+
                                 updateYScale();
                                 calculatePositionOfCluster(scope.config.xDim);
                             } else {
                                 range = xScale.range();
                                 height = range[1] - range[0];
                                 getOptimalBinSize(scope.config.xDim, scope.config.yDim, clusterSize.heightOfBox, height);
+
                                 updateXScale();
                                 calculatePositionOfCluster(scope.config.yDim);
                             }
 
-
                         };
+
+
 
                         var updateYScale = function() {
 
-                            var yRange = getExtentFromCalculatedPoints(scope.config.yDim);
+                            var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.config.yDim);
 
                             yScale = d3.scale.linear().range([height, 0]);
                             yScale.domain(yRange);
@@ -751,7 +780,7 @@
 
                         var updateXScale = function() {
 
-                            var xRange = getExtentFromCalculatedPoints(scope.config.xDim);
+                            var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.config.xDim);
 
                             xScale = d3.scale.linear().range([0, width]);
                             xScale.domain(xRange);
@@ -773,7 +802,7 @@
 
                                 numBin = numBin + 1;
 
-                                maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim,nomDim, numBin);
+                                maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
 
                                 dotSize = ordDimLength / numBin;
                             }
@@ -866,7 +895,11 @@
                             var increment;
                             var previousIncrement;
 
+
+
                             d3.map(keyValue).entries().forEach(function(d, i, all) {
+
+
                                 if (i === 0) {
                                     if (d.value.isMinimized === true) {
 
@@ -910,6 +943,27 @@
 
                         };
 
+                        var calculatePositionOfClusterForBinnedGather = function(dim) {
+
+
+                            var keyValue = scope.config.dimSetting[dim].keyValue;
+
+                            var keys = Object.keys(keyValue);
+
+                            keys.sort(function(a, b) {
+                                return a - b;
+                            });
+
+                            for (var i = 0; i < keys.length; i++) {
+
+                                keyValue[keys[i]].value = {};
+
+                                keyValue[keys[i]].value.calculatedPosition = i + 0.5;
+                            }
+
+                        };
+
+
                         var getPositionValueFunc = function(dimName) {
 
                             if (!dimName) {
@@ -941,6 +995,10 @@
                                 var binKey = +scope.config.dimSetting[dimNameClosure].binnedData[d.id];
                                 if (!scope.config.dimSetting[dimNameClosure].keyValue[binKey]) {
 
+                                    console.log(binKey);
+                                }
+
+                                if (binKey === 138) {
                                     console.log(binKey);
                                 }
 
@@ -1691,19 +1749,23 @@
 
                         };
 
-                        var labelGeneratorForOrdinalGather = function(dimName) {
+                        var labelGeneratorForOrdinalGather = function(dim) {
 
-                            var samplingRate = getSamplingRateForOrdinalGather(dimName);
+                            var keyValue = scope.config.dimSetting[scope.config.yDim].keyValue;
 
-                            var binDistanceFormatter = d3.format("3,.0f");
+                            var keys = Object.keys(keyValue)
+                                .sort(function(a, b) {
+                                    return a - b;
+                                });
+
+                                var binDistanceFormatter = d3.format("3,.0f");
+
 
                             return function(d, i) {
 
-                                var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i * samplingRate];
+                                return binDistanceFormatter(+keys[d]);
 
-                                return binDistanceFormatter(+binValue);
                             };
-
 
 
                         };
@@ -1748,6 +1810,10 @@
                             var sampledPositions = originalPositions.filter(function(d, i) {
                                 return (i % samplingRate === 0);
                             });
+
+                            sampledPositions = sampledPositions.map(function(d) {
+                                return d + Math.floor(samplingRate/2);
+                            })
 
                             return sampledPositions;
 
@@ -1858,10 +1924,12 @@
 
                         var drawXAxisLinesAndTicksForOrdinalGather = function() {
 
+                            var ticks = tickValueGeneratorForOrdinalGather(scope.config.xDim);
+
                             var xAxis = d3.svg.axis()
                                 .scale(xScale)
-                                .tickValues(tickValueGeneratorForOrdinalGather(scope.config.xDim))
-                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.xDim))
+                                .tickValues(ticks)
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.xDim, ticks))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("bottom");
 
@@ -1881,10 +1949,12 @@
 
                         var drawYAxisLinesAndTicksForOrdinalGather = function() {
 
+                            var ticks = tickValueGeneratorForOrdinalGather(scope.config.yDim);
+
                             var yAxis = d3.svg.axis()
                                 .scale(yScale)
-                                .tickValues(tickValueGeneratorForOrdinalGather(scope.config.yDim))
-                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
+                                .tickValues(ticks)
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim, ticks))
                                 .tickSize(12, 0) //Provides 0 size ticks at center position for gather
                                 .orient("left");
 

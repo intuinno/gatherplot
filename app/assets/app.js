@@ -58897,7 +58897,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
 
 
                         $scope.nomaConfig.xDim = 'Cylinders';
-                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.yDim = 'Horsepower';
                         $scope.nomaConfig.colorDim = 'Origin';
 
                         $scope.nomaConfig.isGather = 'gather';

@@ -732,7 +732,7 @@
 
 
                         $scope.nomaConfig.xDim = 'Cylinders';
-                        $scope.nomaConfig.yDim = 'MPG';
+                        $scope.nomaConfig.yDim = 'Horsepower';
                         $scope.nomaConfig.colorDim = 'Origin';
 
                         $scope.nomaConfig.isGather = 'gather';
