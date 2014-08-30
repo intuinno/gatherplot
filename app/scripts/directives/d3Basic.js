@@ -758,7 +758,7 @@
                                 return xScale(xValue(d));
                             };
 
-                            yScale = d3.scale.linear().range([virtualAxisLength, 0]);
+                            yScale = d3.scale.linear().range([height, height-virtualAxisLength]);
                             yScale.domain(yRange);
                             yMap = function(d) {
                                 return yScale(yValue(d));
@@ -1912,8 +1912,12 @@
                                     return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
                                 });
 
+                            var angleRad = Math.atan(height/width);
 
-                            nodeGroup.attr("transform", "translate(80, -220) rotate(65 80 660)");
+                            var angleDeg = 90 - angleRad * 180 / Math.PI;
+
+
+                            nodeGroup.attr("transform", " translate(" + margin + "," + margin +")  rotate(" + angleDeg + "," + "0" + "," + yScale.range()[0]  + ")");
 
                         };
 
