@@ -758,7 +758,7 @@
                                 return xScale(xValue(d));
                             };
 
-                            yScale = d3.scale.linear().range([height, height-virtualAxisLength]);
+                            yScale = d3.scale.linear().range([height, height - virtualAxisLength]);
                             yScale.domain(yRange);
                             yMap = function(d) {
                                 return yScale(yValue(d));
@@ -1912,12 +1912,12 @@
                                     return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
                                 });
 
-                            var angleRad = Math.atan(height/width);
+                            var angleRad = Math.atan(height / width);
 
                             var angleDeg = 90 - angleRad * 180 / Math.PI;
 
 
-                            nodeGroup.attr("transform", " translate(" + margin + "," + margin +")  rotate(" + angleDeg + "," + "0" + "," + yScale.range()[0]  + ")");
+                            nodeGroup.attr("transform", " translate(" + margin + "," + margin + ")  rotate(" + angleDeg + "," + "0" + "," + yScale.range()[0] + ")");
 
                         };
 
@@ -1963,7 +1963,7 @@
                                 };
                             } else if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
 
-                                var binDistanceFormatter = d3.format("3,.0f");
+                                var binDistanceFormatter = d3.format("3,.2f");
 
                                 return function(d, i) {
 
@@ -2271,7 +2271,12 @@
 
                             var ticks = tickValueGeneratorForOrdinalGather(scope.config.xDim);
 
-                            var xScaleForSameOrdDimGather = d3.scale.linear().domain([8, 120]).range([0, 600])
+                            var calculatedPositions  = getCalculatedPositions(scope.config.xDim);
+
+                            var domain = [calculatedPositions[0], calculatedPositions[calculatedPositions.length-1]];
+
+                          
+                            var xScaleForSameOrdDimGather = d3.scale.linear().domain(domain).range([0, width]);
 
                             var xAxis = d3.svg.axis()
                                 .scale(xScaleForSameOrdDimGather)
@@ -2298,7 +2303,13 @@
 
 
                             var ticks = tickValueGeneratorForOrdinalGather(scope.config.yDim);
-                            var yScaleForSameOrdDimGather = d3.scale.linear().domain([-80, 120]).range([600, 0])
+
+                            var calculatedPositions  = getCalculatedPositions(scope.config.xDim);
+
+                            var domain = [calculatedPositions[0], calculatedPositions[calculatedPositions.length-1]];
+
+            
+                            var yScaleForSameOrdDimGather = d3.scale.linear().domain(domain).range([height, 0])
 
                             var yAxis = d3.svg.axis()
                                 .scale(yScaleForSameOrdDimGather)
