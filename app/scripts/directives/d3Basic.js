@@ -1838,7 +1838,7 @@
                         var writeNodesInSVG = function() {
                             // debugger;
 
-                nodeGroup.attr("transform", "translate(80, 80) rotate(0 80 660)");
+                            nodeGroup.attr("transform", "translate(80, 80) rotate(0 80 660)");
 
 
                             nodeGroup.selectAll(".dot")
@@ -1913,7 +1913,7 @@
                                 });
 
 
-                             nodeGroup.attr("transform", "translate(80, -220) rotate(65 80 660)");
+                            nodeGroup.attr("transform", "translate(80, -220) rotate(65 80 660)");
 
                         };
 
@@ -2032,6 +2032,35 @@
 
                         };
 
+                        var tickValueGeneratorForSameOrdGather = function(dimName) {
+
+                            if (!dimName) {
+                                return [];
+
+                            }
+
+
+                            var originalPositions = getCalculatedPositions(dimName);
+
+
+                            var samplingRate = getSamplingRateForOrdinalGather(dimName);
+
+                            var sampledPositions = originalPositions.filter(function(d, i) {
+                                return (i % samplingRate === 0);
+                            });
+
+
+
+                            sampledPositions = sampledPositions.map(function(d) {
+                                return d + Math.floor(samplingRate / 0.5);
+                            })
+
+                            sampledPositions.pop();
+
+                            return sampledPositions;
+
+                        };
+
                         var tickValueGeneratorForOrdinalGather = function(dimName) {
 
                             if (!dimName) {
@@ -2084,8 +2113,9 @@
 
                             restoreXYScaleForSameOrdDimGather();
 
-                            drawAxesLinesAndTicks();
+                            drawAxesLinesAndTicksForSameOrdDimGather();
                             drawAxesLabel();
+                            setStylesForAxesAndTicks();
 
                         };
 
@@ -2128,6 +2158,14 @@
                             drawYAxisLinesAndTicksForScatter();
 
                         };
+
+                        var drawAxesLinesAndTicksForSameOrdDimGather = function() {
+
+                            svg.selectAll(".axis").remove();
+
+                            drawXAxisLinesAndTicksForSameOrdDimGather();
+                            drawYAxisLinesAndTicksForSameOrdDimGather();
+                        }
 
                         var drawXAxisLinesAndTicksForScatter = function() {
 
@@ -2172,6 +2210,9 @@
                                 .style("stroke", "black");
 
                         };
+
+
+
 
                         var drawXAxisLinesAndTicksForOrdinalGather = function() {
 
@@ -2219,6 +2260,60 @@
                             svg.selectAll(".y .tick line")
                                 .style("stroke-width", 1)
                                 .style("stroke", "black");
+
+                        };
+
+                        var drawXAxisLinesAndTicksForSameOrdDimGather = function() {
+
+                            var ticks = tickValueGeneratorForOrdinalGather(scope.config.xDim);
+
+                            var xScaleForSameOrdDimGather = d3.scale.linear().domain([8, 120]).range([0, 600])
+
+                            var xAxis = d3.svg.axis()
+                                .scale(xScaleForSameOrdDimGather)
+                                .tickValues(ticks)
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.xDim))
+                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
+                                .orient("bottom");
+
+                            xAxisNodes = svgGroup.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + (height) + ")")
+                                .call(xAxis);
+
+                            xAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+                            svg.selectAll(".x .tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
+
+                        };
+
+                        var drawYAxisLinesAndTicksForSameOrdDimGather = function() {
+
+
+                            var ticks = tickValueGeneratorForOrdinalGather(scope.config.yDim);
+                            var yScaleForSameOrdDimGather = d3.scale.linear().domain([-80, 120]).range([600, 0])
+
+                            var yAxis = d3.svg.axis()
+                                .scale(yScaleForSameOrdDimGather)
+                                .tickValues(ticks)
+                                .tickFormat(labelGeneratorForOrdinalGather(scope.config.yDim))
+                                .tickSize(12, 0) //Provides 0 size ticks at center position for gather
+                                .orient("left");
+
+                            yAxisNodes = svgGroup.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+                            yAxisNodes.selectAll('text')
+                                .style("font-size", 12);
+
+                            svg.selectAll(".y .tick line")
+                                .style("stroke-width", 1)
+                                .style("stroke", "black");
+
 
                         };
 
