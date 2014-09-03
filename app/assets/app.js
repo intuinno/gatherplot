@@ -58896,7 +58896,7 @@ angular.module('ui.sortable', []).value('uiSortableConfig', {}).directive('uiSor
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.xDim = 'MPG';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
