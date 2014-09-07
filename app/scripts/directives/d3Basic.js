@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('myApp.directives')
-        .directive('nomarect',
+        .directive('gatherplot',
             function() {
                 return {
                     restrict: 'EA',

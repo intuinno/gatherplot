@@ -9,6 +9,8 @@
 
                 };
 
+                $scope.configMatrix = [];
+
                 $scope.customCSV = "";
 
 
@@ -738,6 +740,33 @@
                         $scope.nomaConfig.isGather = 'gather';
                         $scope.isCarsOpen = true;
                         $scope.nomaConfig.relativeMode = 'absolute';
+
+                        $scope.configMatrix = [];
+
+                        for (var xIndex in $scope.nomaConfig.dims) {
+
+                            var xTemp = [];
+
+                            for (var yIndex in $scope.nomaConfig.dims) {
+
+                                var temp = {};
+
+                                temp.SVGAspectRatio = 1.4;
+                                temp.colorDim = '';
+                                temp.isGather = 'gather';
+                                temp.isInteractiveAxis = false;
+                                temp.relativeMode = 'absolute';
+                                temp.dims = $scope.nomaConfig.dims;
+                                temp.xDim = $scope.nomaConfig.dims[xIndex];
+                                temp.yDim = $scope.nomaConfig.dims[yIndex];
+
+                                xTemp.push(temp);
+
+                            }
+
+                            $scope.configMatrix.push(xTemp);
+
+                        }
 
                         $scope.$apply();
 

@@ -63,7 +63,23 @@
                     <div>
                         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
                     </div>
-                    <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+
+
+                    <!-- Matrix -->
+
+                    <div ng-repeat="yConfig in configMatrix">
+
+                        <div ng-repeat="xConfig in yConfig">
+
+                            <gatherplot data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></gatherplot>
+
+
+                        </div>
+
+                    </div>
+
+
                     <div class="chart-simple-interface">
                         <h5>Show me
 
@@ -117,10 +133,11 @@
                                                 <div class="form-group">
                                                     <div ng-class="{tryMe: isBinSizeFocused}">
 
-                                                        Data Binning Size: <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="input-mini ">
-                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1"  >
+                                                        Data Binning Size:
+                                                        <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="input-mini ">
+                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1">
 
-                                                        
+
                                                         <span class="error" ng-show="DemoCtrl.binSize.$error.number">
 
                                                             Not valid number!</span>
@@ -142,10 +159,11 @@
                                         <td>
                                             <div name="CSVurlForm">
 
-                                                Load CSV: {{customCSV}} <br> 
+                                                Load CSV: {{customCSV}}
+                                                <br>
 
-                                                <input clas="input-xxlarge search-query" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV"> 
-                                                <a  href="" class="btn btn-sm btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
+                                                <input clas="input-xxlarge search-query" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV">
+                                                <a href="" class="btn btn-sm btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
 
                                                 <alert class="error" ng-show="csvInput.$error.url">Not valid url!</alert>
 
@@ -426,7 +444,7 @@
         var disqus_shortname = 'gatherplot'; // required: replace example with your forum shortname
 
         /* * * DON'T EDIT BELOW THIS LINE * * */
-         (function() {
+        (function() {
             var dsq = document.createElement('script');
             dsq.type = 'text/javascript';
             dsq.async = true;
