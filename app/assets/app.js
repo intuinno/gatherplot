@@ -58477,6 +58477,7 @@ angular.module('ui.sortable', [])
                         $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                         $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                         $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+                        loadGPLOM();
 
                         $scope.$apply();
 
@@ -58624,7 +58625,7 @@ angular.module('ui.sortable', [])
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 4000;
+                    var numberOfEntity = 3000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -58682,6 +58683,8 @@ angular.module('ui.sortable', [])
 
                     $scope.nomaConfig.relativeMode = 'absolute';
 
+                    loadGPLOM();
+
                     // $scope.$apply();
 
 
@@ -58734,7 +58737,7 @@ angular.module('ui.sortable', [])
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 5000;
+                    var numberOfEntity = 2000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -58784,6 +58787,8 @@ angular.module('ui.sortable', [])
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
                     $scope.nomaConfig.isGather = 'scatter';
+
+                    loadGPLOM();
 
                     resetTutMsg();
 
@@ -58956,7 +58961,7 @@ angular.module('ui.sortable', [])
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'MPG';
+                        $scope.nomaConfig.xDim = 'Cylinders';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
@@ -58964,7 +58969,23 @@ angular.module('ui.sortable', [])
                         $scope.isCarsOpen = true;
                         $scope.nomaConfig.relativeMode = 'absolute';
 
-                        $scope.configMatrix = [];
+                        loadGPLOM();
+
+                        
+                        $scope.$apply();
+
+
+
+                    });
+
+
+
+
+                };
+
+                var loadGPLOM = function() {
+
+                $scope.configMatrix = [];
 
                         for (var xIndex in $scope.nomaConfig.dims) {
 
@@ -58991,17 +59012,8 @@ angular.module('ui.sortable', [])
                             $scope.configMatrix.push(xTemp);
 
                         }
+                    };
 
-                        $scope.$apply();
-
-
-
-                    });
-
-
-
-
-                };
 
                 $scope.changeConfigCarsScatterplots = function() {
 

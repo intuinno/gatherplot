@@ -170,6 +170,7 @@
                         var reloadDataToSVG = function() {
 
                             svgGroup.selectAll("*").remove();
+                            nodeGroup.selectAll(".dot").remove();
 
                             if (scope.config.matrixMode === false ) {
 

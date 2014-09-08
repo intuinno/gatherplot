@@ -262,6 +262,7 @@
                         $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                         $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                         $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
+                        loadGPLOM();
 
                         $scope.$apply();
 
@@ -409,7 +410,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 4000;
+                    var numberOfEntity = 3000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -467,6 +468,8 @@
 
                     $scope.nomaConfig.relativeMode = 'absolute';
 
+                    loadGPLOM();
+
                     // $scope.$apply();
 
 
@@ -519,7 +522,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 5000;
+                    var numberOfEntity = 2000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -569,6 +572,8 @@
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
                     $scope.nomaConfig.isGather = 'scatter';
+
+                    loadGPLOM();
 
                     resetTutMsg();
 
@@ -741,7 +746,7 @@
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'MPG';
+                        $scope.nomaConfig.xDim = 'Cylinders';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
@@ -749,7 +754,23 @@
                         $scope.isCarsOpen = true;
                         $scope.nomaConfig.relativeMode = 'absolute';
 
-                        $scope.configMatrix = [];
+                        loadGPLOM();
+
+                        
+                        $scope.$apply();
+
+
+
+                    });
+
+
+
+
+                };
+
+                var loadGPLOM = function() {
+
+                $scope.configMatrix = [];
 
                         for (var xIndex in $scope.nomaConfig.dims) {
 
@@ -776,17 +797,8 @@
                             $scope.configMatrix.push(xTemp);
 
                         }
+                    };
 
-                        $scope.$apply();
-
-
-
-                    });
-
-
-
-
-                };
 
                 $scope.changeConfigCarsScatterplots = function() {
 
