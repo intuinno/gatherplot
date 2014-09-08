@@ -19,14 +19,16 @@
 
                         //Constants and Setting Environment variables 
 
-                        var margin;
+                        var margin = 80;
+
+                        
+                        var maxDotSize = 5;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
-                        } else {
-                            margin = 80;
-                        }
-                        var maxDotSize = 5;
+                            maxDotSize = 1;
+                        } 
+
                         var width = 1040;
                         var height = 820;
                         var outerWidth = width + 2 * margin;
@@ -169,6 +171,8 @@
 
                             svgGroup.selectAll("*").remove();
 
+                            if (scope.config.matrixMode === false ) {
+
                             nodeGroup.selectAll(".dot")
                                 .data(scope.data)
                                 .enter().append("rect")
@@ -188,6 +192,36 @@
                                         .duration(500)
                                         .style("opacity", 0);
                                 });
+
+                            } else {
+
+                                nodeGroup.selectAll(".dot")
+                                .data(scope.data)
+                                .enter().append("rect")
+                                .attr("class", "dot");
+
+                                svg.on("mouseover", function(d) {
+                                    tooltip.transition()
+                                        .duration(200)
+                                        .style("opacity", 0.9);
+
+
+                                    tooltip.html(scope.config.xDim +  " vs " + scope.config.yDim)
+                                        .style("left", (d3.event.pageX + 5) + "px")
+                                        .style("top", (d3.event.pageY - 28) + "px");
+                                })
+                                .on("mouseout", function(d) {
+                                    tooltip.transition()
+                                        .duration(500)
+                                        .style("opacity", 0);
+                                })
+                                .on("click", function(d) {
+
+                                    return scope.onClick({item:{xDim: scope.config.xDim, yDim: scope.config.yDim}}) ; 
+                                });
+
+
+                            }
 
 
                             scope.config.dimSetting = {};
@@ -492,6 +526,8 @@
                         };
 
                         var drawBoundaryForMatrix = function() {
+
+                            svgGroup.selectAll(".matrixFrame").remove();
 
                             svgGroup.append("rect")
                                     .attr("class", "matrixFrame")
@@ -1296,6 +1332,8 @@
                         };
 
                         var assignSizeOfNodesForScatterAndJitter = function() {
+
+
 
                             scope.data.forEach(function(d) {
 

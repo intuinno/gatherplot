@@ -58268,7 +58268,14 @@ angular.module('ui.sortable', [])
                 };
 
                 $scope.d3OnClick = function(item) {
-                    alert(item.name);
+
+                    $scope.$apply(function() {
+
+                        $scope.nomaConfig.xDim = item.xDim;
+                        $scope.nomaConfig.yDim = item.yDim;
+
+                    });
+                    // alert(item.name);
                 };
 
                 $scope.changeActiveDataCustomCSV = function(customCSV) {

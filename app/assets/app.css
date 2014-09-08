@@ -6216,7 +6216,8 @@ div .matrixRow {
 }
 
 div.matrixGroup {
-  width: 50%;
+  width: 90%;
+  margin: 0 auto; 
 }
 
 div .GPLOM {
@@ -6226,8 +6227,12 @@ div .GPLOM {
   display:inline-block;
   cursor:pointer;
   /*border: 1px;*/
-  fill:none;
+  
   /*stroke:black;*/
+}
+
+div .GPLOM:hover{
+  background-color: gray;
 }
 
 div.clusterControlBox {   

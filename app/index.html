@@ -40,7 +40,7 @@
     </div>
     <div class="container" ng-controller="DemoCtrl">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-7">
                 <div>
                     <h5>
                         <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
@@ -66,19 +66,7 @@
                     <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" ></div>
 
 
-                    <!-- Matrix -->
-
-                    <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
-
-                        <div class="matrixRow" ng-repeat="xConfig in yConfig">
-
-                            <div gatherplot class="GPLOM" data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
-
-
-                        </div>
-
-                    </div>
-
+                    
 
                     <div class="chart-simple-interface">
                         <h5>Show me
@@ -197,7 +185,7 @@
                 </accordion>
             </div>
             <!--/span-->
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <div class="sidebar-nav">
                     <h3>Guided Tours</h3>
                     <accordion close-others="true">
@@ -431,6 +419,20 @@
                         </accordion-group>
 
                     </accordion>
+
+                    <!-- Matrix -->
+
+                    <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
+
+                        <div class="matrixRow" ng-repeat="xConfig in yConfig">
+
+                            <div gatherplot class="GPLOM" data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+
+
+                        </div>
+
+                    </div>
+
                 </div>
                 <!--/.well -->
             </div>
