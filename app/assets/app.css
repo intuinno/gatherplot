@@ -6209,6 +6209,14 @@ button.close {
 
 }
 
+/*.matrixFrame:hover { 
+   fill: none;
+  stroke: red;
+  stroke-width: 3px;
+  shape-rendering: crispEdges;
+
+}*/
+
 div .matrixRow {
   display:inline-block;
   /*padding:px;*/
@@ -6233,6 +6241,9 @@ div .GPLOM {
 
 div .GPLOM:hover{
   background-color: gray;
+  stroke: red;
+  stroke-width: 3px;
+  shape-rendering: crispEdges;
 }
 
 div.clusterControlBox {   
