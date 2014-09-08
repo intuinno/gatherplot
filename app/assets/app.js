@@ -58966,7 +58966,7 @@ angular.module('ui.sortable', [])
 
                                 var temp = {};
 
-                                temp.SVGAspectRatio = 1.4;
+                                temp.SVGAspectRatio = 1;
                                 temp.colorDim = '';
                                 temp.isGather = 'gather';
                                 temp.isInteractiveAxis = false;

@@ -70,9 +70,9 @@
 
                     <div ng-repeat="yConfig in configMatrix">
 
-                        <div ng-repeat="xConfig in yConfig">
+                        <div class="matrixRow" ng-repeat="xConfig in yConfig">
 
-                            <gatherplot data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></gatherplot>
+                            <div gatherplot class="GPLOM" data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
 
 
                         </div>

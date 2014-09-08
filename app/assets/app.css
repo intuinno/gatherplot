@@ -6202,6 +6202,19 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
+div .matrixRow {
+  display:inline-block;
+}
+
+
+div .GPLOM {
+
+  width:250px;
+  height:250px;
+  display:inline-block;
+  cursor:pointer;
+}
+
 div.clusterControlBox {   
          
   text-align: center;           
