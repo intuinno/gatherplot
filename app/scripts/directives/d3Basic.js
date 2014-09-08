@@ -19,7 +19,13 @@
 
                         //Constants and Setting Environment variables 
 
-                        var margin = 80;
+                        var margin;
+
+                        if (scope.config.matrixMode === true) {
+                            margin = 5;
+                        } else {
+                            margin = 80;
+                        }
                         var maxDotSize = 5;
                         var width = 1040;
                         var height = 820;
@@ -420,7 +426,15 @@
                             // XPadding = 60;
                             // YPadding = 30;
                             //Update size of SVG
-                            outerWidth = d3.select(iElement[0]).node().offsetWidth;
+
+                            if (scope.config.matrixMode === false) {
+                                outerWidth = d3.select(iElement[0]).node().offsetWidth;
+                            } else {
+                                outerWidth = d3.select(".matrixGroup").node().offsetWidth;
+
+                                outerWidth = outerWidth / (scope.config.dims.length+1);
+
+                            }
                             // calculate the height
                             outerHeight = outerWidth / config.SVGAspectRatio;
 
@@ -445,20 +459,50 @@
 
                         var drawPlot = function() {
 
-                            if (isSameOrdDimGather()) {
+                            drawNodes();
 
-                                drawNodesForSameOrdDimGather();
-                                drawAxesForSameOrdDimGather();
+                            // drawAxes();
 
+                            // drawLegends();
 
+                            handleAxesConsiderMatrix();
+                            handleLegendsConsiderMatrix();
+
+                        };
+
+                        var handleAxesConsiderMatrix = function() {
+
+                            if (scope.config.matrixMode === false) {
+
+                                drawAxes();
                             } else {
 
-                                drawNodes();
-                                drawAxes();
+                                // drawAxes();
 
+                                drawBoundaryForMatrix();
                             }
+                        };
 
-                            drawLegends();
+                        var handleLegendsConsiderMatrix = function() {
+
+                            if (scope.config.matrixMode === false) {
+
+                                drawLegends();
+                            }
+                        };
+
+                        var drawBoundaryForMatrix = function() {
+
+                            svgGroup.append("rect")
+                                    .attr("class", "matrixFrame")
+                                    .attr("x", -margin)
+                                    .attr("y", -margin)
+                                    .attr("width", width+2*margin-2)
+                                    .attr("height", height+2*margin-2);
+
+
+
+
 
                         };
 
@@ -487,13 +531,28 @@
                         };
 
                         var drawNodes = function() {
+
+                            if (isSameOrdDimGather()) {
+
+                                drawNodesForSameOrdDimGather();
+
+                            } else {
+
+                                drawNodesForDifferentDim();
+                            }
+
+
+                        };
+
+                        var drawNodesForDifferentDim = function() {
+
                             prepareScale();
 
                             calculateParametersOfNodes();
 
                             drawNodesInSVG();
 
-                        };
+                        }
 
                         var calculateParametersOfNodes = function() {
 
@@ -1838,7 +1897,7 @@
                         var writeNodesInSVG = function() {
                             // debugger;
 
-                            nodeGroup.attr("transform", "translate(80, 80) rotate(0 80 660)");
+                            nodeGroup.attr("transform", "translate(" + margin + "," + margin + ") rotate(0 80 660)");
 
 
                             nodeGroup.selectAll(".dot")
@@ -2107,11 +2166,22 @@
 
                         var drawAxes = function() {
 
+                            if (isSameOrdDimGather()) {
+
+                                drawAxesForSameOrdDimGather();
+                            } else {
+
+                                drawAxesForDifferentDim();
+                            }
+
+                        };
+
+                        var drawAxesForDifferentDim = function() {
 
                             drawAxesLinesAndTicks();
                             drawAxesLabel();
 
-                        };
+                        }
 
                         var drawAxesForSameOrdDimGather = function() {
 
@@ -2271,11 +2341,11 @@
 
                             var ticks = tickValueGeneratorForOrdinalGather(scope.config.xDim);
 
-                            var calculatedPositions  = getCalculatedPositions(scope.config.xDim);
+                            var calculatedPositions = getCalculatedPositions(scope.config.xDim);
 
-                            var domain = [calculatedPositions[0], calculatedPositions[calculatedPositions.length-1]];
+                            var domain = [calculatedPositions[0], calculatedPositions[calculatedPositions.length - 1]];
 
-                          
+
                             var xScaleForSameOrdDimGather = d3.scale.linear().domain(domain).range([0, width]);
 
                             var xAxis = d3.svg.axis()
@@ -2304,11 +2374,11 @@
 
                             var ticks = tickValueGeneratorForOrdinalGather(scope.config.yDim);
 
-                            var calculatedPositions  = getCalculatedPositions(scope.config.xDim);
+                            var calculatedPositions = getCalculatedPositions(scope.config.xDim);
 
-                            var domain = [calculatedPositions[0], calculatedPositions[calculatedPositions.length-1]];
+                            var domain = [calculatedPositions[0], calculatedPositions[calculatedPositions.length - 1]];
 
-            
+
                             var yScaleForSameOrdDimGather = d3.scale.linear().domain(domain).range([height, 0])
 
                             var yAxis = d3.svg.axis()
@@ -2588,7 +2658,7 @@
                                 .attr("x", 0)
                                 .attr("y", yBracketGroup)
                                 .attr("class", "y controlButtonBracketGroup")
-                                .attr("width", 80)
+                                .attr("width", margin)
                                 .attr("height", heightBracketGroup)
                                 .attr("rx", 5)
                                 .attr("ry", 5);
@@ -2653,7 +2723,7 @@
                                     .attr("x", 10)
                                     .attr("y", -2)
                                     .attr("class", "y controlButtonBracket")
-                                    .attr("width", 80)
+                                    .attr("width", margin)
                                     .attr("height", 14)
                                     .attr("rx", 5)
                                     .attr("ry", 5)
@@ -2677,7 +2747,7 @@
                                     .attr("x", 100)
                                     .attr("y", -2)
                                     .attr("class", "y controlButtonBracket")
-                                    .attr("width", 80)
+                                    .attr("width", margin)
                                     .attr("height", 14)
                                     .attr("rx", 5)
                                     .attr("ry", 5)

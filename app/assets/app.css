@@ -6202,17 +6202,32 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
-div .matrixRow {
-  display:inline-block;
+.matrixFrame { 
+   fill: none;
+  stroke: #aaa;
+  shape-rendering: crispEdges;
+
 }
 
+div .matrixRow {
+  display:inline-block;
+  /*padding:px;*/
+
+}
+
+div.matrixGroup {
+  width: 50%;
+}
 
 div .GPLOM {
 
-  width:250px;
-  height:250px;
+/*  width:100px;
+  height:100px;*/
   display:inline-block;
   cursor:pointer;
+  /*border: 1px;*/
+  fill:none;
+  /*stroke:black;*/
 }
 
 div.clusterControlBox {   

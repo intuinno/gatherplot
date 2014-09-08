@@ -25,6 +25,7 @@
                 $scope.nomaConfig.relativeModes = [false, true];
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
+                $scope.nomaConfig.matrixMode = false;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
                 $scope.nomaConfig.isInteractiveAxis = true;
@@ -759,6 +760,7 @@
                                 temp.dims = $scope.nomaConfig.dims;
                                 temp.xDim = $scope.nomaConfig.dims[xIndex];
                                 temp.yDim = $scope.nomaConfig.dims[yIndex];
+                                temp.matrixMode = true;
 
                                 xTemp.push(temp);
 
