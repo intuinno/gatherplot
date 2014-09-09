@@ -58282,8 +58282,8 @@ angular.module('ui.sortable', [])
                     $window.open('/gplom.html', '_blank');
                 };
 
-                $scope.openSPLOM = function() {
-                    $window.open('/splom.html', '_blank');
+                $scope.openGPLOMNav = function() {
+                    $window.open('/indexmatrixNav.html', '_blank');
                 };
 
 
