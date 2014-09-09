@@ -207,7 +207,7 @@
                                         .style("opacity", 0.9);
 
 
-                                    tooltip.html(scope.config.xDim +  " vs " + scope.config.yDim)
+                                    tooltip.html("<h3>"+  scope.config.xDim +  " vs " + scope.config.yDim + "</h3>")
                                         .style("left", (d3.event.pageX + 5) + "px")
                                         .style("top", (d3.event.pageY - 28) + "px");
                                 })
@@ -467,7 +467,7 @@
                             } else {
                                 outerWidth = d3.select(".matrixGroup").node().offsetWidth;
 
-                                outerWidth = outerWidth / (scope.config.dims.length+1);
+                                outerWidth = outerWidth / (scope.config.dims.length) - 10;
 
                             }
                             // calculate the height

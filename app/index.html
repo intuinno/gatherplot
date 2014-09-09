@@ -11,8 +11,8 @@
 
 <body data-ng-app="myApp">
     <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="container">
+        <div class="container-fluid">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="glyphicon glyphicon-bar"></span>
@@ -38,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="container" ng-controller="DemoCtrl">
+    <div class="container-fluid" ng-controller="DemoCtrl">
         <div class="row">
             <div class="col-md-7">
                 <div>
@@ -63,10 +63,10 @@
                     <div>
                         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
                     </div>
-                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" ></div>
+                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
 
 
-                    
+
 
                     <div class="chart-simple-interface">
                         <h5>Show me
@@ -185,7 +185,7 @@
                 </accordion>
             </div>
             <!--/span-->
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div class="sidebar-nav">
                     <h3>Guided Tours</h3>
                     <accordion close-others="true">
@@ -356,6 +356,45 @@
                         </accordion-group>
 
 
+                        <accordion-group is-open="isMatrixOpen">
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMatrixOpen, 'glyphicon-chevron-right': !isMatrixOpen}"></i>
+                                Gatherplot matrices (GPLOM)
+                            </accordion-heading>
+
+                            <div>
+
+                                <table class="table table-hover table-condensed">
+
+                                    <tr>
+                                        You can create Gatherplots matrices (GPLOM), which are extension of scatterplot matrices (SPLOM).
+                                    </tr>
+                                    <td>Open it on a separate browser window. <strong> Please note it may take a while depending on the computing power of your computer </strong>.
+                                    </td>
+                                    <td>
+                                        <a href="" class="pull-right btn btn-link btn-default " ng-click="openGPLOM()">Open
+                                </a>
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>
+                                                Compare this with scatterplot matrices. Open it on a separate browser window.
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <a href="" class="pull-right btn btn-link btn-default " ng-click="openSPLOM()">Open
+                                </a>
+                                        </td>
+                                    </tr>
+                                    
+                                </table>
+
+                            </div>
+
+
+
+                        </accordion-group>
+
                         <accordion-group is-open="isContinuousOpen">
                             <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isContinuousOpen, 'glyphicon-chevron-right': !isContinousOpen}"></i>
                                 Continuous Variables <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataContinuous()">Load</a>
@@ -418,11 +457,12 @@
 
                         </accordion-group>
 
+
                     </accordion>
 
                     <!-- Matrix -->
 
-                    <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
+                    <!-- <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
 
                         <div class="matrixRow" ng-repeat="xConfig in yConfig">
 
@@ -431,7 +471,7 @@
 
                         </div>
 
-                    </div>
+                    </div> -->
 
                 </div>
                 <!--/.well -->

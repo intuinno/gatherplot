@@ -58217,8 +58217,8 @@ angular.module('ui.sortable', [])
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('DemoCtrl', ['$scope', '$q',
-            function($scope, $q) {
+        .controller('DemoCtrl', ['$scope', '$q','$window',
+            function($scope, $q, $window) {
 
                 $scope.nomaConfig = {
 
@@ -58277,6 +58277,23 @@ angular.module('ui.sortable', [])
                     });
                     // alert(item.name);
                 };
+
+                $scope.openGPLOM = function() {
+                    $window.open('/gplom.html', '_blank');
+                };
+
+                $scope.openSPLOM = function() {
+                    $window.open('/splom.html', '_blank');
+                };
+
+
+                // $scope.$watch()
+                $scope.changeGPLOM = function() {
+
+                    loadGPLOM();
+                    $scope.$apply();
+                }
+
 
                 $scope.changeActiveDataCustomCSV = function(customCSV) {
 
@@ -58971,7 +58988,7 @@ angular.module('ui.sortable', [])
 
                         loadGPLOM();
 
-                        
+
                         $scope.$apply();
 
 
@@ -58985,34 +59002,34 @@ angular.module('ui.sortable', [])
 
                 var loadGPLOM = function() {
 
-                $scope.configMatrix = [];
+                    $scope.configMatrix = [];
 
-                        for (var xIndex in $scope.nomaConfig.dims) {
+                    for (var xIndex in $scope.nomaConfig.dims) {
 
-                            var xTemp = [];
+                        var xTemp = [];
 
-                            for (var yIndex in $scope.nomaConfig.dims) {
+                        for (var yIndex in $scope.nomaConfig.dims) {
 
-                                var temp = {};
+                            var temp = {};
 
-                                temp.SVGAspectRatio = 1;
-                                temp.colorDim = '';
-                                temp.isGather = 'gather';
-                                temp.isInteractiveAxis = false;
-                                temp.relativeMode = 'absolute';
-                                temp.dims = $scope.nomaConfig.dims;
-                                temp.xDim = $scope.nomaConfig.dims[xIndex];
-                                temp.yDim = $scope.nomaConfig.dims[yIndex];
-                                temp.matrixMode = true;
+                            temp.SVGAspectRatio = 1;
+                            temp.colorDim = '';
+                            temp.isGather = 'gather';
+                            temp.isInteractiveAxis = false;
+                            temp.relativeMode = 'absolute';
+                            temp.dims = $scope.nomaConfig.dims;
+                            temp.xDim = $scope.nomaConfig.dims[xIndex];
+                            temp.yDim = $scope.nomaConfig.dims[yIndex];
+                            temp.matrixMode = true;
 
-                                xTemp.push(temp);
-
-                            }
-
-                            $scope.configMatrix.push(xTemp);
+                            xTemp.push(temp);
 
                         }
-                    };
+
+                        $scope.configMatrix.push(xTemp);
+
+                    }
+                };
 
 
                 $scope.changeConfigCarsScatterplots = function() {
