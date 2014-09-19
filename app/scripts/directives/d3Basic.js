@@ -24,11 +24,11 @@
                         var margin = 80;
 
                         
-                        var maxDotSize = 5;
+                        var maxDotSize = 10;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
-                            maxDotSize = 1;
+                            maxDotSize = 5;
                         } 
 
                         var width = 1040;

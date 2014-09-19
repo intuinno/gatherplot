@@ -810,7 +810,7 @@
                             temp.dims = $scope.nomaConfig.dims;
                             temp.xDim = $scope.nomaConfig.dims[xIndex];
                             temp.yDim = $scope.nomaConfig.dims[yIndex];
-                            temp.matrixMode = true;
+                            temp.matrixMode = false;
 
                             xTemp.push(temp);
 
