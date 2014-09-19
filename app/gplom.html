@@ -38,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid" ng-controller="DemoCtrl">
+    <div class="container-fluid" ng-controller="gplomCtrl">
         <div class="row">
             <div class="col-md-12">
                 <div>
@@ -54,13 +54,13 @@
 
                             </div>
                             <div class="btn-group">
-                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'absolute'"  ng-change="changeGPLOM()">Abs</label>
-                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'relative'"  ng-change="changeGPLOM()">Rel</label>
+                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'absolute'" ng-change="changeGPLOM()">Abs</label>
+                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'relative'" ng-change="changeGPLOM()">Rel</label>
                             </div>
 
                             color according to
 
-                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims"  ng-change="changeGPLOM()">
+                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims" ng-change="changeGPLOM()">
 
                                 <option value="">-- undefined --</option>
 
@@ -82,25 +82,27 @@
                     <!-- <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
  -->
 
-<!-- Matrix -->
+                    <!-- Matrix -->
 
-                    <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
+                    <div ng-repeat="yDimMatrix in nomaConfig.dims" class="matrixGroup">
 
-    <div class="matrixRow" ng-repeat="xConfig in yConfig">
+                        <div class="matrixRow" ng-repeat="xDimMatrix in nomaConfig.dims">
 
-        <div gatherplot class="GPLOM" data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+                            <div gatherplot class="GPLOM" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{xDimMatrix}}" ydim="{{yDimMatrix}}"></div>
 
 
-    </div>
+ <!-- {{yDimMatrix}}  {{xDimMatrix}} -->
 
-</div>
+                        </div>
+
+                    </div>
 
 
                 </div>
 
             </div>
             <!--/span-->
-            
+
             <!--/span-->
         </div>
         <!--/row-->
