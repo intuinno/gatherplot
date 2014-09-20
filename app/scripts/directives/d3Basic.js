@@ -24,7 +24,7 @@
                         var margin = 80;
 
                         
-                        var maxDotSize = 10;
+                        var maxDotSize = 5;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;

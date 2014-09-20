@@ -58671,18 +58671,18 @@ angular.module('ui.sortable', [])
                             temp.cancer = 'Cancer';
 
                             if (Math.random() > 0.8) {
-                                temp.mammo = 'Positive Mamo';
-                            } else {
                                 temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
                             }
 
                         } else {
                             temp.cancer = 'No cancer';
 
                             if (Math.random() > 0.096) {
-                                temp.mammo = 'Positive Mamo';
-                            } else {
                                 temp.mammo = 'Negative Mamo';
+                            } else {
+                                temp.mammo = 'Positive Mamo';
                             }
                         }
 
