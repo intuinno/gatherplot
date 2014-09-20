@@ -2,7 +2,7 @@
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('DemoCtrl', ['$scope', '$q','$window',
+        .controller('gplomCtrl', ['$scope', '$q', '$window',
             function($scope, $q, $window) {
 
                 $scope.nomaConfig = {
@@ -18,7 +18,6 @@
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
 
-
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
                 $scope.nomaShapeRendering = 'auto';
@@ -27,8 +26,6 @@
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
                 $scope.nomaConfig.matrixMode = false;
-                $scope.nomaConfig.xDim;
-                $scope.nomaConfig.yDim;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
                 $scope.nomaConfig.isInteractiveAxis = true;
@@ -78,8 +75,8 @@
                 // $scope.$watch()
                 $scope.changeGPLOM = function() {
 
-                    loadGPLOM();
-                    $scope.$apply();
+                    // loadGPLOM();
+                    // $scope.$apply();
                 }
 
 
@@ -456,18 +453,18 @@
                             temp.cancer = 'Cancer';
 
                             if (Math.random() > 0.8) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
 
                         } else {
                             temp.cancer = 'No cancer';
 
                             if (Math.random() > 0.096) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
                         }
 
@@ -747,7 +744,7 @@
 
                     $scope.activeData = 'Cars Data';
 
-                    d3.csv('data/cars.csv', function(error, tdata) {
+                    d3.csv('data/carsSmall.csv', function(error, tdata) {
                         var count = 0;
 
                         tdata.map(function(d) {
@@ -766,7 +763,7 @@
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.xDim = 'Origin';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
@@ -774,7 +771,12 @@
                         $scope.isCarsOpen = true;
                         $scope.nomaConfig.relativeMode = 'absolute';
 
-                        loadGPLOM();
+                        $scope.nomaConfig.SVGAspectRatio = 1;
+                        $scope.nomaConfig.isInteractiveAxis = false;
+
+                        $scope.nomaConfig.matrixMode = true;
+
+                        // loadGPLOM();
 
 
                         $scope.$apply();
@@ -808,7 +810,7 @@
                             temp.dims = $scope.nomaConfig.dims;
                             temp.xDim = $scope.nomaConfig.dims[xIndex];
                             temp.yDim = $scope.nomaConfig.dims[yIndex];
-                            temp.matrixMode = true;
+                            temp.matrixMode = false;
 
                             xTemp.push(temp);
 
