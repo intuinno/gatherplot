@@ -18,6 +18,7 @@
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
 
+
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
                 $scope.nomaShapeRendering = 'auto';
@@ -26,6 +27,8 @@
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
                 $scope.nomaConfig.matrixMode = false;
+                $scope.nomaConfig.xDim;
+                $scope.nomaConfig.yDim;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
                 $scope.nomaConfig.isInteractiveAxis = true;

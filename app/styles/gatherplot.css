@@ -42,6 +42,16 @@ div .GPLOM:hover{
   shape-rendering: crispEdges;
 }
 
+div .GPLOMBrush {
+
+/*  width:100px;
+  height:100px;*/
+  display:inline-block;
+  cursor:pointer;
+  /*border: 1px;*/
+  
+  /*stroke:black;*/
+}
 div.clusterControlBox {   
          
   text-align: center;           

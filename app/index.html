@@ -63,7 +63,7 @@
                     <div>
                         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
                     </div>
-                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
 
 
 
