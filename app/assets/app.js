@@ -58806,7 +58806,7 @@ angular.module('ui.sortable', [])
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
-                    $scope.nomaConfig.isGather = 'scatter';
+                    $scope.nomaConfig.isGather = 'gather';
 
                     loadGPLOM();
 
@@ -59178,7 +59178,7 @@ angular.module('ui.sortable', [])
                 };
 
 
-                $scope.changeActiveDataCars();
+                $scope.changeActiveDataContinuous();
 
 
             }
@@ -60159,6 +60159,23 @@ angular.module('ui.sortable', [])
             }
         ]);
 
+
+
+}());;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('gplomNavCtrl', ['$scope',
+            function($scope) {
+
+                $scope.nomaConfig.SVGAspectRatio = 1;
+                $scope.nomaConfig.isInteractiveAxis = false;
+
+                $scope.nomaConfig.matrixMode = true;
+
+            }
+
+        ]);
 
 
 }());

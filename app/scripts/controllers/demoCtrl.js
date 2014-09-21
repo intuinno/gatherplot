@@ -591,7 +591,7 @@
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
-                    $scope.nomaConfig.isGather = 'scatter';
+                    $scope.nomaConfig.isGather = 'gather';
 
                     loadGPLOM();
 
@@ -963,7 +963,7 @@
                 };
 
 
-                $scope.changeActiveDataCars();
+                $scope.changeActiveDataContinuous();
 
 
             }
