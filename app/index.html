@@ -11,8 +11,8 @@
 
 <body data-ng-app="myApp">
     <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="container-fluid">
+        <div class="container">
+            <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="glyphicon glyphicon-bar"></span>
@@ -38,9 +38,9 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid" ng-controller="DemoCtrl">
+    <div class="container" ng-controller="DemoCtrl">
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-8">
                 <div>
                     <h5>
                         <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
@@ -63,11 +63,7 @@
                     <div>
                         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
                     </div>
-                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
-
-
-
-
+                    <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
                     <div class="chart-simple-interface">
                         <h5>Show me
 
@@ -121,11 +117,10 @@
                                                 <div class="form-group">
                                                     <div ng-class="{tryMe: isBinSizeFocused}">
 
-                                                        Data Binning Size:
-                                                        <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="input-mini ">
-                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1">
+                                                        Data Binning Size: <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="input-mini ">
+                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1"  >
 
-
+                                                        
                                                         <span class="error" ng-show="DemoCtrl.binSize.$error.number">
 
                                                             Not valid number!</span>
@@ -147,11 +142,10 @@
                                         <td>
                                             <div name="CSVurlForm">
 
-                                                Load CSV: {{customCSV}}
-                                                <br>
+                                                Load CSV: {{customCSV}} <br> 
 
-                                                <input clas="input-xxlarge search-query" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV">
-                                                <a href="" class="btn btn-sm btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
+                                                <input clas="input-xxlarge search-query" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV"> 
+                                                <a  href="" class="btn btn-sm btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
 
                                                 <alert class="error" ng-show="csvInput.$error.url">Not valid url!</alert>
 
@@ -356,46 +350,7 @@
                         </accordion-group>
 
 
-                        <accordion-group is-open="isMatrixOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMatrixOpen, 'glyphicon-chevron-right': !isMatrixOpen}"></i>
-                                Gatherplot matrices (GPLOM)
-                            </accordion-heading>
-
-                            <div>
-
-                                <table class="table table-hover table-condensed">
-
-                                    <tr>
-                                        You can create Gatherplots matrices (GPLOM), which are extension of scatterplot matrices (SPLOM).
-                                    </tr>
-                                    <td>Open it on a separate browser window. This supports Brushing and Linking. <strong> Please note it may take a while depending on the computing power of your computer </strong>.
-                                    </td>
-                                    <td>
-                                        <a href="" class="pull-right btn btn-link btn-default " ng-click="openGPLOM()">Open
-                                </a>
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p>
-                                                GPLOM as a navigational tool. Open it on a separate browser window.
-                                            </p>
-                                        </td>
-                                        <td>
-                                            <a href="" class="pull-right btn btn-link btn-default " ng-click="openGPLOMNav()">Open
-                                </a>
-                                        </td>
-                                    </tr>
-                                    
-                                </table>
-
-                            </div>
-
-
-
-                        </accordion-group>
-
-                        <!-- <accordion-group is-open="isContinuousOpen">
+                        <accordion-group is-open="isContinuousOpen">
                             <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isContinuousOpen, 'glyphicon-chevron-right': !isContinousOpen}"></i>
                                 Continuous Variables <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataContinuous()">Load</a>
                             </accordion-heading>
@@ -455,24 +410,9 @@
 
 
 
-                        </accordion-group> -->
-
+                        </accordion-group>
 
                     </accordion>
-
-                    <!-- Matrix -->
-
-                    <!-- <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
-
-                        <div class="matrixRow" ng-repeat="xConfig in yConfig">
-
-                            <div gatherplot class="GPLOM" data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
-
-
-                        </div>
-
-                    </div> -->
-
                 </div>
                 <!--/.well -->
             </div>
@@ -486,7 +426,7 @@
         var disqus_shortname = 'gatherplot'; // required: replace example with your forum shortname
 
         /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
+         (function() {
             var dsq = document.createElement('script');
             dsq.type = 'text/javascript';
             dsq.async = true;

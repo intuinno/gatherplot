@@ -2,14 +2,12 @@
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('DemoCtrl', ['$scope', '$q','$window',
-            function($scope, $q, $window) {
+        .controller('DemoCtrl', ['$scope', '$q',
+            function($scope, $q) {
 
                 $scope.nomaConfig = {
 
                 };
-
-                $scope.configMatrix = [];
 
                 $scope.customCSV = "";
 
@@ -18,7 +16,6 @@
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
 
-
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
                 $scope.nomaShapeRendering = 'auto';
@@ -26,9 +23,6 @@
                 $scope.nomaConfig.relativeModes = [false, true];
                 $scope.nomaConfig.relativeMode = 'absolute';
                 $scope.nomaConfig.binSize = 10;
-                $scope.nomaConfig.matrixMode = false;
-                $scope.nomaConfig.xDim;
-                $scope.nomaConfig.yDim;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
                 $scope.nomaConfig.isInteractiveAxis = true;
@@ -56,32 +50,8 @@
                 };
 
                 $scope.d3OnClick = function(item) {
-
-                    $scope.$apply(function() {
-
-                        $scope.nomaConfig.xDim = item.xDim;
-                        $scope.nomaConfig.yDim = item.yDim;
-
-                    });
-                    // alert(item.name);
+                    alert(item.name);
                 };
-
-                $scope.openGPLOM = function() {
-                    $window.open('/gplom.html', '_blank');
-                };
-
-                $scope.openGPLOMNav = function() {
-                    $window.open('/indexmatrixNav.html', '_blank');
-                };
-
-
-                // $scope.$watch()
-                $scope.changeGPLOM = function() {
-
-                    loadGPLOM();
-                    $scope.$apply();
-                }
-
 
                 $scope.changeActiveDataCustomCSV = function(customCSV) {
 
@@ -145,128 +115,128 @@
                             d.id = count;
                             count += 1;
 
-                            // if (d.Survived === 'Yes') {
+                            if (d.Survived === 'Yes') {
 
-                            //     var a = Math.random();
+                                var a = Math.random();
 
-                            //     if (d.Class === 'First') {
-
-
-
-                            //         if (a < 0.202325) {
-                            //             d.Port = 'Southhampton';
-                            //             d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
-
-                            //         } else if (a < 0.26496) {
-                            //             d.Port = 'Queenstown';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+                                if (d.Class === 'First') {
 
 
-                            //         } else if (a < 0.61064) {
 
-                            //             d.Port = 'Cherbourg';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                    if (a < 0.202325) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
 
-                            //         } else {
-
-                            //             d.Port = 'Belfast';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
-
-                            //         }
-                            //     } else if (d.Class === 'Second') {
-
-                            //         if (a < 0.202325) {
-                            //             d.Port = 'Southhampton';
-                            //             d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
-
-                            //         } else if (a < 0.26496) {
-                            //             d.Port = 'Queenstown';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+                                    } else if (a < 0.26496) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
 
 
-                            //         } else if (a < 0.61064) {
+                                    } else if (a < 0.61064) {
 
-                            //             d.Port = 'Cherbourg';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
-                            //         } else {
+                                    } else {
 
-                            //             d.Port = 'Belfast';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
-                            //         }
-                            //     } else if (d.Class === 'Third') {
+                                    }
+                                } else if (d.Class === 'Second') {
 
-                            //         if (a < 0.431254) {
-                            //             d.Port = 'Southhampton';
-                            //             d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+                                    if (a < 0.202325) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
 
-                            //         } else if (a < 0.51303) {
-                            //             d.Port = 'Queenstown';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
-
-
-                            //         } else if (a < 0.74983) {
-
-                            //             d.Port = 'Cherbourg';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
-
-                            //         } else {
-
-                            //             d.Port = 'Belfast';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
-
-                            //         }
-                            //     } else if (d.Class === 'Crew') {
-
-                            //         if (a < 0.278968) {
-                            //             d.Port = 'Southhampton';
-                            //             d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
-
-                            //         } else if (a < 0.50005) {
-                            //             d.Port = 'Queenstown';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+                                    } else if (a < 0.26496) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
 
 
-                            //         } else if (a < 0.75641) {
+                                    } else if (a < 0.61064) {
 
-                            //             d.Port = 'Cherbourg';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
-                            //         } else {
+                                    } else {
 
-                            //             d.Port = 'Belfast';
-                            //             d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
-                            //         }
-                            //     }
+                                    }
+                                } else if (d.Class === 'Third') {
 
+                                    if (a < 0.431254) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
 
-                            // } else {
-                            //     if (Math.random() > 0.5) {
-                            //         d.Port = 'Southhampton';
-                            //         d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
-
-                            //     } else if (Math.random() > 0.4) {
-                            //         d.Port = 'Queenstown';
-                            //         d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+                                    } else if (a < 0.51303) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
 
 
-                            //     } else if (Math.random() > 0.5) {
+                                    } else if (a < 0.74983) {
 
-                            //         d.Port = 'Cherbourg';
-                            //         d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
-                            //     } else {
+                                    } else {
 
-                            //         d.Port = 'Belfast';
-                            //         d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
 
-                            //     }
+                                    }
+                                } else if (d.Class === 'Crew') {
 
-                            // }
+                                    if (a < 0.278968) {
+                                        d.Port = 'Southhampton';
+                                        d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
 
-                            // d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
+                                    } else if (a < 0.50005) {
+                                        d.Port = 'Queenstown';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                    } else if (a < 0.75641) {
+
+                                        d.Port = 'Cherbourg';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    } else {
+
+                                        d.Port = 'Belfast';
+                                        d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                    }
+                                }
+
+
+                            } else {
+                                if (Math.random() > 0.5) {
+                                    d.Port = 'Southhampton';
+                                    d.AgeInNumbers = highMeanLowSDRandomNumberGenerator();
+
+                                } else if (Math.random() > 0.4) {
+                                    d.Port = 'Queenstown';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator();
+
+
+                                } else if (Math.random() > 0.5) {
+
+                                    d.Port = 'Cherbourg';
+                                    d.AgeInNumbers = lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator();
+
+                                } else {
+
+                                    d.Port = 'Belfast';
+                                    d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
+
+                                }
+
+                            }
+
+                            d.AgeInNumbers = Math.round((lowMeanHighSDRandomNumberGenerator() + highMeanLowSDRandomNumberGenerator()) * 0.7);
 
 
                         });
@@ -282,7 +252,6 @@
                         $scope.nomaConfig.xDim = $scope.nomaConfig.dims[0];
                         $scope.nomaConfig.yDim = $scope.nomaConfig.dims[1];
                         $scope.nomaConfig.colorDim = $scope.nomaConfig.dims[2];
-                        loadGPLOM();
 
                         $scope.$apply();
 
@@ -430,7 +399,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 3000;
+                    var numberOfEntity = 4000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Bayesian Inference - Mammogram';
@@ -456,18 +425,18 @@
                             temp.cancer = 'Cancer';
 
                             if (Math.random() > 0.8) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
 
                         } else {
                             temp.cancer = 'No cancer';
 
                             if (Math.random() > 0.096) {
-                                temp.mammo = 'Negative Mamo';
-                            } else {
                                 temp.mammo = 'Positive Mamo';
+                            } else {
+                                temp.mammo = 'Negative Mamo';
                             }
                         }
 
@@ -487,8 +456,6 @@
                     $scope.nomaConfig.colorDim = null;
 
                     $scope.nomaConfig.relativeMode = 'absolute';
-
-                    loadGPLOM();
 
                     // $scope.$apply();
 
@@ -542,7 +509,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 2000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -591,9 +558,7 @@
                     $scope.nomaConfig.yDim = 'continuous2';
                     $scope.nomaConfig.colorDim = 'nominal';
                     $scope.nomaConfig.relativeMode = 'absolute';
-                    $scope.nomaConfig.isGather = 'gather';
-
-                    loadGPLOM();
+                    $scope.nomaConfig.isGather = 'scatter';
 
                     resetTutMsg();
 
@@ -766,16 +731,13 @@
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.xDim = 'MPG';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
                         $scope.nomaConfig.isGather = 'gather';
                         $scope.isCarsOpen = true;
                         $scope.nomaConfig.relativeMode = 'absolute';
-
-                        loadGPLOM();
-
 
                         $scope.$apply();
 
@@ -787,38 +749,6 @@
 
 
                 };
-
-                var loadGPLOM = function() {
-
-                    $scope.configMatrix = [];
-
-                    for (var xIndex in $scope.nomaConfig.dims) {
-
-                        var xTemp = [];
-
-                        for (var yIndex in $scope.nomaConfig.dims) {
-
-                            var temp = {};
-
-                            temp.SVGAspectRatio = 1;
-                            temp.colorDim = '';
-                            temp.isGather = 'gather';
-                            temp.isInteractiveAxis = false;
-                            temp.relativeMode = 'absolute';
-                            temp.dims = $scope.nomaConfig.dims;
-                            temp.xDim = $scope.nomaConfig.dims[xIndex];
-                            temp.yDim = $scope.nomaConfig.dims[yIndex];
-                            temp.matrixMode = true;
-
-                            xTemp.push(temp);
-
-                        }
-
-                        $scope.configMatrix.push(xTemp);
-
-                    }
-                };
-
 
                 $scope.changeConfigCarsScatterplots = function() {
 
@@ -963,7 +893,7 @@
                 };
 
 
-                $scope.changeActiveDataContinuous();
+                $scope.changeActiveDataCars();
 
 
             }
