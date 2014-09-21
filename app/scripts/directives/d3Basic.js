@@ -1021,13 +1021,21 @@
 
                                 updateYScale();
                                 calculatePositionOfCluster(scope.xdim);
-                            } else {
+                            } else if (typeOfXYDim === 'XOrdYNom'){
                                 range = xScale.range();
                                 height = range[1] - range[0];
                                 getOptimalBinSize(scope.xdim, scope.ydim, clusterSize.heightOfBox, height);
 
                                 updateXScale();
                                 calculatePositionOfCluster(scope.ydim);
+                            } else {
+
+
+                                calculatePositionOfCluster(scope.xdim);
+
+                                calculatePositionOfCluster(scope.ydim);
+
+
                             }
 
                         };
