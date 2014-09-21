@@ -21,16 +21,20 @@
 
                         //Constants and Setting Environment variables 
 
-                        var margin = 80;
-
-                        
-                        var maxDotSize = 5;
+                        var margin;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
+<<<<<<< HEAD
                             maxDotSize = 5;
                         } 
 
+=======
+                        } else {
+                            margin = 80;
+                        }
+                        var maxDotSize = 5;
+>>>>>>> parent of b13863a... GPLOM click selection
                         var width = 1040;
                         var height = 820;
                         var outerWidth = width + 2 * margin;
@@ -217,8 +221,6 @@
                             svgGroup.selectAll("*").remove();
                             nodeGroup.selectAll(".dot").remove();
 
-                            if (scope.config.matrixMode === false ) {
-
                             nodeGroup.selectAll(".dot")
                                 .data(scope.data)
                                 .enter().append("rect")
@@ -239,6 +241,7 @@
                                         .style("opacity", 0);
                                 });
 
+<<<<<<< HEAD
                             } else {
 
                                 nodeGroup.selectAll(".dot")
@@ -269,6 +272,8 @@
 
                             }
 
+=======
+>>>>>>> parent of b13863a... GPLOM click selection
 
                             scope.config.dimSetting = {};
 
@@ -572,8 +577,6 @@
                         };
 
                         var drawBoundaryForMatrix = function() {
-
-                            svgGroup.selectAll(".matrixFrame").remove();
 
                             svgGroup.append("rect")
                                     .attr("class", "matrixFrame")
@@ -1378,8 +1381,6 @@
                         };
 
                         var assignSizeOfNodesForScatterAndJitter = function() {
-
-
 
                             scope.data.forEach(function(d) {
 

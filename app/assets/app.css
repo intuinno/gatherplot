@@ -6224,8 +6224,12 @@ div .matrixRow {
 }
 
 div.matrixGroup {
+<<<<<<< HEAD
   width: 100%;
   margin: 0 auto; 
+=======
+  width: 50%;
+>>>>>>> parent of b13863a... GPLOM click selection
 }
 
 div .GPLOM {
@@ -6235,10 +6239,11 @@ div .GPLOM {
   display:inline-block;
   cursor:pointer;
   /*border: 1px;*/
-  
+  fill:none;
   /*stroke:black;*/
 }
 
+<<<<<<< HEAD
 div .GPLOM:hover{
   background-color: gray;
   stroke: red;
@@ -6256,6 +6261,8 @@ div .GPLOMBrush {
   
   /*stroke:black;*/
 }
+=======
+>>>>>>> parent of b13863a... GPLOM click selection
 div.clusterControlBox {   
          
   text-align: center;           

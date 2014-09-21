@@ -40,7 +40,7 @@
     </div>
     <div class="container-fluid" ng-controller="DemoCtrl">
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-9">
                 <div>
                     <h5>
                         <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
@@ -67,6 +67,22 @@
 
 
 
+<<<<<<< HEAD
+=======
+                    <!-- Matrix -->
+
+                    <div ng-repeat="yConfig in configMatrix" class="matrixGroup">
+
+                        <div class="matrixRow" ng-repeat="xConfig in yConfig">
+
+                            <div gatherplot class="GPLOM" data="nomaData" config="xConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+
+
+                        </div>
+
+                    </div>
+
+>>>>>>> parent of b13863a... GPLOM click selection
 
                     <div class="chart-simple-interface">
                         <h5>Show me
@@ -185,7 +201,11 @@
                 </accordion>
             </div>
             <!--/span-->
+<<<<<<< HEAD
             <div class="col-md-4">
+=======
+            <div class="col-md-3">
+>>>>>>> parent of b13863a... GPLOM click selection
                 <div class="sidebar-nav">
                     <h3>Guided Tours</h3>
                     <accordion close-others="true">
@@ -368,7 +388,7 @@
                                     <tr>
                                         You can create Gatherplots matrices (GPLOM), which are extension of scatterplot matrices (SPLOM).
                                     </tr>
-                                    <td>Open it on a separate browser window. This supports Brushing and Linking. <strong> Please note it may take a while depending on the computing power of your computer </strong>.
+                                    <td>Open it on a separate browser window. <strong> Please note it may take a while depending on the computing power of your computer </strong>.
                                     </td>
                                     <td>
                                         <a href="" class="pull-right btn btn-link btn-default " ng-click="openGPLOM()">Open
@@ -378,11 +398,11 @@
                                     <tr>
                                         <td>
                                             <p>
-                                                GPLOM as a navigational tool. Open it on a separate browser window.
+                                                Compare this with scatterplot matrices. Open it on a separate browser window.
                                             </p>
                                         </td>
                                         <td>
-                                            <a href="" class="pull-right btn btn-link btn-default " ng-click="openGPLOMNav()">Open
+                                            <a href="" class="pull-right btn btn-link btn-default " ng-click="openSPLOM()">Open
                                 </a>
                                         </td>
                                     </tr>
@@ -459,6 +479,7 @@
 
 
                     </accordion>
+<<<<<<< HEAD
 
                     <!-- Matrix -->
 
@@ -473,6 +494,8 @@
 
                     </div> -->
 
+=======
+>>>>>>> parent of b13863a... GPLOM click selection
                 </div>
                 <!--/.well -->
             </div>

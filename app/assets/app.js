@@ -58271,22 +58271,15 @@ angular.module('ui.sortable', [])
                 };
 
                 $scope.d3OnClick = function(item) {
-
-                    $scope.$apply(function() {
-
-                        $scope.nomaConfig.xDim = item.xDim;
-                        $scope.nomaConfig.yDim = item.yDim;
-
-                    });
-                    // alert(item.name);
+                    alert(item.name);
                 };
 
                 $scope.openGPLOM = function() {
                     $window.open('/gplom.html', '_blank');
                 };
 
-                $scope.openGPLOMNav = function() {
-                    $window.open('/indexmatrixNav.html', '_blank');
+                $scope.openSPLOM = function() {
+                    $window.open('/splom.html', '_blank');
                 };
 
 
