@@ -962,6 +962,48 @@
 
                 };
 
+                $scope.changeActiveDataEHR = function() {
+
+                    resetTutMsg();
+
+
+                    $scope.activeData = 'Electronic Health Records (EHR)';
+
+                    d3.csv('data/patient.csv', function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+                        $scope.nomaConfig.xDim = '';
+                        $scope.nomaConfig.yDim = '';
+                        $scope.nomaConfig.colorDim = '';
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+
+
+                        $scope.$apply();
+
+
+
+                    });
+
+
+
+
+                };
+
 
                 $scope.changeActiveDataCars();
 

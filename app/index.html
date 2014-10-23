@@ -456,6 +456,27 @@
 
 
                         </accordion-group>
+                        <accordion-group is-open="isPatientOpen">
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isPatientOpen, 'glyphicon-chevron-right': !isPatientOpen}"></i>
+                                Electronic Health Record (EHR) <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataEHR()">Load</a>
+                            </accordion-heading>
+
+                            <div>
+
+                                <table class="table table-hover table-condensed">
+
+                                    <tr>
+                                        This example shows how gatherplot can be used to visualize EHR data
+                                    </tr>
+                                    
+
+                                </table>
+
+                            </div>
+
+
+
+                        </accordion-group>
 
 
                     </accordion>
