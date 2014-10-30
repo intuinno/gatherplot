@@ -2576,14 +2576,13 @@
 
                         var drawXAxisLinesAndTicksForGather = function() {
 
-                            // if (getDimType(scope.xdim) !== 'ordinal') {
+                            if (getDimType(scope.xdim) !== 'ordinal' || findTypeOfXYDim() === 'OrdOrd') {
 
-                            //     drawXAxisLinesAndTicksForNominalGather();
-                            // } else {
+                                drawXAxisLinesAndTicksForNominalGather();
+                            } else {
 
-                            //     drawXAxisLinesAndTicksForOrdinalGather();
-                            // }
-                            drawXAxisLinesAndTicksForNominalGather();
+                                drawXAxisLinesAndTicksForOrdinalGather();
+                            }
 
                         };
 
@@ -2591,15 +2590,14 @@
 
 
 
-                            // if (getDimType(scope.ydim) !== 'ordinal') {
+                            if (getDimType(scope.ydim) !== 'ordinal' || findTypeOfXYDim() === 'OrdOrd') {
 
-                            //     drawYAxisLinesAndTicksForNominalGather();
-                            // } else {
+                                drawYAxisLinesAndTicksForNominalGather();
+                            } else {
 
-                            //     drawYAxisLinesAndTicksForOrdinalGather();
-                            // }
+                                drawYAxisLinesAndTicksForOrdinalGather();
+                            }
 
-                            drawYAxisLinesAndTicksForNominalGather();
 
                         };
 
