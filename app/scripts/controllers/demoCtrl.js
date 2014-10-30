@@ -766,7 +766,7 @@
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.xDim = 'Displacement';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
