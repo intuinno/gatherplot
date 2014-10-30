@@ -58981,7 +58981,7 @@ angular.module('ui.sortable', [])
                         $scope.nomaConfig.dims.splice(index, 1);
 
 
-                        $scope.nomaConfig.xDim = 'Cylinders';
+                        $scope.nomaConfig.xDim = 'Displacement';
                         $scope.nomaConfig.yDim = 'MPG';
                         $scope.nomaConfig.colorDim = 'Origin';
 
@@ -59172,6 +59172,48 @@ angular.module('ui.sortable', [])
 
                     $scope.addAlert('info', 'Here the color of nodes represent a weight, which is continuous. Having ordered arrangement makes it easier to discern minute changes in colors.  Compare with scatterplots or jittering.');
                     $scope.focusElement("isPlotSelectFocused");
+
+
+
+                };
+
+                $scope.changeActiveDataEHR = function() {
+
+                    resetTutMsg();
+
+
+                    $scope.activeData = 'Electronic Health Records (EHR)';
+
+                    d3.csv('data/patient.csv', function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+                        $scope.nomaConfig.xDim = '';
+                        $scope.nomaConfig.yDim = '';
+                        $scope.nomaConfig.colorDim = '';
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+
+
+                        $scope.$apply();
+
+
+
+                    });
+
 
 
 
@@ -60159,6 +60201,23 @@ angular.module('ui.sortable', [])
             }
         ]);
 
+
+
+}());;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('gplomNavCtrl', ['$scope',
+            function($scope) {
+
+                $scope.nomaConfig.SVGAspectRatio = 1;
+                $scope.nomaConfig.isInteractiveAxis = false;
+
+                $scope.nomaConfig.matrixMode = true;
+
+            }
+
+        ]);
 
 
 }());

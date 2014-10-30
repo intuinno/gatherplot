@@ -23,13 +23,13 @@
 
                         var margin = 80;
 
-                        
+
                         var maxDotSize = 5;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
                             maxDotSize = 5;
-                        } 
+                        }
 
                         var width = 1040;
                         var height = 820;
@@ -41,14 +41,17 @@
                             .range(["#98c8fd", "08306b"])
                             .interpolate(d3.interpolateHsl);
                         var renderData;
-                        var defaultBinSize = 10;
+
                         var xValue, yValue; //Function for getting value of X,Y position 
                         var xOriginalValue, yOriginalValue;
                         var xScale, yScale;
                         var xMap, yMap;
                         var nest = {};
+
+                        var defaultBinSize = 10;
+
                         var marginForBorderOfAxis = 0.5; //Margin for Border Of Axis
-                        scope.config.binSize = defaultBinSize;
+
 
                         var marginClusterRatio = 0.1; //Ratio of margin in the cluster 
 
@@ -58,6 +61,7 @@
                         var tooltip;
                         var clusterControlBox;
 
+                        scope.config.binSiz = defaultBinSize;
 
 
                         var initializeSVG = function() {
@@ -164,9 +168,9 @@
 
                         scope.handleXDimChange = function(newVals, oldVals) {
 
-                            if (!newVals){
+                            if (!newVals) {
 
-            
+
                             } else {
 
                                 // scope.xdim = newVals;
@@ -178,13 +182,13 @@
 
                         scope.handleYDimChange = function(newVals, oldVals) {
 
-                            if (!newVals){
+                            if (!newVals) {
 
-            
+
                             } else {
 
                                 // scope.ydim = newVals;
-                                   scope.handleConfigChange(renderData, scope.config);
+                                scope.handleConfigChange(renderData, scope.config);
 
                             }
 
@@ -217,54 +221,59 @@
                             svgGroup.selectAll("*").remove();
                             nodeGroup.selectAll(".dot").remove();
 
-                            if (scope.config.matrixMode === false ) {
+                            if (scope.config.matrixMode === false) {
 
-                            nodeGroup.selectAll(".dot")
-                                .data(scope.data)
-                                .enter().append("rect")
-                                .attr("class", "dot")
-                                .on("mouseover", function(d) {
-                                    tooltip.transition()
-                                        .duration(200)
-                                        .style("opacity", 0.9);
+                                nodeGroup.selectAll(".dot")
+                                    .data(scope.data)
+                                    .enter().append("rect")
+                                    .attr("class", "dot")
+                                    .on("mouseover", function(d) {
+                                        tooltip.transition()
+                                            .duration(200)
+                                            .style("opacity", 0.9);
 
 
-                                    tooltip.html(d.Name + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d))
-                                        .style("left", (d3.event.pageX + 5) + "px")
-                                        .style("top", (d3.event.pageY - 28) + "px");
-                                })
-                                .on("mouseout", function(d) {
-                                    tooltip.transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
-                                });
+                                        tooltip.html(d.Name + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d))
+                                            .style("left", (d3.event.pageX + 5) + "px")
+                                            .style("top", (d3.event.pageY - 28) + "px");
+                                    })
+                                    .on("mouseout", function(d) {
+                                        tooltip.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
+                                    });
 
                             } else {
 
                                 nodeGroup.selectAll(".dot")
-                                .data(scope.data)
-                                .enter().append("rect")
-                                .attr("class", "dot");
+                                    .data(scope.data)
+                                    .enter().append("rect")
+                                    .attr("class", "dot");
 
                                 svg.on("mouseover", function(d) {
-                                    tooltip.transition()
-                                        .duration(200)
-                                        .style("opacity", 0.9);
+                                        tooltip.transition()
+                                            .duration(200)
+                                            .style("opacity", 0.9);
 
 
-                                    tooltip.html("<h3>"+  scope.xdim +  " vs " + scope.ydim + "</h3>")
-                                        .style("left", (d3.event.pageX + 5) + "px")
-                                        .style("top", (d3.event.pageY - 28) + "px");
-                                })
-                                .on("mouseout", function(d) {
-                                    tooltip.transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
-                                })
-                                .on("click", function(d) {
+                                        tooltip.html("<h3>" + scope.xdim + " vs " + scope.ydim + "</h3>")
+                                            .style("left", (d3.event.pageX + 5) + "px")
+                                            .style("top", (d3.event.pageY - 28) + "px");
+                                    })
+                                    .on("mouseout", function(d) {
+                                        tooltip.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
+                                    })
+                                    .on("click", function(d) {
 
-                                    return scope.onClick({item:{xDim: scope.xdim, yDim: scope.ydim}}) ; 
-                                });
+                                        return scope.onClick({
+                                            item: {
+                                                xDim: scope.xdim,
+                                                yDim: scope.ydim
+                                            }
+                                        });
+                                    });
 
 
                             }
@@ -541,52 +550,42 @@
 
                             drawNodes();
 
-                            // drawAxes();
-
-                            // drawLegends();
-
-                            handleAxesConsiderMatrix();
-                            handleLegendsConsiderMatrix();
+                            drawAxesAndLegends();
 
                         };
 
-                        var handleAxesConsiderMatrix = function() {
+                        var drawAxesAndLegends = function() {
 
                             if (scope.config.matrixMode === false) {
 
                                 drawAxes();
+
+                                drawLegends();
+
                             } else {
 
                                 // drawAxes();
 
                                 drawBoundaryForMatrix();
                             }
-                        };
+                        }
 
-                        var handleLegendsConsiderMatrix = function() {
-
-                            if (scope.config.matrixMode === false) {
-
-                                drawLegends();
-                            }
-                        };
 
                         var drawBoundaryForMatrix = function() {
 
                             svgGroup.selectAll(".matrixFrame").remove();
 
                             svgGroup.append("rect")
-                                    .attr("class", "matrixFrame")
-                                    .attr("x", -margin)
-                                    .attr("y", -margin)
-                                    .attr("width", width+2*margin-2)
-                                    .attr("height", height+2*margin-2);
-
-
-
+                                .attr("class", "matrixFrame")
+                                .attr("x", -margin)
+                                .attr("y", -margin)
+                                .attr("width", width + 2 * margin - 2)
+                                .attr("height", height + 2 * margin - 2);
 
 
                         };
+
+
 
                         var drawNodesForSameOrdDimGather = function() {
 
@@ -831,10 +830,44 @@
                             return [extent[0] - marginForBorderOfAxis, extent[1] + marginForBorderOfAxis];
                         };
 
+                        var getExtentConsideringXY = function(xdim, ydim) {
+
+                            var range = {};
+
+                            var typeOfXYDim = findTypeOfXYDim();
+
+                            var xRange, yRange;
+
+                            if (typeOfXYDim === 'OrdOrd' && scope.config.isGather === 'gather') {
+
+                                doBinningAndSetKeys(xdim, scope.config.binSize);
+                                doBinningAndSetKeys(ydim, scope.config.binSize);
+
+                                xRange = getExtentFromCalculatedPoints(xdim);
+                                yRange = getExtentFromCalculatedPoints(ydim);
+
+
+                            } else {
+
+                                xRange = getExtent(xdim);
+                                yRange = getExtent(ydim);
+
+                            }
+                            range.xRange = xRange;
+                            range.yRange = yRange;
+
+                            return range;
+
+                        };
+
                         var prepareScale = function() {
 
-                            var xRange = getExtent(scope.xdim);
-                            var yRange = getExtent(scope.ydim);
+                            var range = getExtentConsideringXY(scope.xdim, scope.ydim);
+
+                            var xRange = range.xRange;
+                            var yRange = range.yRange;
+
+
 
                             xScale = d3.scale.linear().range([0, width]);
                             xScale.domain(xRange);
@@ -1000,12 +1033,27 @@
 
                             } else if (typeOfXYDim === 'OrdOrd') {
 
+                                calculatePositionOfNodesForOrdOrdGather();
+
                             } else {
                                 //Only one of them are ordinal -> binned gatherplot 
 
                                 calculatePositionOfNodesForBinnedGather();
 
                             }
+                        };
+
+                        var calculatePositionOfNodesForOrdOrdGather = function() {
+
+                            var typeOfXYDim = findTypeOfXYDim();
+                            var clusterSize = getClusterBox();
+                            var range, height;
+
+                            range = xScale.range();
+
+                            calculatePositionOfCluster(scope.xdim);
+                            calculatePositionOfCluster(scope.ydim);
+
                         };
 
                         var calculatePositionOfNodesForBinnedGather = function() {
@@ -1287,10 +1335,6 @@
                                     console.log(binKey);
                                 }
 
-                                if (binKey === 138) {
-                                    console.log(binKey);
-                                }
-
                                 var positionWithBinKey = scope.config.dimSetting[dimNameClosure].keyValue[binKey].calculatedPosition;
 
                                 return +positionWithBinKey;
@@ -1324,7 +1368,7 @@
                             } else if (dimType === 'ordinal') {
 
 
-                                if (scope.config.isGather === 'gather' && findTypeOfXYDim() !== "OrdOrd") {
+                                if (scope.config.isGather === 'gather') {
                                     return calculatedPositionWithBinValueFunc;
 
                                 } else {
@@ -1352,14 +1396,9 @@
 
                             } else if (scope.config.isGather === 'gather') {
 
-                                if (findTypeOfXYDim() === "OrdOrd") {
 
-                                    setOffsetOfNodesForScatter();
+                                setOffsetOfNodesForGather();
 
-                                } else {
-
-                                    setOffsetOfNodesForGather();
-                                }
                             }
 
                         };
@@ -1588,8 +1627,9 @@
                                 Ymargin = marginClusterRatio;
                             } else if (typeOfXYDim === 'OrdOrd') {
 
-                                Xmargin = 0;
-                                Ymargin = 0;
+                                Xmargin = marginClusterRatio;
+                                Ymargin = marginClusterRatio;
+
                             } else {
 
                                 Xmargin = 0;
@@ -1889,30 +1929,23 @@
                                 numElementInLongEdge,
                                 sizeNode, lengthCandidate;
 
-                            if (findTypeOfXYDim() === "NomNom") {
 
-                                do {
 
-                                    numElementInShortEdge++;
-                                    sizeNode = shortEdge / numElementInShortEdge;
-                                    lengthCandidate = sizeNode * number / numElementInShortEdge;
+                            do {
 
-                                } while (lengthCandidate > longEdge);
+                                numElementInShortEdge++;
+                                sizeNode = shortEdge / numElementInShortEdge;
+                                lengthCandidate = sizeNode * number / numElementInShortEdge;
 
-                                numElementInLongEdge = Math.ceil(number / numElementInShortEdge);
+                            } while (lengthCandidate > longEdge);
 
-                                return {
-                                    numElementInShortEdge: numElementInShortEdge,
-                                    numElementInLongEdge: numElementInLongEdge
-                                };
+                            numElementInLongEdge = Math.ceil(number / numElementInShortEdge);
 
-                            } else {
+                            return {
+                                numElementInShortEdge: numElementInShortEdge,
+                                numElementInLongEdge: numElementInLongEdge
+                            };
 
-                                return {
-                                    numElementInShortEdge: 1,
-                                    numElementInLongEdge: number
-                                };
-                            }
 
                         };
 
@@ -2114,7 +2147,7 @@
                                 };
                             } else if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
 
-                                var binDistanceFormatter = d3.format("3,.2f");
+                                var binDistanceFormatter = d3.format("3,.1f");
 
                                 return function(d, i) {
 
@@ -2287,7 +2320,7 @@
 
                         var drawAxesLinesAndTicks = function() {
 
-                            if (scope.config.isGather === 'gather' && findTypeOfXYDim() !== 'OrdOrd') {
+                            if (scope.config.isGather === 'gather') {
 
                                 drawAxesLinesAndTicksForGather();
 
@@ -2543,26 +2576,31 @@
 
                         var drawXAxisLinesAndTicksForGather = function() {
 
-                            if (getDimType(scope.xdim) !== 'ordinal') {
+                            // if (getDimType(scope.xdim) !== 'ordinal') {
 
-                                drawXAxisLinesAndTicksForNominalGather();
-                            } else {
+                            //     drawXAxisLinesAndTicksForNominalGather();
+                            // } else {
 
-                                drawXAxisLinesAndTicksForOrdinalGather();
-                            }
+                            //     drawXAxisLinesAndTicksForOrdinalGather();
+                            // }
+                            drawXAxisLinesAndTicksForNominalGather();
+
                         };
 
                         var drawYAxisLinesAndTicksForGather = function() {
 
 
 
-                            if (getDimType(scope.ydim) !== 'ordinal') {
+                            // if (getDimType(scope.ydim) !== 'ordinal') {
 
-                                drawYAxisLinesAndTicksForNominalGather();
-                            } else {
+                            //     drawYAxisLinesAndTicksForNominalGather();
+                            // } else {
 
-                                drawYAxisLinesAndTicksForOrdinalGather();
-                            }
+                            //     drawYAxisLinesAndTicksForOrdinalGather();
+                            // }
+
+                            drawYAxisLinesAndTicksForNominalGather();
+
                         };
 
                         var drawXAxisLinesAndTicksForNominalGather = function() {
@@ -3275,7 +3313,7 @@
 
             } // End function (d3Service)
 
-    );
+        );
 
     angular.module('myApp.directives')
         .directive('focusMe', function($timeout, $parse) {
