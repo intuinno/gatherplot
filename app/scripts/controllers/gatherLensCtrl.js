@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    angular.module('myApp.controllers')
-        .controller('DemoCtrl', ['$scope', '$q','$window',
+    angular.module('gatherLensApp.controllers')
+        .controller('gatherLensCtrl', ['$scope', '$q','$window',
             function($scope, $q, $window) {
 
                 $scope.nomaConfig = {
@@ -548,7 +548,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 2000;
+                    var numberOfEntity = 4000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -1011,7 +1011,7 @@
                 };
 
 
-                $scope.changeActiveDataCars();
+                $scope.changeActiveDataContinuous();
 
 
             }

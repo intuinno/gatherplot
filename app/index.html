@@ -122,8 +122,8 @@
                                                     <div ng-class="{tryMe: isBinSizeFocused}">
 
                                                         Data Binning Size:
-                                                        <input type="number" ng-pattern="onlyNumbers" name="binSize" ng-model="nomaConfig.binSize" min="1" max="100" class="input-mini ">
-                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" step="1">
+                                                        <input type="number"  ng-model="nomaConfig.binSize" min="1" max="50" size="20">
+                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" >
 
 
                                                         <span class="error" ng-show="DemoCtrl.binSize.$error.number">
@@ -470,6 +470,34 @@
                                     </tr>
                                     
 
+                                </table>
+
+                            </div>
+
+
+
+                        </accordion-group>
+
+                        <accordion-group is-open="isLensOpen">
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isLensOpen, 'glyphicon-chevron-right': !isLensOpen}"></i>
+                                Gatherlens
+                            </accordion-heading>
+
+                            <div>
+
+                                <table class="table table-hover table-condensed">
+
+                                    <tr>
+                                        Gatherlens provides a new way to look into the crowded scatterplots.
+                                    </tr>
+                                    <td>Open it on a separate browser window. 
+                                    </td>
+                                    <td>
+                                        <a href="" class="pull-right btn btn-link btn-default " ng-click="openLens()">Open
+                                </a>
+                                    </td>
+                                    </tr>
+                                    
                                 </table>
 
                             </div>

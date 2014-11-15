@@ -6202,6 +6202,11 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
+.lens {
+
+  fill:lightsteelblue;
+}
+
 .matrixFrame { 
    fill: none;
   stroke: #aaa;

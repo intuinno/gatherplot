@@ -110,6 +110,7 @@ module.exports = function(grunt) {
           'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
           'bower_components/angular-ui-sortable/sortable.js',
           'app/scripts/app.js',
+          'app/scripts/gatherLensApp.js',
           'app/scripts/services/**/*.js',
           'app/scripts/controllers/**/*.js',
           'app/scripts/filters/**/*.js',
