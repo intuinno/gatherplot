@@ -31,7 +31,21 @@
                 $scope.nomaConfig.yDim;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
-                $scope.nomaConfig.isInteractiveAxis = true;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+
+                $scope.$watch(function() {
+                            return $scope.nomaConfig.isGather;
+                        }, function(newVals, oldVals) {
+                            // debugger;
+                            if (newVals == 'scatter') {
+
+                                $scope.isScatter = true;
+                            } else {
+
+                                $scope.isScatter = false;
+                            } }, true);
 
                 $scope.addAlert = function(messageType, messageContent) {
                     $scope.alerts.push({
@@ -1011,7 +1025,7 @@
                 };
 
 
-                $scope.changeActiveDataCars();
+                $scope.changeActiveDataContinuous();
 
 
             }

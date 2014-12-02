@@ -57,6 +57,15 @@
                         <alert class="chart-instruction" ng-show="isPlotSelectFocused" close="isPlotSelectFocused=false">
                             Try these buttons.</alert>
 
+                        <div class="btn-group" ng-show="isScatter">
+
+                                <button type="button" class="btn btn-default active" ng-model="nomaConfig.lens" btn-radio="'noLens'">No Lens</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'rectLens'">Rect Lens</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'pieLens'"> Pie Lens</button>
+
+                        </div>
                     </h5>
 
                     <h4 class="chart-title">{{activeData}}</h4>
@@ -110,8 +119,7 @@
                     <accordion-group is-open="isAdvancedOptionOpen" ng-hide='false'>
 
 
-                        <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i>
-                            Under the Hood (Advanced Option)</accordion-heading>
+                        <accordion-heading> <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isAdvancedOptionOpen, 'glyphicon-chevron-right': !isAdvancedOptionOpen}"></i> Under the Hood (Advanced Option)</accordion-heading>
                         <div class="well">
                             <div>
                                 <table class="table table-hover ">
@@ -122,8 +130,8 @@
                                                     <div ng-class="{tryMe: isBinSizeFocused}">
 
                                                         Data Binning Size:
-                                                        <input type="number"  ng-model="nomaConfig.binSize" min="1" max="50" size="20">
-                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50" >
+                                                        <input type="number" ng-model="nomaConfig.binSize" min="1" max="50" size="20">
+                                                        <input type="range" ng-model="nomaConfig.binSize" min="1" max="50">
 
 
                                                         <span class="error" ng-show="DemoCtrl.binSize.$error.number">
@@ -191,8 +199,7 @@
                     <accordion close-others="true">
 
                         <accordion-group is-open="isCarsOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isCarsOpen, 'glyphicon-chevron-right': !isCarsOpen}"></i>
-                                Cars Dataset <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataCars()">Load</a>
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isCarsOpen, 'glyphicon-chevron-right': !isCarsOpen}"></i> Cars Dataset <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataCars()">Load</a>
                             </accordion-heading>
                             <div>
                                 <table class="table table-hover table-condensed">
@@ -273,8 +280,7 @@
 
 
                         <accordion-group is-open="isTitanicOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isTitanicOpen, 'glyphicon-chevron-right': !isTitanicOpen}"></i>
-                                Survivor of Titanic <a class="pull-right btn btn-xs btn-default" href="" ng-click="changeActiveDataTitanic()">Load</a>
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isTitanicOpen, 'glyphicon-chevron-right': !isTitanicOpen}"></i> Survivor of Titanic <a class="pull-right btn btn-xs btn-default" href="" ng-click="changeActiveDataTitanic()">Load</a>
                             </accordion-heading>
                             <div>
 
@@ -343,8 +349,7 @@
                         </accordion-group>
 
                         <accordion-group is-open="isMammoOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMammoOpen, 'glyphicon-chevron-right': !isMammoOpen}"></i>
-                                Bayesian Inference - Mammogram <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataMammo()">Load</a>
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMammoOpen, 'glyphicon-chevron-right': !isMammoOpen}"></i> Bayesian Inference - Mammogram <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataMammo()">Load</a>
                             </accordion-heading>
 
                             <p>The absolute/relative mode of gatherplot can be used to aid the decision process of the bayesian inference problem.</p>
@@ -357,8 +362,7 @@
 
 
                         <accordion-group is-open="isMatrixOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMatrixOpen, 'glyphicon-chevron-right': !isMatrixOpen}"></i>
-                                Gatherplot matrices (GPLOM)
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isMatrixOpen, 'glyphicon-chevron-right': !isMatrixOpen}"></i> Gatherplot matrices (GPLOM)
                             </accordion-heading>
 
                             <div>
@@ -386,7 +390,7 @@
                                 </a>
                                         </td>
                                     </tr>
-                                    
+
                                 </table>
 
                             </div>
@@ -396,8 +400,7 @@
                         </accordion-group>
 
                         <accordion-group is-open="isContinuousOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isContinuousOpen, 'glyphicon-chevron-right': !isContinousOpen}"></i>
-                                Continuous Variables <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataContinuous()">Load</a>
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isContinuousOpen, 'glyphicon-chevron-right': !isContinousOpen}"></i> Continuous Variables <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataContinuous()">Load</a>
                             </accordion-heading>
 
                             <div>
@@ -457,8 +460,7 @@
 
                         </accordion-group>
                         <accordion-group is-open="isPatientOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isPatientOpen, 'glyphicon-chevron-right': !isPatientOpen}"></i>
-                                Electronic Health Record (EHR) <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataEHR()">Load</a>
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isPatientOpen, 'glyphicon-chevron-right': !isPatientOpen}"></i> Electronic Health Record (EHR) <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataEHR()">Load</a>
                             </accordion-heading>
 
                             <div>
@@ -468,7 +470,7 @@
                                     <tr>
                                         This example shows how gatherplot can be used to visualize EHR data
                                     </tr>
-                                    
+
 
                                 </table>
 
@@ -479,8 +481,7 @@
                         </accordion-group>
 
                         <accordion-group is-open="isLensOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isLensOpen, 'glyphicon-chevron-right': !isLensOpen}"></i>
-                                Gatherlens
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isLensOpen, 'glyphicon-chevron-right': !isLensOpen}"></i> Gatherlens
                             </accordion-heading>
 
                             <div>
@@ -490,14 +491,14 @@
                                     <tr>
                                         Gatherlens provides a new way to look into the crowded scatterplots.
                                     </tr>
-                                    <td>Open it on a separate browser window. 
+                                    <!-- <td>Open it on a separate browser window.
                                     </td>
                                     <td>
                                         <a href="" class="pull-right btn btn-link btn-default " ng-click="openLens()">Open
                                 </a>
-                                    </td>
+                                    </td> -->
                                     </tr>
-                                    
+
                                 </table>
 
                             </div>
@@ -559,7 +560,7 @@
                 (i[r].q = i[r].q || []).push(arguments)
             }, i[r].l = 1 * new Date();
             a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
+                m = s.getElementsByTagName(o)[0];
             a.async = 1;
             a.src = g;
             m.parentNode.insertBefore(a, m)
