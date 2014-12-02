@@ -64,6 +64,9 @@
 
                         scope.config.binSiz = defaultBinSize;
 
+                        var initialLensSize = 100;
+
+
 
                         var initializeSVG = function() {
 
@@ -242,10 +245,10 @@
                                         tooltip.html(d.Name + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d))
                                             .style("left", (d3.event.pageX + 5) + "px")
                                             .style("top", (d3.event.pageY - 28) + "px");
-                                
 
-                              
-                                });
+
+
+                                    });
 
 
 
@@ -543,7 +546,6 @@
 
                         var renderConfigChange = function(data, config) {
 
-
                             updateSizeSVG(config);
 
                             //Call separate render for the rendering
@@ -554,10 +556,151 @@
 
                         };
 
+                        var redrawLensRect = function(xPos, yPos) {
+
+                            var itemsOnLens = getLensData(xPos, yPos);
+
+                            prepareScaleLens(itemsOnLens);
+
+                            calculateParametersOfNodesLens(itemsOnLens);
+
+                            drawNodesInSVG(itemsOnLens);
+
+                        };
+
+                        var drawLens = function(itemsOnLens) {
+
+                            // var processedItemsOnLens = processItemsOnLens(itemsOnLens)
+
+                            var lensItems = d3.selectAll(".lensItems")
+                                .data(processItemsOnLens, function(d) {
+                                    return d.id;
+                                });
+
+                            //Update
+                            //Transition from previous place to new place
+                            lensItems.style("fill", function(d) {
+                                    return color(d[scope.config.colorDim]);
+                                })
+                                .transition()
+                                .duration(1500)
+                                .attr("x", xMap)
+                                .attr("y", yMap)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidth;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeight;
+                                })
+                                .attr("rx", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("ry", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("transform", function(d, i) {
+
+                                    // if (d.cancer== "Cancer") {
+                                    //     console.log(height);
+                                    // }
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
+                                });
+
+
+
+                            //Enter
+                            //Append new circle
+                            //Transition from Original place to new place
+                            lensItems.enter().append("rect")
+                                .attr("y", yMap)
+                                .attr("x", xMap)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidth;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeight;
+                                })
+                                .attr("rx", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("ry", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+
+                                .style("fill", function(d) {
+                                    return color(d[scope.config.colorDim]);
+                                })
+                                .transition()
+                                .duration(150)
+                                .attr("x", xMap)
+                                .attr("y", yMap)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidth;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeight;
+                                })
+                                .attr("rx", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("ry", function(d) {
+                                    return scope.round ? +5 : 0;
+                                })
+                                .attr("transform", function(d, i) {
+
+                                    // if (d.cancer== "Cancer") {
+                                    //     console.log(height);
+                                    // }
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
+                                });
+
+
+                            //Exit
+                            //Transition from previous place to original place
+                            //remove circle
+
+                            //So each data now requires four new dimension
+                            //Original position
+                            //Previous position
+                            //
+
+
+
+
+                        };
+
+
+
+                        var getLensData = function(xPos, yPos) {
+
+                            var itemsOnLens = scope.data.filter(function(d) {
+
+                                if (xMap(d) < xPos + initialLensSize / 2 && xMap(d) > xPos - initialLensSize / 2) {
+
+                                    if (yMap(d) < yPos + initialLensSize / 2 && yMap(d) > yPos - initialLensSize / 2) {
+
+                                        return d;
+                                    }
+                                }
+
+                            });
+
+
+                            return itemsOnLens;
+
+
+                        };
+
                         var handleLensConfig = function(config) {
 
                             var drag = d3.behavior.drag()
-                                        .on("drag",dragmove);
+                                .on("drag", dragmove);
+
+                            var dragCircle = d3.behavior.drag()
+                                .on("drag", dragmoveCircle)
 
                             var initialLensSize = 100;
 
@@ -566,11 +709,25 @@
                                 var xPos, yPos;
 
                                 d3.select(this)
-                                    .attr("x", xPos = Math.max(initialLensSize, Math.min(width-initialLensSize, d3.event.x)))
-                                    .attr("y", yPos = Math.max(initialLensSize, Math.min(height-initialLensSize, d3.event.y)));
+                                    .attr("x", xPos = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x)) - initialLensSize / 2)
+                                    .attr("y", yPos = Math.max(initialLensSize / 2, Math.min(height - initialLensSize / 2, d3.event.y)) - initialLensSize / 2);
 
-                                labelDiv.text(xPos);
-                                    
+                                // labelDiv.text(xPos);
+
+                                redrawLensRect(xPos, yPos);
+
+                            }
+
+                            function dragmoveCircle() {
+
+                                var xPos, yPos;
+
+                                d3.select(this)
+                                    .attr("cx", xPos = Math.max(initialLensSize, Math.min(width - initialLensSize, d3.event.x)))
+                                    .attr("cy", yPos = Math.max(initialLensSize, Math.min(height - initialLensSize, d3.event.y)));
+
+                                // labelDiv.text(xPos);
+
                             }
 
                             if (config.lens === "noLens") {
@@ -584,8 +741,8 @@
 
                                 nodeGroup.append("rect")
                                     .attr("class", "lens")
-                                    .attr("x", width/2)
-                                    .attr("y", height/2)
+                                    .attr("x", width / 2)
+                                    .attr("y", height / 2)
                                     .attr("width", initialLensSize)
                                     .attr("height", initialLensSize)
                                     .call(drag);
@@ -597,10 +754,10 @@
 
                                 nodeGroup.append("circle")
                                     .attr("class", "lens")
-                                    .attr("cx", width/2)
-                                    .attr("cy", height/2)
-                                    .attr("r", initialLensSize/2)
-                                    .call(drag);
+                                    .attr("cx", width / 2)
+                                    .attr("cy", height / 2)
+                                    .attr("r", initialLensSize / 2)
+                                    .call(dragCircle);
 
 
                             }
