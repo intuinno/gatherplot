@@ -67,6 +67,12 @@
 
                         var initialLensSize = 100;
 
+                        var initialRectLensWidth = 100;
+
+                        var initialRectLensHeight = 100;
+
+                        var initialCircleLensR = 50;
+
 
                         var initializeSVG = function() {
 
@@ -520,9 +526,13 @@
 
                         };
 
-                        var redrawLensRect = function(xPos, yPos) {
+                        var redrawLensRect = function(lensInfo) {
 
-                            var itemsOnLens = getLensData(xPos, yPos);
+                            var itemsOnLens = getLensData(lensInfo);
+
+                            calculatePositionForLens(itemsOnLens, lensInfo);
+
+                            drawLensItems(itemsOnLens, lensInfo);
 
                             // prepareScaleLens(itemsOnLens);
 
@@ -530,26 +540,66 @@
 
                             // drawNodesInSVG(itemsOnLens);
 
+                        }; 
+
+                        var calculatePositionForLens = function(items, lensInfo) {
+
+                            items.sort(sortFuncByColorDimension());
+
+                            items.forEach(function(d,i){ 
+
+                                d.clusterID = i;
+
+                            })
+
+                            var box = getLensClusterSize(1, lensInfo);
+
+                            var maxNumElementInCluster = items.length;
+
+                            assignNodesOffsetConsideringAspectRatio(items, box);
+
+                            // var itemSize = calculateNodesSizeForAbsolute(lensClusterBox, maxNumElementInCluster);
+
+                            // getOffsetForLensItems(items, lensInfo, itemSize, lensClusterBox);
+
                         };
 
-                        var drawLens = function(itemsOnLens) {
+                        var getOffsetForLensItems = function(items, lens, itemSize, box) {
+
+                            items.forEach(function(d,i) {
+
+
+
+
+                            });
+
+
+                        }
+
+                        var getLensClusterSize = function (clusterNumber, lensInfo) {
+
+                            var lensClusterSize = {};
+
+                            lensClusterSize.widthOfBox = lensInfo.width/clusterNumber;
+
+                            lensClusterSize.heightOfBox = lensInfo.height;
+
+                            return lensClusterSize; 
+                        }
+
+                        var drawLensItems = function(itemsOnLens, lensInfo) {
 
                             // var processedItemsOnLens = processItemsOnLens(itemsOnLens)
 
-                            var lensItems = d3.selectAll(".lensItems")
-                                .data(processItemsOnLens, function(d) {
+                            var lensItems = nodeGroup.selectAll(".lensItems")
+                                .data(itemsOnLens, function(d) {
                                     return d.id;
                                 });
 
                             //Update
                             //Transition from previous place to new place
-                            lensItems.style("fill", function(d) {
-                                    return color(d[scope.config.colorDim]);
-                                })
-                                .transition()
-                                .duration(1500)
-                                .attr("x", xMap)
-                                .attr("y", yMap)
+                            lensItems.transition()
+                                .duration(500) 
                                 .attr("width", function(d) {
                                     // console.log(initialSquareLenth);
                                     return +d.nodeWidth;
@@ -557,12 +607,8 @@
                                 .attr("height", function(d) {
                                     return +d.nodeHeight;
                                 })
-                                .attr("rx", function(d) {
-                                    return scope.round ? +5 : 0;
-                                })
-                                .attr("ry", function(d) {
-                                    return scope.round ? +5 : 0;
-                                })
+                                .attr("x", lensInfo.centerX)
+                                .attr("y", lensInfo.centerY)
                                 .attr("transform", function(d, i) {
 
                                     // if (d.cancer== "Cancer") {
@@ -573,10 +619,12 @@
 
 
 
+
                             //Enter
                             //Append new circle
                             //Transition from Original place to new place
                             lensItems.enter().append("rect")
+                                .attr("class", "lensItems")
                                 .attr("y", yMap)
                                 .attr("x", xMap)
                                 .attr("width", function(d) {
@@ -597,22 +645,9 @@
                                     return color(d[scope.config.colorDim]);
                                 })
                                 .transition()
-                                .duration(150)
-                                .attr("x", xMap)
-                                .attr("y", yMap)
-                                .attr("width", function(d) {
-                                    // console.log(initialSquareLenth);
-                                    return +d.nodeWidth;
-                                })
-                                .attr("height", function(d) {
-                                    return +d.nodeHeight;
-                                })
-                                .attr("rx", function(d) {
-                                    return scope.round ? +5 : 0;
-                                })
-                                .attr("ry", function(d) {
-                                    return scope.round ? +5 : 0;
-                                })
+                                .duration(500)
+                                .attr("x", lensInfo.centerX)
+                                .attr("y", lensInfo.centerY)
                                 .attr("transform", function(d, i) {
 
                                     // if (d.cancer== "Cancer") {
@@ -631,6 +666,20 @@
                             //Previous position
                             //
 
+                            lensItems.exit()
+                                .transition()
+                                .duration(500) 
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidth;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeight;
+                                })
+                                .attr("y", yMap)
+                                .attr("x", xMap)
+                                .duration(100)
+                                .remove();
 
 
 
@@ -638,13 +687,13 @@
 
 
 
-                        var getLensData = function(xPos, yPos) {
+                        var getLensData = function(lensInfo) {
 
                             var itemsOnLens = scope.data.filter(function(d) {
 
-                                if (xMap(d) < xPos + initialLensSize / 2 && xMap(d) > xPos - initialLensSize / 2) {
+                                if (xMap(d) < lensInfo.centerX + lensInfo.width / 2 && xMap(d) > lensInfo.centerX - lensInfo.width / 2) {
 
-                                    if (yMap(d) < yPos + initialLensSize / 2 && yMap(d) > yPos - initialLensSize / 2) {
+                                    if (yMap(d) < lensInfo.centerY + lensInfo.height / 2 && yMap(d) > lensInfo.centerY - lensInfo.height / 2) {
 
                                         return d;
                                     }
@@ -669,6 +718,8 @@
 
                             var initialLensSize = 100;
 
+                            var lensInfo = {};
+
                             function dragmove() {
 
                                 var xPos, yPos;
@@ -679,7 +730,14 @@
 
                                 // labelDiv.text(xPos);
 
-                                redrawLensRect(xPos, yPos);
+                                lensInfo.centerX = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x));
+                                lensInfo.centerY = Math.max(initialLensSize / 2, Math.min(height - initialLensSize / 2, d3.event.y));
+                                lensInfo.type = 'rect';
+                                lensInfo.width = initialLensSize;
+                                lensInfo.height = initialLensSize;
+
+
+                                redrawLensRect(lensInfo);
 
                             }
 
@@ -703,6 +761,8 @@
                             } else if (config.lens === "rectLens") {
 
                                 nodeGroup.selectAll(".lens").remove();
+
+
 
                                 nodeGroup.append("rect")
                                     .attr("class", "lens")
@@ -1900,6 +1960,16 @@
 
                             var box = getClusterBox();
 
+                            assignNodesOffsetConsideringAspectRatio(cluster,box)
+
+                            
+                            updateNodesOffsetForMinimized(cluster, xKey, yKey);
+                            updateNodesSizeForMinimized(cluster, xKey, yKey);
+
+                        };
+
+                        var assignNodesOffsetConsideringAspectRatio = function(cluster, box) {
+
                             if (box.widthOfBox > box.heightOfBox) {
 
                                 assignNodesOffsetHorizontallyByCluster(cluster, box);
@@ -1909,8 +1979,7 @@
                                 assignNodesOffsetVerticallyByCluster(cluster, box);
                             }
 
-                            updateNodesOffsetForMinimized(cluster, xKey, yKey);
-                            updateNodesSizeForMinimized(cluster, xKey, yKey);
+
 
                         };
 
