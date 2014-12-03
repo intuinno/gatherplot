@@ -720,9 +720,43 @@
 
                             var lensInfo = {};
 
+                            var drawInitialLensItems = function(centerX, centerY, width, height) {
+
+
+                                var xPos, yPos;
+
+
+
+
+                                // labelDiv.text(xPos);
+
+                                lensInfo.centerX = centerX;
+                                lensInfo.centerY = centerY;
+                                lensInfo.type = 'rect';
+                                lensInfo.width = width;
+                                lensInfo.height = height;
+
+
+                                redrawLensRect(lensInfo);
+
+                            
+
+                            };
+
                             function dragmove() {
 
                                 var xPos, yPos;
+
+                                lensInfo.centerX = width/2 + initialLensSize/2;
+                                lensInfo.centerY = height/2 + initialLensSize/2;
+
+                                if(!d3.event) {
+
+                                    d3.event = {};
+
+                                    d3.event.x = lensInfo.centerX;
+                                    d3.event.y = lensInfo.centerY;
+                                }
 
                                 d3.select(this)
                                     .attr("x", xPos = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x)) - initialLensSize / 2)
@@ -730,8 +764,8 @@
 
                                 // labelDiv.text(xPos);
 
-                                lensInfo.centerX = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x));
-                                lensInfo.centerY = Math.max(initialLensSize / 2, Math.min(height - initialLensSize / 2, d3.event.y));
+                                lensInfo.centerX = xPos + initialLensSize/2;
+                                lensInfo.centerY = yPos + initialLensSize/2;
                                 lensInfo.type = 'rect';
                                 lensInfo.width = initialLensSize;
                                 lensInfo.height = initialLensSize;
@@ -756,21 +790,24 @@
                             if (config.lens === "noLens" || config.isGather !== 'scatter') {
 
                                 nodeGroup.selectAll(".lens").remove();
+                                nodeGroup.selectAll(".lensItems").remove();
 
 
                             } else if (config.lens === "rectLens") {
 
                                 nodeGroup.selectAll(".lens").remove();
-
+                                nodeGroup.selectAll(".lensItems").remove();
 
 
                                 nodeGroup.append("rect")
                                     .attr("class", "lens")
-                                    .attr("x", width / 2)
-                                    .attr("y", height / 2)
+                                    .attr("x", width / 2 )
+                                    .attr("y", height / 2 )
                                     .attr("width", initialLensSize)
                                     .attr("height", initialLensSize)
                                     .call(drag);
+
+                                drawInitialLensItems(width/2+initialLensSize/2,height/2 + initialLensSize/2, initialLensSize, initialLensSize);
 
 
                             } else if (config.lens === "pieLens") {
