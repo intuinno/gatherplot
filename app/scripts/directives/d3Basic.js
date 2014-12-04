@@ -543,6 +543,14 @@
 
                         var calculatePositionForLensHist = function(items, lensInfo) {
 
+                            // var nestedLensItems = d3.nest()
+                            //     .key(sortFuncByColorDimension())
+                            //     .sortValues(function(a,b) {
+
+                            //         return a.
+                            //     })
+
+
                             items.sort(sortFuncByColorDimension());
 
                             items.forEach(function(d, i) {
@@ -553,7 +561,16 @@
 
                             var box = getLensClusterSize(1, lensInfo);
 
-                            assignNodesOffsetConsideringAspectRatio(items, box);
+                            var maxNumElementInCluster = items.length;
+
+                            var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
+
+                            if (size > maxDotSize) {
+
+                                size = maxDotSize;
+                            }
+
+                            handleOffsetRectLens(items, box, size);
 
                         };
 
@@ -569,6 +586,13 @@
                         }
 
                         var drawLensItems = function(itemsOnLens, lensInfo) {
+
+
+
+                            nodeGroup.selectAll(".dot")
+                                .data(itemsOnLens, function(d) {
+                                    return d.id;
+                                }).remove();
 
                             var lensItems = nodeGroup.selectAll(".lensItems")
                                 .data(itemsOnLens, function(d) {
@@ -600,7 +624,7 @@
                             //Append new circle
                             //Transition from Original place to new place
                             lensItems.enter().append("rect")
-                                .attr("class", "lensItems")
+                                .classed({'lensItems':true, 'dot':false})
                                 .attr("y", yMap)
                                 .attr("x", xMap)
                                 .attr("width", function(d) {
@@ -640,6 +664,7 @@
                             //Transition from previous place to original place
                             //remove circle
                             lensItems.exit()
+                                .classed({'dot':true,'lensItems':false})
                                 .transition()
                                 .duration(500)
                                 .attr("width", function(d) {
@@ -653,8 +678,7 @@
                                 .attr("x", xMap)
                                 .attr("transform", function(d, i) {
                                     return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
-                                })
-                                .remove();
+                                });
                         };
 
 
@@ -1838,6 +1862,12 @@
                         };
 
                         var assignClusterIDOfNodes = function() {
+
+                            assignClusterIDOfNodesInNestedItems(nest);
+
+                        };
+
+                        var assignClusterIDOfNodesInNestedItems = function(nest) {
 
                             nest.forEach(function(d, i, j) {
 
