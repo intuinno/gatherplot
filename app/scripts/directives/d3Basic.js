@@ -73,6 +73,9 @@
 
                         var initialCircleLensR = 50;
 
+                        var initialHistLensWidth = 120;
+                        var initialHistLensHeight = 90;
+
 
                         var initializeSVG = function() {
 
@@ -132,25 +135,6 @@
                             return scope.handleConfigChange(renderData, newVals);
                         }, true);
 
-                        // scope.$watch(function() {
-                        //     return scope.xdim;
-                        // }, function(newVals, oldVals) {
-                        //     // debugger;
-                        //     return scope.handleXDimChange(newVals, oldVals);
-                        // }, true);
-
-                        // scope.$watch(function() {
-                        //     return scope.ydim;
-                        // }, function(newVals, oldVals) {
-                        //     // debugger;
-                        //     return scope.handleYDimChange(newVals, oldVals);
-                        // }, true);
-
-                        // scope.$watch('config.binSize', function(newVals, oldVals) {
-                        //     // debugger;
-                        //     return scope.renderDataChange(scope.data, scope.config);
-                        // }, true);
-
                         scope.$watch(function() {
                             return scope.border;
                         }, function(newVals, oldVals) {
@@ -178,35 +162,6 @@
                                 });
 
                         };
-
-                        scope.handleXDimChange = function(newVals, oldVals) {
-
-                            if (!newVals) {
-
-
-                            } else {
-
-                                // scope.xdim = newVals;
-                                scope.handleConfigChange(renderData, scope.config);
-
-                            }
-
-                        };
-
-                        scope.handleYDimChange = function(newVals, oldVals) {
-
-                            if (!newVals) {
-
-
-                            } else {
-
-                                // scope.ydim = newVals;
-                                scope.handleConfigChange(renderData, scope.config);
-
-                            }
-
-                        };
-
 
                         scope.renderRoundChange = function(isRound) {
 
@@ -530,23 +485,27 @@
 
                             var itemsOnLens = getLensData(lensInfo);
 
-                            calculatePositionForLens(itemsOnLens, lensInfo);
+                            calculatePositionForLensRect(itemsOnLens, lensInfo);
 
                             drawLensItems(itemsOnLens, lensInfo);
 
-                            // prepareScaleLens(itemsOnLens);
+                        };
 
-                            // calculateParametersOfNodesLens(itemsOnLens);
+                        var redrawLensHist = function(lensInfo) {
 
-                            // drawNodesInSVG(itemsOnLens);
+                            var itemsOnLens = getLensData(lensInfo);
 
-                        }; 
+                            calculatePositionForLensHist(itemsOnLens, lensInfo);
 
-                        var calculatePositionForLens = function(items, lensInfo) {
+                            drawLensItems(itemsOnLens, lensInfo);
+
+                        };
+
+                        var calculatePositionForLensRect = function(items, lensInfo) {
 
                             items.sort(sortFuncByColorDimension());
 
-                            items.forEach(function(d,i){ 
+                            items.forEach(function(d, i) {
 
                                 d.clusterID = i;
 
@@ -556,40 +515,60 @@
 
                             var maxNumElementInCluster = items.length;
 
-                            assignNodesOffsetConsideringAspectRatio(items, box);
+                            var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
 
-                            // var itemSize = calculateNodesSizeForAbsolute(lensClusterBox, maxNumElementInCluster);
+                            // if (size > maxDotSize) {
 
-                            // getOffsetForLensItems(items, lensInfo, itemSize, lensClusterBox);
+                            //     size = maxDotSize;
+                            // }
+
+                            handleOffsetRectLens(items, box, size);
 
                         };
 
-                        var getOffsetForLensItems = function(items, lens, itemSize, box) {
+                        var handleOffsetRectLens = function(cluster, box, size) {
 
-                            items.forEach(function(d,i) {
+                            if (box.widthOfBox > box.heightOfBox) {
+
+                                handleOffsetRectLensHorizontally(cluster, box, size);
+
+                            } else {
+
+                                handleOffsetRectLensVertically(cluster, box, size);
+                            }
 
 
 
+                        };
 
-                            });
+                        var calculatePositionForLensHist = function(items, lensInfo) {
 
+                            items.sort(sortFuncByColorDimension());
 
-                        }
+                            items.forEach(function(d, i) {
 
-                        var getLensClusterSize = function (clusterNumber, lensInfo) {
+                                d.clusterID = i;
+
+                            })
+
+                            var box = getLensClusterSize(1, lensInfo);
+
+                            assignNodesOffsetConsideringAspectRatio(items, box);
+
+                        };
+
+                        var getLensClusterSize = function(clusterNumber, lensInfo) {
 
                             var lensClusterSize = {};
 
-                            lensClusterSize.widthOfBox = lensInfo.width/clusterNumber;
+                            lensClusterSize.widthOfBox = lensInfo.width / clusterNumber;
 
                             lensClusterSize.heightOfBox = lensInfo.height;
 
-                            return lensClusterSize; 
+                            return lensClusterSize;
                         }
 
                         var drawLensItems = function(itemsOnLens, lensInfo) {
-
-                            // var processedItemsOnLens = processItemsOnLens(itemsOnLens)
 
                             var lensItems = nodeGroup.selectAll(".lensItems")
                                 .data(itemsOnLens, function(d) {
@@ -599,13 +578,13 @@
                             //Update
                             //Transition from previous place to new place
                             lensItems.transition()
-                                .duration(500) 
+                                .duration(500)
                                 .attr("width", function(d) {
                                     // console.log(initialSquareLenth);
-                                    return +d.nodeWidth;
+                                    return +d.nodeWidthLens;
                                 })
                                 .attr("height", function(d) {
-                                    return +d.nodeHeight;
+                                    return +d.nodeHeightLens;
                                 })
                                 .attr("x", lensInfo.centerX)
                                 .attr("y", lensInfo.centerY)
@@ -614,11 +593,8 @@
                                     // if (d.cancer== "Cancer") {
                                     //     console.log(height);
                                     // }
-                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
+                                    return "translate(" + (d.XOffsetLens) + "," + (-(d.YOffsetLens)) + ") ";
                                 });
-
-
-
 
                             //Enter
                             //Append new circle
@@ -648,27 +624,24 @@
                                 .duration(500)
                                 .attr("x", lensInfo.centerX)
                                 .attr("y", lensInfo.centerY)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidthLens;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeightLens;
+                                })
                                 .attr("transform", function(d, i) {
-
-                                    // if (d.cancer== "Cancer") {
-                                    //     console.log(height);
-                                    // }
-                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
+                                    return "translate(" + (d.XOffsetLens) + "," + (-(d.YOffsetLens)) + ") ";
                                 });
 
 
                             //Exit
                             //Transition from previous place to original place
                             //remove circle
-
-                            //So each data now requires four new dimension
-                            //Original position
-                            //Previous position
-                            //
-
                             lensItems.exit()
                                 .transition()
-                                .duration(500) 
+                                .duration(500)
                                 .attr("width", function(d) {
                                     // console.log(initialSquareLenth);
                                     return +d.nodeWidth;
@@ -678,11 +651,10 @@
                                 })
                                 .attr("y", yMap)
                                 .attr("x", xMap)
-                                .duration(100)
+                                .attr("transform", function(d, i) {
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
+                                })
                                 .remove();
-
-
-
                         };
 
 
@@ -707,108 +679,139 @@
 
                         };
 
-
-                        var handleLensChange = function(config) {
-
-                            var drag = d3.behavior.drag()
-                                .on("drag", dragmove);
-
-                            var dragCircle = d3.behavior.drag()
-                                .on("drag", dragmoveCircle)
-
-                            var initialLensSize = 100;
+                        var drawInitialRectLensItems = function(centerX, centerY, width, height) {
 
                             var lensInfo = {};
 
-                            var drawInitialLensItems = function(centerX, centerY, width, height) {
+                            lensInfo.centerX = centerX;
+                            lensInfo.centerY = centerY;
+                            lensInfo.type = 'rect';
+                            lensInfo.width = width;
+                            lensInfo.height = height;
+                            redrawLensRect(lensInfo);
+                        };
+
+                        var drawInitialHistLensItems = function(centerX, centerY, width, height) {
+
+                            var lensInfo = {};
+
+                            lensInfo.centerX = centerX;
+                            lensInfo.centerY = centerY;
+                            lensInfo.type = 'rect';
+                            lensInfo.width = width;
+                            lensInfo.height = height;
+                            redrawLensHist(lensInfo);
+                        };
+
+                        var dragmoveRectLens = function() {
+
+                            var xPos, yPos;
+
+                            var lensInfo = {};
+
+                            d3.select(this)
+                                .attr("x", xPos = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x)) - initialLensSize / 2)
+                                .attr("y", yPos = Math.max(initialLensSize / 2, Math.min(height - initialLensSize / 2, d3.event.y)) - initialLensSize / 2);
+
+                            // labelDiv.text(xPos);
+
+                            lensInfo.centerX = xPos + initialLensSize / 2;
+                            lensInfo.centerY = yPos + initialLensSize / 2;
+                            lensInfo.type = 'rect';
+                            lensInfo.width = initialLensSize;
+                            lensInfo.height = initialLensSize;
 
 
-                                var xPos, yPos;
+                            redrawLensRect(lensInfo);
+
+                        };
+
+                        var dragmoveHistLens = function() {
+
+                            var xPos, yPos;
+
+                            var lensInfo = {};
+
+                            d3.select(this)
+                                .attr("x", xPos = Math.max(initialHistLensWidth / 2, Math.min(width - initialHistLensWidth / 2, d3.event.x)) - initialHistLensWidth / 2)
+                                .attr("y", yPos = Math.max(initialHistLensHeight / 2, Math.min(height - initialHistLensHeight / 2, d3.event.y)) - initialHistLensHeight / 2);
+
+                            // labelDiv.text(xPos);
+
+                            lensInfo.centerX = xPos + initialHistLensWidth / 2;
+                            lensInfo.centerY = yPos + initialHistLensHeight / 2;
+                            lensInfo.type = 'hist';
+                            lensInfo.width = initialHistLensWidth;
+                            lensInfo.height = initialHistLensHeight;
 
 
+                            redrawLensHist(lensInfo);
+
+                        };
+
+                        var dragmoveCircle = function() {
+
+                            var xPos, yPos;
+
+                            d3.select(this)
+                                .attr("cx", xPos = Math.max(initialLensSize, Math.min(width - initialLensSize, d3.event.x)))
+                                .attr("cy", yPos = Math.max(initialLensSize, Math.min(height - initialLensSize, d3.event.y)));
+
+                            // labelDiv.text(xPos);
+
+                        }
+
+                        var handleRectLensChange = function() {
+
+                            clearLens();
+
+                            var drag = d3.behavior.drag()
+                                .on("drag", dragmoveRectLens);
+
+                            nodeGroup.append("rect")
+                                .attr("class", "lens")
+                                .attr("x", width / 2)
+                                .attr("y", height / 2)
+                                .attr("width", initialLensSize)
+                                .attr("height", initialLensSize)
+                                .call(drag);
+
+                            drawInitialRectLensItems(width / 2 + initialLensSize / 2, height / 2 + initialLensSize / 2, initialLensSize, initialLensSize);
+                        };
+
+                        var handleHistLensChange = function() {
+
+                            clearLens();
+
+                            var drag = d3.behavior.drag()
+                                .on("drag", dragmoveHistLens);
+
+                            nodeGroup.append("rect")
+                                .attr("class", "lens")
+                                .attr("x", width / 2)
+                                .attr("y", height / 2)
+                                .attr("width", initialHistLensWidth)
+                                .attr("height", initialHistLensHeight)
+                                .call(drag);
+
+                            drawInitialHistLensItems(width / 2 + initialHistLensWidth / 2, height / 2 + initialHistLensHeight / 2, initialHistLensWidth, initialHistLensHeight);
+
+                        };
 
 
-                                // labelDiv.text(xPos);
-
-                                lensInfo.centerX = centerX;
-                                lensInfo.centerY = centerY;
-                                lensInfo.type = 'rect';
-                                lensInfo.width = width;
-                                lensInfo.height = height;
-
-
-                                redrawLensRect(lensInfo);
-
-                            
-
-                            };
-
-                            function dragmove() {
-
-                                var xPos, yPos;
-
-                                lensInfo.centerX = width/2 + initialLensSize/2;
-                                lensInfo.centerY = height/2 + initialLensSize/2;
-
-                                if(!d3.event) {
-
-                                    d3.event = {};
-
-                                    d3.event.x = lensInfo.centerX;
-                                    d3.event.y = lensInfo.centerY;
-                                }
-
-                                d3.select(this)
-                                    .attr("x", xPos = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x)) - initialLensSize / 2)
-                                    .attr("y", yPos = Math.max(initialLensSize / 2, Math.min(height - initialLensSize / 2, d3.event.y)) - initialLensSize / 2);
-
-                                // labelDiv.text(xPos);
-
-                                lensInfo.centerX = xPos + initialLensSize/2;
-                                lensInfo.centerY = yPos + initialLensSize/2;
-                                lensInfo.type = 'rect';
-                                lensInfo.width = initialLensSize;
-                                lensInfo.height = initialLensSize;
-
-
-                                redrawLensRect(lensInfo);
-
-                            }
-
-                            function dragmoveCircle() {
-
-                                var xPos, yPos;
-
-                                d3.select(this)
-                                    .attr("cx", xPos = Math.max(initialLensSize, Math.min(width - initialLensSize, d3.event.x)))
-                                    .attr("cy", yPos = Math.max(initialLensSize, Math.min(height - initialLensSize, d3.event.y)));
-
-                                // labelDiv.text(xPos);
-
-                            }
+                        var handleLensChange = function(config) {
 
                             if (config.lens === "noLens" || config.isGather !== 'scatter') {
 
-                                nodeGroup.selectAll(".lens").remove();
-                                nodeGroup.selectAll(".lensItems").remove();
-
+                                clearLens();
 
                             } else if (config.lens === "rectLens") {
 
-                                nodeGroup.selectAll(".lens").remove();
-                                nodeGroup.selectAll(".lensItems").remove();
+                                handleRectLensChange();
 
+                            } else if (config.lens === "histLens") {
 
-                                nodeGroup.append("rect")
-                                    .attr("class", "lens")
-                                    .attr("x", width / 2 )
-                                    .attr("y", height / 2 )
-                                    .attr("width", initialLensSize)
-                                    .attr("height", initialLensSize)
-                                    .call(drag);
-
-                                drawInitialLensItems(width/2+initialLensSize/2,height/2 + initialLensSize/2, initialLensSize, initialLensSize);
-
+                                handleHistLensChange();
 
                             } else if (config.lens === "pieLens") {
 
@@ -821,12 +824,15 @@
                                     .attr("r", initialLensSize / 2)
                                     .call(dragCircle);
 
-
                             }
 
-
-
                         };
+
+                        var clearLens = function() {
+
+                            nodeGroup.selectAll(".lens").remove();
+                            nodeGroup.selectAll(".lensItems").remove();
+                        }
 
                         var updateSizeSVG = function(config) {
                             // XPadding = 60;
@@ -1997,9 +2003,9 @@
 
                             var box = getClusterBox();
 
-                            assignNodesOffsetConsideringAspectRatio(cluster,box)
+                            assignNodesOffsetConsideringAspectRatio(cluster, box)
 
-                            
+
                             updateNodesOffsetForMinimized(cluster, xKey, yKey);
                             updateNodesSizeForMinimized(cluster, xKey, yKey);
 
@@ -2108,6 +2114,26 @@
 
                         };
 
+                        var assignNodesOffsetLongShortEdgeLens = function(longEdge, shortEdge, cluster, size) {
+
+                            var numElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(longEdge, shortEdge, cluster.length, maxNum);
+                            if (isThemeRiverCondition(longEdge, shortEdge, numElement)) {
+
+                                numElement = getNumOfElementForThemeRiver(longEdge, shortEdge, cluster.length);
+                            }
+                            var nodeSize = getNodeSizeAbsoluteOrRelative(longEdge, shortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
+                            var offsetForCenterPosition = calculateOffsetForCenterPosition(nodeSize.lengthInLongEdge, nodeSize.lengthInShortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
+
+
+                            return {
+                                numElement: numElement,
+                                nodeSize: nodeSize,
+                                offsetForCenterPosition: offsetForCenterPosition
+                            };
+
+
+                        };
+
                         var isThemeRiverCondition = function(longEdge, shortEdge, numElement) {
 
                             if (longEdge / shortEdge > 3) {
@@ -2150,6 +2176,51 @@
                                 lengthInLongEdge: lengthInLongEdge,
                                 lengthInShortEdge: lengthInShortEdge
                             };
+
+                        };
+
+                        var handleOffsetRectLensHorizontally = function(cluster, box, size) {
+
+                            var nodeHeight = size;
+                            var nodeWidth = size;
+                            var numElementInShortEdge = Math.round(box.heightOfBox / size);
+                            var numElementInLongEdge = Math.round(box.widthOfBox / size);
+                            var offsetInShortEdge = nodeHeight * numElementInShortEdge / 2;
+                            var offsetInLongEdge = nodeWidth * numElementInLongEdge / 2;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeWidthLens = nodeWidth;
+                                d.nodeHeightLens = nodeHeight;
+
+
+
+
+                                d.YOffsetLens = (d.clusterID % numElementInShortEdge) * nodeHeight - offsetInShortEdge + nodeHeight;
+                                d.XOffsetLens = Math.floor(d.clusterID / numElementInShortEdge) * nodeWidth - offsetInLongEdge;
+
+                            });
+
+                        };
+
+                        var handleOffsetRectLensVertically = function(cluster, box, size) {
+
+                            var nodeHeight = size;
+                            var nodeWidth = size;
+                            var numElementInShortEdge = Math.round(box.widthOfBox / size);
+                            var numElementInLongEdge = Math.round(box.heightOfBox / size);
+                            var offsetInShortEdge = nodeWidth * numElementInShortEdge / 2;
+                            var offsetInLongEdge = nodeHeight * numElementInLongEdge / 2;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeHeightLens = nodeHeight;
+                                d.nodeWidthLens = nodeWidth;
+
+                                d.XOffsetLens = (d.clusterID % numElementInShortEdge) * nodeWidth - offsetInShortEdge;
+                                d.YOffsetLens = Math.floor(d.clusterID / numElementInShortEdge) * nodeHeight - offsetInLongEdge + nodeHeight;
+
+                            });
 
                         };
 

@@ -562,7 +562,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 2000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -597,6 +597,8 @@
 
 
                         temp.continuous2 = (Math.random() * (numDiscreteVar - 1));
+
+                        temp.continuous3 = Math.random();
 
                         data.push(temp);
                     }
