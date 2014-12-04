@@ -517,10 +517,10 @@
 
                             var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
 
-                            // if (size > maxDotSize) {
+                            if (size > maxDotSize) {
 
-                            //     size = maxDotSize;
-                            // }
+                                size = maxDotSize;
+                            }
 
                             handleOffsetRectLens(items, box, size);
 
@@ -2207,8 +2207,10 @@
 
                             var nodeHeight = size;
                             var nodeWidth = size;
-                            var numElementInShortEdge = Math.round(box.widthOfBox / size);
-                            var numElementInLongEdge = Math.round(box.heightOfBox / size);
+
+                            var numOfElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(box.heightOfBox, box.widthOfBox, cluster.length);
+                            var numElementInShortEdge = numOfElement.numElementInShortEdge;
+                            var numElementInLongEdge = numOfElement.numElementInLongEdge;
                             var offsetInShortEdge = nodeWidth * numElementInShortEdge / 2;
                             var offsetInLongEdge = nodeHeight * numElementInLongEdge / 2;
 
