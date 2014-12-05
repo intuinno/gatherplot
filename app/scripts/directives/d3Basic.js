@@ -508,6 +508,8 @@
                             items.forEach(function(d, i) {
 
                                 d.clusterID = i;
+                                d.lensX = lensInfo.centerX;
+                                d.lensY = lensInfo.centerY;
 
                             })
 
@@ -537,31 +539,39 @@
                                 handleOffsetRectLensVertically(cluster, box, size);
                             }
 
+                        };
 
+                        var handleOffsetHistLens = function(cluster, box, size) {
+
+                            if (box.widthOfBox > box.heightOfBox) {
+
+                                handleOffsetHistLensHorizontally(cluster, box, size);
+
+                            } else {
+
+                                handleOffsetHistLensVertically(cluster, box, size);
+                            }
 
                         };
 
                         var calculatePositionForLensHist = function(items, lensInfo) {
 
-                            // var nestedLensItems = d3.nest()
-                            //     .key(sortFuncByColorDimension())
-                            //     .sortValues(function(a,b) {
+                            var nestedLensItems = d3.nest()
+                                .key(function(d) {
+                                    return d[scope.config.colorDim];
+                                })
+                                .sortKeys(d3.ascending)
+                                .sortValues(function(a, b) {
+                                    return a[scope.xdim] - b[scope.xdim];
+                                })
+                                .entries(items);
 
-                            //         return a.
-                            //     })
 
+                            assignClusterIDOfNodesInOneKeyNestedItems(nestedLensItems);
 
-                            items.sort(sortFuncByColorDimension());
+                            var box = getLensClusterSize(nestedLensItems.length, lensInfo);
 
-                            items.forEach(function(d, i) {
-
-                                d.clusterID = i;
-
-                            })
-
-                            var box = getLensClusterSize(1, lensInfo);
-
-                            var maxNumElementInCluster = items.length;
+                            var maxNumElementInCluster = getClusterWithMaximumPopulationFromOneKeyNestedItems(nestedLensItems);
 
                             var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
 
@@ -570,7 +580,17 @@
                                 size = maxDotSize;
                             }
 
-                            handleOffsetRectLens(items, box, size);
+                            nestedLensItems.forEach(function(d) {
+                                handleOffsetHistLens(d.values, box, size);
+                            });
+
+                            nestedLensItems.forEach(function(d, i) {
+
+                                d.values.forEach(function(d) {
+                                    d.lensX = lensInfo.centerX - lensInfo.width / 2 + (0.5 + i) * box.widthOfBox;
+                                    d.lensY = lensInfo.centerY;
+                                });
+                            });
 
                         };
 
@@ -610,8 +630,12 @@
                                 .attr("height", function(d) {
                                     return +d.nodeHeightLens;
                                 })
-                                .attr("x", lensInfo.centerX)
-                                .attr("y", lensInfo.centerY)
+                                .attr("x", function(d) {
+                                    return d.lensX;
+                                })
+                                .attr("y", function(d) {
+                                    return d.lensY;
+                                })
                                 .attr("transform", function(d, i) {
 
                                     // if (d.cancer== "Cancer") {
@@ -624,7 +648,10 @@
                             //Append new circle
                             //Transition from Original place to new place
                             lensItems.enter().append("rect")
-                                .classed({'lensItems':true, 'dot':false})
+                                .classed({
+                                    'lensItems': true,
+                                    'dot': false
+                                })
                                 .attr("y", yMap)
                                 .attr("x", xMap)
                                 .attr("width", function(d) {
@@ -646,8 +673,12 @@
                                 })
                                 .transition()
                                 .duration(500)
-                                .attr("x", lensInfo.centerX)
-                                .attr("y", lensInfo.centerY)
+                                .attr("x", function(d) {
+                                    return d.lensX;
+                                })
+                                .attr("y", function(d) {
+                                    return d.lensY;
+                                })
                                 .attr("width", function(d) {
                                     // console.log(initialSquareLenth);
                                     return +d.nodeWidthLens;
@@ -664,7 +695,10 @@
                             //Transition from previous place to original place
                             //remove circle
                             lensItems.exit()
-                                .classed({'dot':true,'lensItems':false})
+                                .classed({
+                                    'dot': true,
+                                    'lensItems': false
+                                })
                                 .transition()
                                 .duration(500)
                                 .attr("width", function(d) {
@@ -1863,11 +1897,11 @@
 
                         var assignClusterIDOfNodes = function() {
 
-                            assignClusterIDOfNodesInNestedItems(nest);
+                            assignClusterIDOfNodesInTwoKeyNestedItems(nest);
 
                         };
 
-                        var assignClusterIDOfNodesInNestedItems = function(nest) {
+                        var assignClusterIDOfNodesInTwoKeyNestedItems = function(nest) {
 
                             nest.forEach(function(d, i, j) {
 
@@ -1878,6 +1912,22 @@
                                         d.clusterID = i;
 
                                     });
+
+                                });
+
+                            });
+
+
+                        };
+
+                        var assignClusterIDOfNodesInOneKeyNestedItems = function(nest) {
+
+                            nest.forEach(function(d, i, j) {
+
+                                d.values.forEach(function(d, i, j) {
+
+                                    d.clusterID = i;
+
 
                                 });
 
@@ -2213,8 +2263,10 @@
 
                             var nodeHeight = size;
                             var nodeWidth = size;
-                            var numElementInShortEdge = Math.round(box.heightOfBox / size);
-                            var numElementInLongEdge = Math.round(box.widthOfBox / size);
+
+                            var numOfElement = getNumOfElementInLongAndShortEdgeUsingAspectRatioKeeping(box.widthOfBox, box.heightOfBox, cluster.length);
+                            var numElementInShortEdge = numOfElement.numElementInShortEdge;
+                            var numElementInLongEdge = numOfElement.numElementInLongEdge;
                             var offsetInShortEdge = nodeHeight * numElementInShortEdge / 2;
                             var offsetInLongEdge = nodeWidth * numElementInLongEdge / 2;
 
@@ -2255,6 +2307,49 @@
                             });
 
                         };
+
+                        var handleOffsetHistLensHorizontally = function(cluster, box, size) {
+
+                            var nodeHeight = size;
+                            var nodeWidth = size;
+                            var numElementInShortEdge = Math.round(box.heightOfBox / size);
+                            var numElementInLongEdge = Math.round(box.widthOfBox / size);
+                            var offsetInShortEdge = nodeHeight * numElementInShortEdge / 2;
+                            var offsetInLongEdge = nodeWidth * numElementInLongEdge / 2;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeWidthLens = nodeWidth;
+                                d.nodeHeightLens = nodeHeight;
+
+                                d.YOffsetLens = (d.clusterID % numElementInShortEdge) * nodeHeight - offsetInShortEdge + nodeHeight;
+                                d.XOffsetLens = Math.floor(d.clusterID / numElementInShortEdge) * nodeWidth - offsetInLongEdge;
+
+                            });
+
+                        };
+
+                        var handleOffsetHistLensVertically = function(cluster, box, size) {
+
+                            var nodeHeight = size;
+                            var nodeWidth = size;
+                            var numElementInShortEdge = Math.round(box.widthOfBox / size);
+                            var numElementInLongEdge = Math.round(box.heightOfBox / size);
+                            var offsetInShortEdge = nodeHeight * numElementInShortEdge / 2;
+                            var offsetInLongEdge = nodeWidth * numElementInLongEdge / 2;
+
+                            cluster.forEach(function(d, i, j) {
+
+                                d.nodeWidthLens = nodeWidth;
+                                d.nodeHeightLens = nodeHeight;
+
+                                d.XOffsetLens = (d.clusterID % numElementInShortEdge) * nodeWidth - offsetInShortEdge;
+                                d.YOffsetLens = Math.floor(d.clusterID / numElementInShortEdge) * nodeHeight - offsetInLongEdge + nodeHeight;
+
+                            });
+
+                        };
+
 
                         var assignNodesOffsetHorizontallyByCluster = function(cluster, box) {
 
@@ -2321,12 +2416,26 @@
 
                         var getClusterWithMaximumPopulation = function() {
 
+                            return getClusterWithMaximumPopulationFromTwoKeyNestedItems(nest);
+                        };
+
+                        var getClusterWithMaximumPopulationFromTwoKeyNestedItems = function(nest) {
+
                             return d3.max(nest, function(d) {
 
                                 return d3.max(d.values, function(d) {
 
                                     return d.numOfElement;
                                 });
+                            });
+
+                        };
+
+                        var getClusterWithMaximumPopulationFromOneKeyNestedItems = function(nest) {
+
+                            return d3.max(nest, function(d) {
+
+                                return d.values.length;
                             });
 
                         };
