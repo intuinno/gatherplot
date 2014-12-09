@@ -76,6 +76,8 @@
                         var initialHistLensWidth = 120;
                         var initialHistLensHeight = 90;
 
+                        var initialInnerRadiusOfPieLens = 20;
+
 
                         var initializeSVG = function() {
 
@@ -501,6 +503,16 @@
 
                         };
 
+                        var redrawLensPie = function(lensInfo) {
+
+                            var itemsOnLens = getLensData(lensInfo);
+
+                            calculatePositionForLensPie(itemsOnLens, lensInfo);
+
+                            drawLensItems(itemsOnLens, lensInfo);
+
+                        };
+
                         var calculatePositionForLensRect = function(items, lensInfo) {
 
                             items.sort(sortFuncByColorDimension());
@@ -592,6 +604,195 @@
                                 });
                             });
 
+                        };
+
+                        var calculatePositionForLensPie = function(items, lensInfo) {
+
+                            items.forEach(function(d, i) {
+                                d.lensX = lensInfo.centerX;
+                                d.lensY = lensInfo.centerY;
+
+                            });
+
+                            var nestedLensItems = d3.nest()
+                                .key(function(d) {
+                                    return d[scope.config.colorDim];
+                                })
+                                .sortKeys(d3.ascending)
+                                .sortValues(function(a, b) {
+                                    return a[scope.xdim] - b[scope.xdim];
+                                })
+                                .entries(items);
+
+                            var numElement = items.length;
+
+                            var layerSetting = calculateLayerSettingForPieLens(lensInfo, numElement);
+
+                            if (layerSetting.dotR > maxDotSize / 2) {
+
+                                layerSetting.dotR = maxDotSize / 2;
+                            }
+
+                            var clusterAngle = getClusterAngle(nestedLensItems, layerSetting, numElement);
+
+                            nestedLensItems.forEach(function(d, i) {
+                                handleOffsetPieLens(d.values, layerSetting, clusterAngle[i], lensInfo);
+                            });
+
+                        };
+
+                        var handleOffsetPieLens = function(items, layerSetting, clusterAngle, lensInfo) {
+
+                            var currentLayer = 0;
+
+                            var angleOffset = clusterAngle.startAngle;
+
+                            items.forEach(function(d, i, j) {
+
+                                d.nodeWidthLens = layerSetting.dotR * 2;
+                                d.nodeHeightLens = layerSetting.dotR * 2;
+
+                                angleOffset = angleOffset + layerSetting.layerIncrementalAngle[currentLayer];
+
+                                if (angleOffset >= clusterAngle.endAngle) {
+
+                                    angleOffset = clusterAngle.startAngle;
+                                    currentLayer++;
+                                }
+
+                                var angle = angleOffset;
+                                var innerR = layerSetting.layerInnerRadius[currentLayer];
+
+                                d.XOffsetLens = innerR * Math.cos(angle);
+                                d.YOffsetLens = -1 * innerR * Math.sin(angle);
+
+
+                            });
+                        }
+
+                        var getClusterAngle = function(nestedItems, layerSetting, numElement) {
+
+                            var clusterNumber = nestedItems.length;
+                            var offsetAngle = 0;
+
+                            var clusterAngle = nestedItems.map(function(d, i, j) {
+
+                                var startAngle = offsetAngle;
+                                var endAngle = startAngle + 2 * Math.PI * (d.values.length / numElement);
+                                offsetAngle = endAngle;
+
+                                return {
+                                    'startAngle': startAngle,
+                                    'endAngle': endAngle
+                                };
+                            });
+
+                            return clusterAngle;
+
+                        };
+
+                        var calculateLayerSettingForPieLens = function(lensInfo, numElement) {
+
+                            var numLayer = 1;
+
+                            while (!isNumLayerLargeEnough(numLayer, lensInfo, numElement)) {
+                                numLayer++;
+                            }
+
+                            return calculateLayerSettingForPieLensWithNumLayer(numLayer, lensInfo, numElement);
+                        };
+
+                        var calculateLayerSettingForPieLensWithNumLayer = function(numLayer, lensInfo, numElement) {
+
+                            var layerSetting = {};
+
+                            layerSetting.numLayer = numLayer;
+                            layerSetting.dotR = getDotRadiusFromNumLayer(numLayer, lensInfo);
+
+                            layerSetting.layerInnerRadius = [];
+                            layerSetting.layerIncrementalAngle = [];
+                            layerSetting.itemSetting = [];
+                            var itemCountStart = 0;
+
+                            for (var layer = 1; layer <= layerSetting.numLayer; layer++) {
+
+                                var innerR = getInnerRadiusPieLens(lensInfo, layer, layerSetting.dotR);
+                                layerSetting.layerInnerRadius.push(innerR);
+
+                                var incrementalAngle = getIncrementalAngleForPieLens(layerSetting.dotR, lensInfo, layer);
+                                layerSetting.layerIncrementalAngle.push(incrementalAngle);
+
+                                // for (var itemCount = itemCountStart; itemCount <= itemCountStart + count; itemCount++) {
+
+                                //     var itemSetting = {}
+
+                                //     itemSetting.layer = layer;
+                                //     itemSetting.incrementalAngle = incrementalAngle;
+                                //     layerSetting.itemSetting[itemCount] = itemSetting;
+
+                                //     console.log(itemCount);
+
+                                // }
+
+                                // itemCountStart = count; 
+                            }
+
+                            for (var itemCount = 0; itemCount < numElement; itemCount++) {
+
+
+                            }
+
+                            return layerSetting;
+
+                        };
+
+                        var isNumLayerLargeEnough = function(numLayer, lensInfo, numElement) {
+
+                            var dotR = getDotRadiusFromNumLayer(numLayer, lensInfo);
+
+                            if (dotR >= lensInfo.innerRadius) {
+
+                                return false;
+                            }
+
+                            var accumulatedItemsCount = 0;
+
+                            for (var i = 1; i <= numLayer; i++) {
+
+                                accumulatedItemsCount = accumulatedItemsCount + numItemsInSingleLayer(i, dotR, lensInfo);
+                            }
+
+                            return (numElement <= accumulatedItemsCount);
+                        };
+
+                        var numItemsInSingleLayer = function(layerCount, dotR, lensInfo) {
+
+                            var angleForDot = getIncrementalAngleForPieLens(dotR, lensInfo, layerCount);
+                            var numItems = Math.floor(2 * Math.PI / angleForDot);
+
+                            return numItems;
+                        };
+
+                        var getIncrementalAngleForPieLens = function(dotR, lensInfo, layerCount) {
+
+                            var innerRadius = getInnerRadiusPieLens(lensInfo, layerCount, dotR);
+
+                            var halfAngle = Math.PI / 2 - Math.acos(dotR / innerRadius);
+
+                            return halfAngle * 2;
+
+                        };
+
+                        var getInnerRadiusPieLens = function(lensInfo, layerCount, dotR) {
+
+                            return lensInfo.innerRadius + (2 * (layerCount - 1) * dotR);
+                        }
+
+                        var getDotRadiusFromNumLayer = function(numLayer, lensInfo) {
+
+                            var dotR = (lensInfo.outerRadius - lensInfo.innerRadius) / (2 * numLayer - 1);
+
+                            return dotR;
                         };
 
                         var getLensClusterSize = function(clusterNumber, lensInfo) {
@@ -731,6 +932,17 @@
 
                             });
 
+                            itemsOnLens = itemsOnLens.filter(function(d) {
+
+                                var x = xMap(d) - lensInfo.centerX;
+                                var y = yMap(d) - lensInfo.centerY;
+
+                                var dist = Math.sqrt(x * x + y * y);
+                                if (dist < lensInfo.outerRadius) {
+                                    return d;
+                                }
+                            })
+
 
                             return itemsOnLens;
 
@@ -755,11 +967,29 @@
 
                             lensInfo.centerX = centerX;
                             lensInfo.centerY = centerY;
-                            lensInfo.type = 'rect';
+                            lensInfo.type = 'hist';
                             lensInfo.width = width;
                             lensInfo.height = height;
+
                             redrawLensHist(lensInfo);
                         };
+
+                        var drawInitialPieLensItems = function(centerX, centerY, width, height) {
+
+                            var lensInfo = {};
+
+                            lensInfo.centerX = centerX;
+                            lensInfo.centerY = centerY;
+                            lensInfo.type = 'pie';
+                            lensInfo.width = width;
+                            lensInfo.height = height;
+                            lensInfo.outerRadius = initialLensSize / 2;
+                            lensInfo.innerRadius = initialInnerRadiusOfPieLens;
+
+
+                            redrawLensPie(lensInfo);
+                        };
+
 
                         var dragmoveRectLens = function() {
 
@@ -804,6 +1034,31 @@
 
 
                             redrawLensHist(lensInfo);
+
+                        };
+
+                        var dragmovePieLens = function() {
+
+                            var xPos, yPos;
+
+                            var lensInfo = {};
+
+                            d3.select(this)
+                                .attr("x", xPos = Math.max(initialLensSize / 2, Math.min(width - initialLensSize / 2, d3.event.x)) - initialLensSize / 2)
+                                .attr("y", yPos = Math.max(initialLensSize / 2, Math.min(height - initialLensSize / 2, d3.event.y)) - initialLensSize / 2);
+
+                            // labelDiv.text(xPos);
+
+                            lensInfo.centerX = xPos + initialLensSize / 2;
+                            lensInfo.centerY = yPos + initialLensSize / 2;
+                            lensInfo.type = 'pie';
+                            lensInfo.width = initialLensSize;
+                            lensInfo.height = initialLensSize;
+
+                            lensInfo.outerRadius = initialLensSize / 2;
+                            lensInfo.innerRadius = initialInnerRadiusOfPieLens;
+
+                            redrawLensPie(lensInfo);
 
                         };
 
@@ -856,6 +1111,26 @@
 
                         };
 
+                        var handlePieLensChange = function() {
+
+                            clearLens();
+
+                            var drag = d3.behavior.drag()
+                                .on("drag", dragmovePieLens);
+
+                            nodeGroup.append("rect")
+                                .attr("class", "lens")
+                                .attr("x", width / 2)
+                                .attr("y", height / 2)
+                                .attr("width", initialLensSize)
+                                .attr("height", initialLensSize)
+                                .attr("rx", initialLensSize / 2)
+                                .attr("ry", initialLensSize / 2)
+                                .call(drag);
+
+                            drawInitialPieLensItems(width / 2 + initialHistLensWidth / 2, height / 2 + initialHistLensHeight / 2, initialHistLensWidth, initialHistLensHeight);
+
+                        };
 
                         var handleLensChange = function(config) {
 
@@ -873,15 +1148,7 @@
 
                             } else if (config.lens === "pieLens") {
 
-                                nodeGroup.selectAll(".lens").remove();
-
-                                nodeGroup.append("circle")
-                                    .attr("class", "lens")
-                                    .attr("cx", width / 2)
-                                    .attr("cy", height / 2)
-                                    .attr("r", initialLensSize / 2)
-                                    .call(dragCircle);
-
+                                handlePieLensChange();
                             }
 
                         };
@@ -889,7 +1156,25 @@
                         var clearLens = function() {
 
                             nodeGroup.selectAll(".lens").remove();
-                            nodeGroup.selectAll(".lensItems").remove();
+                            nodeGroup.selectAll(".lensItems")
+                                .classed({
+                                    'dot': true,
+                                    'lensItems': false
+                                })
+                                .transition()
+                                .duration(500)
+                                .attr("width", function(d) {
+                                    // console.log(initialSquareLenth);
+                                    return +d.nodeWidth;
+                                })
+                                .attr("height", function(d) {
+                                    return +d.nodeHeight;
+                                })
+                                .attr("y", yMap)
+                                .attr("x", xMap)
+                                .attr("transform", function(d, i) {
+                                    return "translate(" + (d.XOffset) + "," + (-(d.YOffset)) + ") ";
+                                });
                         }
 
                         var updateSizeSVG = function(config) {
