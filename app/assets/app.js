@@ -59220,7 +59220,7 @@ angular.module('ui.sortable', [])
 
                     $scope.activeData = 'Electronic Health Records (EHR)';
 
-                    d3.csv('data/patient.csv', function(error, tdata) {
+                    d3.csv('data/trauma.csv', function(error, tdata) {
                         var count = 0;
 
                         tdata.map(function(d) {
