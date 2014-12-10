@@ -932,16 +932,18 @@
 
                             });
 
-                            itemsOnLens = itemsOnLens.filter(function(d) {
+                            if (lensInfo.type === 'pie') {
+                                itemsOnLens = itemsOnLens.filter(function(d) {
 
-                                var x = xMap(d) - lensInfo.centerX;
-                                var y = yMap(d) - lensInfo.centerY;
+                                    var x = xMap(d) - lensInfo.centerX;
+                                    var y = yMap(d) - lensInfo.centerY;
 
-                                var dist = Math.sqrt(x * x + y * y);
-                                if (dist < lensInfo.outerRadius) {
-                                    return d;
-                                }
-                            })
+                                    var dist = Math.sqrt(x * x + y * y);
+                                    if (dist < lensInfo.outerRadius) {
+                                        return d;
+                                    }
+                                });
+                            }
 
 
                             return itemsOnLens;
