@@ -1,5 +1,5 @@
 {
-  "firebase": "gatherplot",
+  "firebase": "gatherplot-dev",
   "public": "app",
   "ignore": [
     "firebase.json",

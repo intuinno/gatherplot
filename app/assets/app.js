@@ -58260,7 +58260,21 @@ angular.module('ui.sortable', [])
                 $scope.nomaConfig.yDim;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
-                $scope.nomaConfig.isInteractiveAxis = true;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+
+                $scope.$watch(function() {
+                            return $scope.nomaConfig.isGather;
+                        }, function(newVals, oldVals) {
+                            // debugger;
+                            if (newVals == 'scatter') {
+
+                                $scope.isScatter = true;
+                            } else {
+
+                                $scope.isScatter = false;
+                            } }, true);
 
                 $scope.addAlert = function(messageType, messageContent) {
                     $scope.alerts.push({
@@ -58777,7 +58791,7 @@ angular.module('ui.sortable', [])
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 2000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -58812,6 +58826,8 @@ angular.module('ui.sortable', [])
 
 
                         temp.continuous2 = (Math.random() * (numDiscreteVar - 1));
+
+                        temp.continuous3 = Math.random();
 
                         data.push(temp);
                     }
@@ -59204,7 +59220,7 @@ angular.module('ui.sortable', [])
 
                     $scope.activeData = 'Electronic Health Records (EHR)';
 
-                    d3.csv('data/patient.csv', function(error, tdata) {
+                    d3.csv('data/trauma.csv', function(error, tdata) {
                         var count = 0;
 
                         tdata.map(function(d) {
@@ -59240,7 +59256,7 @@ angular.module('ui.sortable', [])
                 };
 
 
-                $scope.changeActiveDataCars();
+                $scope.changeActiveDataContinuous();
 
 
             }

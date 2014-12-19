@@ -31,7 +31,21 @@
                 $scope.nomaConfig.yDim;
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
-                $scope.nomaConfig.isInteractiveAxis = true;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+
+                $scope.$watch(function() {
+                            return $scope.nomaConfig.isGather;
+                        }, function(newVals, oldVals) {
+                            // debugger;
+                            if (newVals == 'scatter') {
+
+                                $scope.isScatter = true;
+                            } else {
+
+                                $scope.isScatter = false;
+                            } }, true);
 
                 $scope.addAlert = function(messageType, messageContent) {
                     $scope.alerts.push({
@@ -548,7 +562,7 @@
                     resetTutMsg();
 
                     //Config settings
-                    var numberOfEntity = 2000;
+                    var numberOfEntity = 5000;
                     var numDiscreteVar = 60;
 
                     $scope.activeData = 'Continuous Variables';
@@ -583,6 +597,8 @@
 
 
                         temp.continuous2 = (Math.random() * (numDiscreteVar - 1));
+
+                        temp.continuous3 = Math.random();
 
                         data.push(temp);
                     }
@@ -975,7 +991,7 @@
 
                     $scope.activeData = 'Electronic Health Records (EHR)';
 
-                    d3.csv('data/patient.csv', function(error, tdata) {
+                    d3.csv('data/trauma.csv', function(error, tdata) {
                         var count = 0;
 
                         tdata.map(function(d) {
@@ -1011,7 +1027,7 @@
                 };
 
 
-                $scope.changeActiveDataCars();
+                $scope.changeActiveDataContinuous();
 
 
             }

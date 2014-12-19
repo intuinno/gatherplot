@@ -1,6 +1,8 @@
 .lens {
 
-  fill:lightsteelblue;
+  fill:white;
+  stroke:gray;
+  stroke-width:2px;
 }
 
 .matrixFrame { 

@@ -1,0 +1,172 @@
+id,Age Group,Clothes Off,Pre-Hospita Intubation,Final Disposition,Gender,ED Disposition,Surgical Coordinator,Insurance,Injury Type,Race,C-Spine Immobilized,IV/IO Placed,SMS ,Injury Severity Score,Day,Day of Week,Pre-Arrival Warning,Mortality,Response,Provider Right
+130508,5-9,Yes,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130503,0-4,Yes,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130502,0-4,Yes,No,Home,Male,Discharged,Fellow,Insured,Blunt,Other,Yes,Yes,2,< 15,Yes,Weekday,No,Lived,Transfer,Junior Resident
+130501,10-14,Yes,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130507,10-14,No,No,Home,Male,Non-critical admission,None,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Other
+130506,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Penetrating,African American/Black,No,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130505,0-4,Yes,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130504,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekday,No,Lived,Stat,Junior Resident
+130737,0-4,Yes,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,No,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130730,0-4,No,No,Home,Female,Discharged,PGY-4,Unknown,Blunt,White,Yes,Yes,2,< 15,No,Weekday,No,Lived,Stat,Junior Resident
+130731,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,> 15,No,Weekend,No,Lived,Stat,Junior Resident
+130732,10-14,No,No,Home,Male,Discharged,PGY-4,Uninsured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130733,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,No,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130645,0-4,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130646,0-4,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,Other,Yes,No,1,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130647,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130640,10-14,Yes,Yes,Home w/ Services,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,0,< 15,Yes,Weekend,Yes,Lived,Attending,Junior Resident
+130641,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,No,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130643,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,No,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130807,10-14,No,No,Home,Female,Critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130804,5-9,Yes,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130648,10-14,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,Other,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130803,10-14,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130801,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130722,10-14,Yes,No,Home,Male,Critical admission,PGY-4,Insured,Penetrating,African American/Black,No,Yes,2,< 15,Yes,Weekday,Yes,Lived,Transfer,Nurse Practitioner
+130653,0-4,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130652,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,White,No,No,1,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130651,5-9,No,No,Home,Male,Discharged,ED attending,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130650,0-4,No,No,Home,Female,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,1,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130819,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,No,Lived,Stat,Other
+130818,10-14,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,White,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130655,0-4,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,Other,Yes,No,0,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130654,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,1,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130815,5-9,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130814,10-14,Yes,No,Home,Male,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130817,0-4,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130816,5-9,Yes,No,Home,Female,Non-critical admission,Fellow,Insured,Blunt,Other,No,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130813,5-9,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130812,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130718,0-4,No,No,Home,Male,Discharged,PGY-4,Uninsured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130719,5-9,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130712,5-9,Yes,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,Other,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130713,5-9,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130710,5-9,No,No,Home,Male,Non-critical admission,ED attending,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130717,5-9,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,White,No,Yes,2,> 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130714,5-9,No,No,Home,Female,Discharged,Fellow,Unknown,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130828,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130829,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Uninsured,Blunt,White,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130820,0-4,Yes,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130821,5-9,Yes,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,1,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130823,5-9,Yes,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130824,10-14,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,No,Lived,Stat,Junior Resident
+130826,0-4,Yes,Yes,Home,Male,Critical admission,PGY-4,Insured,Blunt,Other,Yes,Yes,0,< 15,Yes,Weekday,Yes,Lived,Transfer,Junior Resident
+130626,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130627,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Other,No,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130624,0-4,Yes,No,Home,Male,Discharged,ED attending,Insured,Blunt,African American/Black,Yes,No,1,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130625,10-14,No,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130620,0-4,No,No,Home,Female,Critical admission,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130701,0-4,Yes,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,African American/Black,No,Yes,0,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130703,5-9,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130702,0-4,No,No,Home,Female,Non-critical admission,None,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekday,No,Lived,Stat,Other
+130705,5-9,Yes,No,Home,Male,Non-critical admission,PGY-4,Unknown,Blunt,African American/Black,No,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130704,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Transfer,Junior Resident
+130628,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,No,Lived,Stat,Nurse Practitioner
+130629,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130709,0-4,Yes,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,> 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130726,0-4,Yes,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130708,10-14,Yes,No,Home,Male,Discharged,PGY-4,Insured,Penetrating,African American/Black,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130736,0-4,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,No,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130734,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130546,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130545,5-9,No,No,Home,Male,Critical admission,Fellow,Insured,Blunt,White,No,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130544,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,No,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130543,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130542,10-14,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130541,0-4,No,No,Home,Female,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,No,1,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130540,10-14,No,No,Home,Male,Critical admission,Fellow,Insured,Blunt,White,No,Yes,2,< 15,Yes,Weekend,Yes,Lived,Transfer,Junior Resident
+130739,0-4,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,No,1,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130635,0-4,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130634,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130637,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Asian,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130636,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,1,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130631,0-4,Yes,Yes,Inpatient Rehab Facility,Female,Critical admission,ED attending,Insured,Blunt,Other,Yes,Yes,0,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130633,5-9,Yes,No,Home,Male,Critical admission,Fellow,Insured,Blunt,White,Yes,Yes,1,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130632,5-9,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130639,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130638,0-4,Yes,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130707,10-14,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130532,0-4,Yes,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130533,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130530,0-4,Yes,Yes,Home,Male,Critical admission,PGY-4,Unknown,Blunt,White,Yes,Yes,1,> 15,Yes,Weekday,Yes,Lived,Transfer,Nurse Practitioner
+130531,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130536,5-9,Yes,No,Home,Female,Discharged,Fellow,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130537,0-4,Yes,Yes,Medical Examiner/Morgue,Male,Critical admission,Fellow,Insured,Blunt,Other,Yes,Yes,0,> 15,Yes,Weekday,Yes,Died,Attending,Nurse Practitioner
+130534,10-14,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130535,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,No,No,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130538,10-14,No,No,Home,Male,Critical admission,PGY-4,Uninsured,Blunt,African American/Black,Yes,No,2,> 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130539,10-14,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130601,5-9,Yes,No,Home,Male,Critical admission,None,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130602,5-9,No,No,Home,Female,Discharged,None,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekend,No,Lived,Stat,Junior Resident
+130603,0-4,Yes,No,Home,Male,Critical admission,Fellow,Insured,Blunt,African American/Black,Yes,Yes,2,> 15,Yes,Weekend,Yes,Lived,Transfer,Junior Resident
+130604,10-14,No,No,Inpatient Rehab Facility,Male,Critical admission,Fellow,Insured,Blunt,African American/Black,Yes,Yes,1,> 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130606,0-4,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130607,0-4,No,No,Home,Male,Critical admission,None,Insured,Blunt,White,No,Yes,2,< 15,Yes,Weekday,Yes,Lived,Transfer,Junior Resident
+130608,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130609,5-9,Yes,No,Home,Male,Non-critical admission,ED attending,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekday,No,Lived,Stat,Nurse Practitioner
+130837,10-14,No,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130836,0-4,Yes,No,Home,Female,Discharged,ED attending,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130835,10-14,No,No,Home w/ Services,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,No,No,2,< 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130834,10-14,No,No,Home,Male,Non-critical admission,None,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Other
+130832,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130831,0-4,Yes,No,Home,Female,Non-critical admission,PGY-4,Uninsured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130839,10-14,No,No,Home,Male,Critical admission,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130838,10-14,No,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,Other,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130520,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130523,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130522,0-4,Yes,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Other,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130525,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130524,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130527,10-14,No,No,Home,Female,Non-critical admission,PGY-4,Uninsured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,No,Lived,Stat,Nurse Practitioner
+130526,5-9,No,No,Inpatient Rehab Facility,Female,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,> 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130529,0-4,No,No,Inpatient Rehab Facility,Male,Critical admission,ED attending,Insured,Blunt,White,Yes,Yes,0,> 15,Yes,Weekday,Yes,Lived,Attending,Nurse Practitioner
+130528,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekday,No,Lived,Stat,Nurse Practitioner
+130756,10-14,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130754,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130755,5-9,Yes,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130752,0-4,No,No,Home,Female,Non-critical admission,Fellow,Insured,Blunt,White,No,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130753,10-14,No,No,Home,Male,Critical admission,Fellow,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Transfer,Junior Resident
+130619,0-4,Yes,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekend,No,Lived,Stat,Other
+130618,5-9,No,No,Home,Female,Critical admission,Fellow,Insured,Blunt,Other,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130617,10-14,Yes,No,Home,Male,Critical admission,Fellow,Insured,Blunt,Asian,Yes,Yes,2,> 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130615,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Other,No,No,2,< 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130614,0-4,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,Other,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130613,5-9,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,White,No,No,2,< 15,No,Weekday,No,Lived,Transfer,Junior Resident
+130612,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,Asian,Yes,No,2,< 15,No,Weekday,No,Lived,Stat,Junior Resident
+130611,0-4,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130610,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,1,< 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130725,5-9,Yes,Yes,Medical Examiner/Morgue,Male,Critical admission,PGY-4,Insured,Blunt,African American/Black,No,Yes,0,> 15,No,Weekend,No,Died,Stat,Junior Resident
+130724,5-9,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130842,5-9,No,No,Home,Female,Critical admission,ED attending,Insured,Blunt,Other,Yes,Yes,2,> 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130843,10-14,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Penetrating,Other,No,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130841,5-9,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Blunt,Other,Yes,Yes,2,< 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130846,10-14,Yes,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,African American/Black,No,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130845,0-4,No,No,Home,Male,Critical admission,Fellow,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130848,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130849,0-4,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130729,10-14,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,No,Yes,2,< 15,No,Weekday,No,Lived,Stat,Junior Resident
+130728,5-9,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130518,0-4,No,No,Home,Female,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130519,5-9,Yes,No,Home,Female,Discharged,Fellow,Insured,Blunt,African American/Black,No,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130514,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130515,0-4,No,No,Home,Female,Non-critical admission,PGY-4,Insured,Penetrating,African American/Black,No,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130516,5-9,No,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,No,2,< 15,No,Weekday,No,Lived,Stat,Junior Resident
+130510,10-14,Yes,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,African American/Black,No,Yes,2,< 15,No,Weekend,No,Lived,Stat,Other
+130511,0-4,Yes,No,Home,Male,Non-critical admission,Fellow,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekday,Yes,Lived,Transfer,Nurse Practitioner
+130512,10-14,No,No,Home,Female,Discharged,PGY-4,Uninsured,Blunt,Other,Yes,No,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
+130513,10-14,Yes,No,Home,Male,Critical admission,None,Insured,Blunt,White,No,Yes,2,< 15,Yes,Weekday,Yes,Lived,Transfer,Nurse Practitioner
+130745,5-9,No,No,Home,Male,Discharged,Fellow,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130744,10-14,No,No,Home,Female,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekend,Yes,Lived,Stat,Junior Resident
+130747,10-14,Yes,No,Home,Male,Non-critical admission,None,Insured,Blunt,African American/Black,No,Yes,2,< 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130746,10-14,No,No,Home,Male,Non-critical admission,None,Insured,Blunt,White,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130741,10-14,No,No,Home,Male,Critical admission,PGY-4,Unknown,Blunt,White,No,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130740,10-14,No,No,Acute Care Hospital,Female,Critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,> 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130743,0-4,Yes,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Transfer,Junior Resident
+130742,0-4,No,No,Home,Male,Discharged,PGY-4,Insured,Blunt,White,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Junior Resident
+130749,10-14,Yes,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,> 15,No,Weekend,Yes,Lived,Transfer,Junior Resident
+130748,0-4,Yes,No,Home,Male,Non-critical admission,PGY-4,Insured,Blunt,African American/Black,Yes,Yes,2,< 15,Yes,Weekend,Yes,Lived,Stat,Junior Resident
+130750,10-14,No,No,Home,Female,Discharged,PGY-4,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,No,Lived,Stat,Nurse Practitioner
+130851,0-4,No,No,Home,Female,Discharged,ED attending,Insured,Blunt,African American/Black,Yes,No,2,< 15,Yes,Weekday,No,Lived,Stat,Junior Resident
+130850,0-4,No,No,Home,Male,Discharged,None,Insured,Blunt,Other,Yes,No,2,< 15,Yes,Weekday,Yes,Lived,Stat,Nurse Practitioner
+130853,10-14,No,No,Home,Male,Critical admission,PGY-4,Insured,Blunt,White,Yes,Yes,2,< 15,No,Weekday,Yes,Lived,Stat,Junior Resident
