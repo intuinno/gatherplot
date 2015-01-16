@@ -4,7 +4,8 @@
     // create the angular app
     angular.module('myApp', [
         'myApp.controllers',
-        'myApp.directives'
+        'myApp.directives',
+        'ngRoute'
     ]);
 
     // setup dependency injection
