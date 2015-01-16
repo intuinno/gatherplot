@@ -510,7 +510,7 @@
                         </accordion-group>
 
                         <accordion-group is-open="isVWViewerOpen">
-                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isLensOpen, 'glyphicon-chevron-right': !isVWViewer}"></i> Vowpal Wabbit Viewer<a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataVWV()">Load</a>
+                            <accordion-heading> <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isLensOpen, 'glyphicon-chevron-right': !isVWViewer}"></i> CommentIQ Dataset
                             </accordion-heading>
 
                             <div>
@@ -519,7 +519,20 @@
 
                               
                                     <tr>
-                                        This example shows how to use gatherplot as a Vowpal wabbit(VW) input viewer. 
+                                        <td>
+                                        Load comments data
+                                        </td>
+                                        <td>
+                                         <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataComments()">Load</a>
+                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                        Load articles data 
+                                        </td>
+                                        <td>
+                                        <a href="" class="pull-right btn btn-xs btn-default" ng-click="changeActiveDataArticles()">Load</a>
+                                        </td>
                                     </tr>
 
 
