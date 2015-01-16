@@ -757,11 +757,6 @@
 
 
 
-
-
-
-
-
                 $scope.changeActiveDataCars = function() {
 
                     resetTutMsg();
@@ -798,15 +793,9 @@
 
                         loadGPLOM();
 
-
                         $scope.$apply();
 
-
-
                     });
-
-
-
 
                 };
 
@@ -1094,6 +1083,7 @@
 
             }
         ]);
+
 
 
 

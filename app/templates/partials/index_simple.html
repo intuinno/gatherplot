@@ -1,1 +1,43 @@
-Simple URL parameters
+<!-- <div ng-controller="ShowCtrl"> -->
+<div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+
+
+
+
+<div class="chart-simple-interface">
+    <h5>Show me
+
+                            <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
+
+                                <option value="">-- undefined --</option>
+
+                            </select>&nbsp;vs&nbsp;.
+
+                            <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
+
+                                <option value="">-- undefined --</option>
+
+                            </select>
+
+                            </br>
+                            </br>
+                            Mark nodes with color according to
+
+                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
+
+                                <option value="">-- undefined --</option>
+
+                            </select>
+                        </h5>
+
+
+    <div ng-class="{tryMe: isRelativeSelectFocused}">
+        <h6>
+                                <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.</h6>
+
+    </div>
+    <alert class="chart-instruction" ng-show="isRelativeSelectFocused" close="isRelativeSelectFocused=false">
+        Try this check button.</alert>
+
+
+</div>

@@ -1375,6 +1375,10 @@
                             if (!dim) {
 
                                 return [-0.5, 0.5];
+                            } else if (dim === 'Null') {
+
+                                return [-0.5, 0.5];
+
                             }
 
                             if (scope.config.isGather === 'gather') {
@@ -1407,7 +1411,13 @@
 
                             if (!dim) {
                                 return 'nominal';
-                            } else {
+                            } else if (dim === 'Null') {
+
+                                return 'nominal'; 
+
+
+                            }
+                            else {
 
                                 return scope.config.dimSetting[dim].dimType;
                             }
@@ -1862,6 +1872,24 @@
 
                         var findTypeOfXYDim = function() {
 
+                            if (scope.xdim === 'Null') {
+
+                                scope.xdim = '';
+                                scope.config.xdim = '';
+                            } 
+
+                            if (scope.ydim === 'Null') {
+
+                                scope.ydim = '';
+                                scope.config.ydim = '';
+                            }
+
+                            if (scope.config.colorDim ==='Null') {
+
+                                scope.config.colorDim = '';
+                            }
+
+
                             var xDimType = getDimType(scope.xdim);
                             var yDimType = getDimType(scope.ydim);
 
@@ -1893,6 +1921,8 @@
 
                             if (!dim) {
 
+                                return;
+                            } else if (dim === 'Null') {
                                 return;
                             }
 

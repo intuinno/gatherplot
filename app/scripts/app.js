@@ -11,15 +11,16 @@
             $routeProvider.
                 when('/demo', {
                     templateUrl: '../templates/partials/index_full.html',
-                    controllers: 'DemoCtrl'
+                    controller: 'DemoCtrl'
                 }).
                 when('/show/:dataset/:xDim/:yDim/:colorDim/:relativeMode', {
                     templateUrl: '../templates/partials/index_simple.html',
-                    controllers: 'showCtrl'
+                    controller: 'ShowCtrl'
                 }).
                 otherwise({
                     redirectTo: '/demo'
                 });
+
 
         }]);;
 
