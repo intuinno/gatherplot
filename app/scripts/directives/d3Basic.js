@@ -83,11 +83,18 @@
 
                         var initializeSVG = function() {
 
+
+                            // .value("title");
+
+                            labelDiv = d3.select(iElement[0])
+                                .append("div")
+                                .attr("class", "btn-group")
+                                .html('<a class="btn btn-default"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" ><i class="fa fa-align-left"></i></a><a class="btn btn-default"><i class="fa fa-align-center"></i></a><a class="btn btn-default" ><i class="fa fa-align-right"></i></a><a class="btn btn-default" ><i class="fa fa-align-justify"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+
                             svg = d3.select(iElement[0])
                                 .append("svg:svg");
 
-                            labelDiv = d3.select(iElement[0])
-                                .append("div");
+
 
                             svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -237,11 +244,11 @@
                                             .style("left", (d3.event.pageX + 5) + "px")
                                             .style("top", (d3.event.pageY - 28) + "px");
                                     });
-                                    // .on("mouseout", function(d) {
-                                    //     tooltip.transition()
-                                    //         .duration(3000)
-                                    //         .style("opacity", 0);
-                                    // });
+                                // .on("mouseout", function(d) {
+                                //     tooltip.transition()
+                                //         .duration(3000)
+                                //         .style("opacity", 0);
+                                // });
 
                             } else {
 
@@ -1266,7 +1273,54 @@
 
                             }
 
+                            function zoomReset() {
+
+                                svgGroup.select(".x.axis").call(xAxis);
+                                svgGroup.select(".y.axis").call(yAxis);
+
+
+
+                            }
+
                             setClipPathForAxes();
+
+                            d3.select("#toolbarReset").on("click", reset);
+
+                            function reset() {
+
+                                nodeGroup.transition()
+                                    .duration(700)
+                                    .attr("transform", "translate(0,0) scale(1)");
+
+                                d3.transition().duration(700).tween("zoom", function() {
+
+                                    var range = getExtentConsideringXY(scope.xdim, scope.ydim);
+
+                                    var xRange = range.xRange;
+                                    var yRange = range.yRange;
+
+                                    var typeOfXYDim = findTypeOfXYDim();
+
+                                    if (typeOfXYDim === 'XNomYOrd') {
+
+                                        var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+
+                                    } else if (typeOfXYDim === 'XOrdYNom') {
+
+                                        var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+
+                                    }
+
+                                    var ix = d3.interpolate(xScale.domain(), xRange),
+                                        iy = d3.interpolate(yScale.domain(), yRange);
+
+                                    return function(t) {
+                                        zoom.x(xScale.domain(ix(t))).y(yScale.domain(iy(t)));
+
+                                        zoomReset();
+                                    };
+                                });
+                            }
 
                         };
 
@@ -1289,7 +1343,7 @@
                                 .attr("x", -300)
                                 .attr("y", -40)
                                 .attr("width", 300)
-                                .attr("height", height+40);
+                                .attr("height", height + 40);
 
                             yAxisNodes.attr("clip-path", "url(#clipYAxis)");
 
@@ -2570,6 +2624,11 @@
                             }
 
                             if (!key) {
+
+                                return false;
+                            }
+
+                            if (!scope.config.isInteractiveAxis) {
 
                                 return false;
                             }
