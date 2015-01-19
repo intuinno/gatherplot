@@ -6312,7 +6312,7 @@ div.clusterControlBox {
   position: absolute;
   width: 200px;
   height: 28px;
-  pointer-events: none;
+  /*pointer-events: none;*/
 }
 
 .chart-instruction {
