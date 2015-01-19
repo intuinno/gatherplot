@@ -90,13 +90,13 @@
                             svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
 
-                            nodeGroup = svg.append("g")
-                                .attr("transform", "translate(" + margin + "," + margin + ")")
+                            nodeGroup = svgGroup.append("g")
                                 .attr("class", "nodes");
 
                             xAxisNodes = svgGroup.append("g")
                                 .attr("class", "x axis")
                                 .attr("transform", "translate(0," + height + ")");
+
 
                             yAxisNodes = svgGroup.append("g")
                                 .attr("class", "y axis");
@@ -189,6 +189,10 @@
                         var reloadDataToSVG = function() {
 
                             svgGroup.selectAll("*").remove();
+
+                            nodeGroup = svgGroup.append("g")
+                                .attr("class", "nodes");
+
                             nodeGroup.selectAll(".dot").remove();
 
                             if (scope.config.matrixMode === false) {
@@ -2877,7 +2881,9 @@
                         var writeNodesInSVG = function() {
                             // debugger;
 
-                            nodeGroup.attr("transform", "translate(" + margin + "," + margin + ") rotate(0 80 660)");
+                            // nodeGroup.attr("transform", "translate(" + margin + "," + margin + ") rotate(0 80 660)");
+
+                            nodeGroup.attr("transform", "translate(0,0) rotate(0 80 660)");
 
 
                             nodeGroup.selectAll(".dot")
