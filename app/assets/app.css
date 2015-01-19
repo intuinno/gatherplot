@@ -6202,6 +6202,11 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
 .lens {
 
   fill:white;
