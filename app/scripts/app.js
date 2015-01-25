@@ -5,7 +5,8 @@
     angular.module('myApp', [
         'myApp.controllers',
         'myApp.directives',
-        'ngRoute'
+        'ngRoute',
+        'firebase'
     ]).config(['$routeProvider', 
         function($routeProvider) {
             $routeProvider.
@@ -16,6 +17,10 @@
                 when('/show/:dataset/:xDim/:yDim/:colorDim/:relativeMode', {
                     templateUrl: '../templates/partials/index_simple.html',
                     controller: 'ShowCtrl'
+                }).
+                when('/dropbox/:dropbox_key/:dropbox_filename', {
+                    templateUrl: '../templates/partials/index_dropbox.html',
+                    controller: 'DropboxCtrl'
                 }).
                 otherwise({
                     redirectTo: '/demo'
