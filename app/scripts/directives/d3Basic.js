@@ -45,6 +45,7 @@
                         var xValue, yValue; //Function for getting value of X,Y position 
                         var xOriginalValue, yOriginalValue;
                         var xScale, yScale;
+                        var xAxis, yAxis;
                         var xMap, yMap;
                         var nest = {};
 
@@ -58,6 +59,7 @@
                         scope.config.dimSetting = {};
 
                         var svg, svgGroup, nodeGroup, xAxisNodes, yAxisNodes;
+                        var maskGroup;
                         var tooltip;
                         var clusterControlBox;
 
@@ -81,22 +83,38 @@
 
                         var initializeSVG = function() {
 
+
+                            // .value("title");
+
+                            labelDiv = d3.select(iElement[0])
+                                .append("div")
+                                .attr("class", "btn-group")
+                                .html('<a class="btn btn-default"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" ><i class="fa fa-align-left"></i></a><a class="btn btn-default"><i class="fa fa-align-center"></i></a><a class="btn btn-default" ><i class="fa fa-align-right"></i></a><a class="btn btn-default" ><i class="fa fa-align-justify"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+
                             svg = d3.select(iElement[0])
                                 .append("svg:svg");
 
-                            labelDiv = d3.select(iElement[0])
-                                .append("div");
+
 
                             svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
 
-                            nodeGroup = svg.append("g")
-                                .attr("transform", "translate(" + margin + "," + margin + ")")
+                            maskGroup = svgGroup.append("g")
+                                .attr("class", "masks");
+
+                            nodeGroup = maskGroup.append("g")
                                 .attr("class", "nodes");
+
+                            nodeGroup.append("rect")
+                                .attr("class", "overlay")
+                                .attr("width", width)
+                                .attr("height", height);
+
 
                             xAxisNodes = svgGroup.append("g")
                                 .attr("class", "x axis")
                                 .attr("transform", "translate(0," + height + ")");
+
 
                             yAxisNodes = svgGroup.append("g")
                                 .attr("class", "y axis");
@@ -108,6 +126,8 @@
                             clusterControlBox = d3.select("body").append("div")
                                 .attr("class", "clusterControlBox")
                                 .style("opacity", 0);
+
+
 
                         };
 
@@ -189,7 +209,18 @@
                         var reloadDataToSVG = function() {
 
                             svgGroup.selectAll("*").remove();
-                            nodeGroup.selectAll(".dot").remove();
+
+                            maskGroup = svgGroup.append("g")
+                                .attr("class", "masks");
+
+                            nodeGroup = maskGroup.append("g")
+                                .attr("class", "nodes");
+
+                            maskGroup.selectAll("rect").remove();
+
+                            drawBackground();
+
+
 
                             if (scope.config.matrixMode === false) {
 
@@ -198,20 +229,26 @@
                                     .enter().append("rect")
                                     .attr("class", "dot")
                                     .on("mouseover", function(d) {
+
+                                        tooltip.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
+
+
                                         tooltip.transition()
                                             .duration(200)
                                             .style("opacity", 0.9);
 
 
-                                        tooltip.html(d.Name + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d))
+                                        tooltip.html(d.commentTitle + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d) + "</br>" + d.commentBody + "</br>" + '<a href="' + d.articleURL + '" target="_blank">Click to See Article</a>')
                                             .style("left", (d3.event.pageX + 5) + "px")
                                             .style("top", (d3.event.pageY - 28) + "px");
-                                    })
-                                    .on("mouseout", function(d) {
-                                        tooltip.transition()
-                                            .duration(500)
-                                            .style("opacity", 0);
                                     });
+                                // .on("mouseout", function(d) {
+                                //     tooltip.transition()
+                                //         .duration(3000)
+                                //         .style("opacity", 0);
+                                // });
 
                             } else {
 
@@ -1212,15 +1249,141 @@
 
                             drawPlot();
 
+                            configZoom();
+
+                        };
+
+                        var configZoom = function() {
+
+                            var zoom = d3.behavior.zoom()
+                                .x(xScale)
+                                .y(yScale)
+                                .scaleExtent([1, 100])
+                                .on("zoom", zoomed);
+
+                            svgGroup.call(zoom);
+
+
+
+                            function zoomed() {
+
+                                svgGroup.select(".x.axis").call(xAxis);
+                                svgGroup.select(".y.axis").call(yAxis);
+                                nodeGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+
+                            }
+
+                            function zoomReset() {
+
+                                svgGroup.select(".x.axis").call(xAxis);
+                                svgGroup.select(".y.axis").call(yAxis);
+
+
+
+                            }
+
+                            setClipPathForAxes();
+
+                            d3.select("#toolbarReset").on("click", reset);
+
+                            function reset() {
+
+                                nodeGroup.transition()
+                                    .duration(700)
+                                    .attr("transform", "translate(0,0) scale(1)");
+
+                                d3.transition().duration(700).tween("zoom", function() {
+
+                                    var range = getExtentConsideringXY(scope.xdim, scope.ydim);
+
+                                    var xRange = range.xRange;
+                                    var yRange = range.yRange;
+
+                                    var typeOfXYDim = findTypeOfXYDim();
+
+                                    if (typeOfXYDim === 'XNomYOrd') {
+
+                                        var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+
+                                    } else if (typeOfXYDim === 'XOrdYNom') {
+
+                                        var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+
+                                    }
+
+                                    var ix = d3.interpolate(xScale.domain(), xRange),
+                                        iy = d3.interpolate(yScale.domain(), yRange);
+
+                                    return function(t) {
+                                        zoom.x(xScale.domain(ix(t))).y(yScale.domain(iy(t)));
+
+                                        zoomReset();
+                                    };
+                                });
+                            }
+
+                        };
+
+                        var setClipPathForAxes = function() {
+
+                            var clipXAxis = xAxisNodes.append("clipPath")
+                                .attr("id", "clipXAxis")
+                                .append("rect")
+                                .attr("x", 0)
+                                .attr("y", 0)
+                                .attr("width", width)
+                                .attr("height", margin);
+
+                            xAxisNodes.attr("clip-path", "url(#clipXAxis)");
+
+
+                            var clipYAxis = yAxisNodes.append("clipPath")
+                                .attr("id", "clipYAxis")
+                                .append("rect")
+                                .attr("x", -300)
+                                .attr("y", -40)
+                                .attr("width", 300)
+                                .attr("height", height + 40);
+
+                            yAxisNodes.attr("clip-path", "url(#clipYAxis)");
+
+
                         };
 
                         var drawPlot = function() {
 
+                            // drawBackground();
+
                             drawNodes();
+
+                            drawMask();
 
                             drawAxesAndLegends();
 
                         };
+
+                        var drawBackground = function() {
+
+                            nodeGroup.append("rect")
+                                .attr("class", "overlay")
+                                .attr("width", width)
+                                .attr("height", height);
+                        };
+
+                        var drawMask = function() {
+
+                            var clip = maskGroup.append("clipPath")
+                                .attr("id", "clip")
+                                .append("rect")
+                                .attr("x", 0)
+                                .attr("y", 0)
+                                .attr("width", width)
+                                .attr("height", height);
+
+                            maskGroup.attr("clip-path", "url(#clip)");
+
+
+                        }
 
                         var drawAxesAndLegends = function() {
 
@@ -1375,6 +1538,10 @@
                             if (!dim) {
 
                                 return [-0.5, 0.5];
+                            } else if (dim === 'Null') {
+
+                                return [-0.5, 0.5];
+
                             }
 
                             if (scope.config.isGather === 'gather') {
@@ -1407,6 +1574,11 @@
 
                             if (!dim) {
                                 return 'nominal';
+                            } else if (dim === 'Null') {
+
+                                return 'nominal';
+
+
                             } else {
 
                                 return scope.config.dimSetting[dim].dimType;
@@ -1862,6 +2034,24 @@
 
                         var findTypeOfXYDim = function() {
 
+                            if (scope.xdim === 'Null') {
+
+                                scope.xdim = '';
+                                scope.config.xdim = '';
+                            }
+
+                            if (scope.ydim === 'Null') {
+
+                                scope.ydim = '';
+                                scope.config.ydim = '';
+                            }
+
+                            if (scope.config.colorDim === 'Null') {
+
+                                scope.config.colorDim = '';
+                            }
+
+
                             var xDimType = getDimType(scope.xdim);
                             var yDimType = getDimType(scope.ydim);
 
@@ -1893,6 +2083,8 @@
 
                             if (!dim) {
 
+                                return;
+                            } else if (dim === 'Null') {
                                 return;
                             }
 
@@ -2436,6 +2628,11 @@
                                 return false;
                             }
 
+                            if (!scope.config.isInteractiveAxis) {
+
+                                return false;
+                            }
+
                             return (scope.config.dimSetting[dim].keyValue[key].isMinimized);
                         };
 
@@ -2847,7 +3044,9 @@
                         var writeNodesInSVG = function() {
                             // debugger;
 
-                            nodeGroup.attr("transform", "translate(" + margin + "," + margin + ") rotate(0 80 660)");
+                            // nodeGroup.attr("transform", "translate(" + margin + "," + margin + ") rotate(0 80 660)");
+
+                            nodeGroup.attr("transform", "translate(0,0) rotate(0 80 660)");
 
 
                             nodeGroup.selectAll(".dot")
@@ -3193,7 +3392,7 @@
 
                         var drawXAxisLinesAndTicksForScatter = function() {
 
-                            var xAxis = d3.svg.axis()
+                            xAxis = d3.svg.axis()
                                 .scale(xScale)
                                 .ticks(tickGenerator(scope.xdim))
                                 .tickFormat(labelGenerator(scope.xdim))
@@ -3216,7 +3415,7 @@
 
                         var drawYAxisLinesAndTicksForScatter = function() {
 
-                            var yAxis = d3.svg.axis()
+                            yAxis = d3.svg.axis()
                                 .scale(yScale)
                                 .ticks(tickGenerator(scope.ydim))
                                 .tickFormat(labelGenerator(scope.ydim))
@@ -3242,7 +3441,7 @@
 
                             var ticks = tickValueGeneratorForOrdinalGather(scope.xdim);
 
-                            var xAxis = d3.svg.axis()
+                            xAxis = d3.svg.axis()
                                 .scale(xScale)
                                 .tickValues(ticks)
                                 .tickFormat(labelGeneratorForOrdinalGather(scope.xdim))
@@ -3267,7 +3466,7 @@
 
                             var ticks = tickValueGeneratorForOrdinalGather(scope.ydim);
 
-                            var yAxis = d3.svg.axis()
+                            yAxis = d3.svg.axis()
                                 .scale(yScale)
                                 .tickValues(ticks)
                                 .tickFormat(labelGeneratorForOrdinalGather(scope.ydim))
@@ -3298,7 +3497,7 @@
 
                             var xScaleForSameOrdDimGather = d3.scale.linear().domain(domain).range([0, width]);
 
-                            var xAxis = d3.svg.axis()
+                            xAxis = d3.svg.axis()
                                 .scale(xScaleForSameOrdDimGather)
                                 .tickValues(ticks)
                                 .tickFormat(labelGeneratorForOrdinalGather(scope.xdim))
@@ -3331,7 +3530,7 @@
 
                             var yScaleForSameOrdDimGather = d3.scale.linear().domain(domain).range([height, 0])
 
-                            var yAxis = d3.svg.axis()
+                            yAxis = d3.svg.axis()
                                 .scale(yScaleForSameOrdDimGather)
                                 .tickValues(ticks)
                                 .tickFormat(labelGeneratorForOrdinalGather(scope.ydim))
@@ -3428,7 +3627,7 @@
 
                         var drawXAxisLinesAndTicksForNominalGather = function() {
 
-                            var xAxis = d3.svg.axis()
+                            xAxis = d3.svg.axis()
                                 .scale(xScale)
                                 .tickValues(tickValueGeneratorForGather(scope.xdim))
                                 .tickFormat(labelGeneratorForGather(scope.xdim))
@@ -3585,7 +3784,8 @@
 
 
 
-                            var yAxis = d3.svg.axis()
+
+                            yAxis = d3.svg.axis()
                                 .scale(yScale)
                                 .tickValues(tickValueGeneratorForGather(scope.ydim))
                                 .tickFormat(labelGeneratorForGather(scope.ydim))

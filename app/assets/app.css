@@ -6202,6 +6202,11 @@ button.close {
 }
 /*# sourceMappingURL=bootstrap.css.map */
 
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
 .lens {
 
   fill:white;
@@ -6307,7 +6312,7 @@ div.clusterControlBox {
   position: absolute;
   width: 200px;
   height: 28px;
-  pointer-events: none;
+  /*pointer-events: none;*/
 }
 
 .chart-instruction {
