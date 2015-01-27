@@ -1,6 +1,34 @@
-<!-- <div ng-controller="ShowCtrl"> -->
+<form class="navbar-form navbar-left" role="search" name="CSVurlForm" ng-show="isURLInput">
 
-<h5>
+
+
+    <h3> Load CSV </h3>
+
+    <p> Please enter the url of the file. For example, a shared file for dropbox can be 
+https://dl.dropboxusercontent.com/s/yvgvb0c5bldj049/TitanicPort3.csv
+    </p>
+
+    <br>
+
+    <div class="form-group">
+        <div class="input-group">
+            <input class="form-control" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV">
+            <span class="input-group-btn">
+        <a href="" class="btn btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
+        </span>
+        </div>
+
+    </div>
+
+    <a href={{customCSV}}>{{customCSV}}</a>
+    <alert class="error" ng-show="csvURLError">Not valid url! {{csvErrorMsg}}</alert>
+
+</form>
+
+<div ng-hide="isURLInput">
+    <!-- <div ng-controller="ShowCtrl"> -->
+
+    <h5>
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-6">
@@ -32,13 +60,13 @@
 			</div>
 		</h5>
 
-<div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
 
 
 
 
-<div class="chart-simple-interface">
-    <h5>Show me
+    <div class="chart-simple-interface">
+        <h5>Show me
 
 				<select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
 
@@ -64,11 +92,13 @@
 	</h5>
 
 
-    <div ng-class="{tryMe: isRelativeSelectFocused}">
-        <h6>
+        <div ng-class="{tryMe: isRelativeSelectFocused}">
+            <h6>
 			<input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.</h6>
 
-    </div>
+        </div>
 
+
+    </div>
 
 </div>

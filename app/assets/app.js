@@ -64062,34 +64062,104 @@ angular.module('ui.sortable', [])
 
     // create the angular app
     angular.module('myApp', [
-        'myApp.controllers',
-        'myApp.directives',
-        'ngRoute'
-    ]).config(['$routeProvider', 
-        function($routeProvider) {
-            $routeProvider.
-                when('/demo', {
-                    templateUrl: '../templates/partials/index_full.html',
-                    controller: 'DemoCtrl'
-                }).
-                when('/show/:dataset/:xDim/:yDim/:colorDim/:relativeMode', {
-                    templateUrl: '../templates/partials/index_simple.html',
-                    controller: 'ShowCtrl'
-                }).
-                otherwise({
-                    redirectTo: '/demo'
+            'myApp.controllers',
+            'myApp.directives',
+            'ngRoute',
+            'firebase',
+            'firebase.utils',
+            'simpleLogin'
+        ]).config(['$routeProvider', 'SECURED_ROUTES',
+            function($routeProvider, SECURED_ROUTES) {
+
+                $routeProvider.whenAuthenticated = function(path, route) {
+
+                    route.resolve = route.resolve || {};
+
+                    route.resolve.user = ['authRequired', function(authRequired) {
+                        return authRequired();
+                    }];
+
+                    $routeProvider.when(path, route);
+                    SECURED_ROUTES[path] = true;
+
+                    return $routeProvider;
+                };
+
+            }
+        ])
+        .config(['$routeProvider',
+            function($routeProvider) {
+                $routeProvider
+                    .when('/', {
+                        templateUrl: '../templates/partials/index_full.html',
+                        controller: 'DemoCtrl'
+                    })
+                    .when('/demo', {
+                        templateUrl: '../templates/partials/index_full.html',
+                        controller: 'DemoCtrl'
+                    })
+                    .when('/show/:dataset/:xDim/:yDim/:colorDim/:relativeMode', {
+                        templateUrl: '../templates/partials/index_simple.html',
+                        controller: 'ShowCtrl'
+                    })
+                    .when('/dropbox/:dropbox_key/:dropbox_filename', {
+                        templateUrl: '../templates/partials/index_dropbox.html',
+                        controller: 'DropboxCtrl'
+                    })
+                    .when('/login', {
+                        templateUrl: '../templates/partials/login.html',
+                        controller: 'LoginCtrl'
+                    })
+                    .whenAuthenticated('/account', {
+                        templateUrl: '../templates/partials/account.html',
+                        controller: 'AccountCtrl'
+                    })
+                    .when('/load/:csvKey', {
+                        templateUrl: '../templates/partials/index_load.html',
+                        controller: 'LoadCtrl'
+                    })
+                    .when('/load', {
+                        redirectTo: '/load/new'
+                    })
+                    .otherwise({
+                        redirectTo: '/'
+                    });
+
+            }
+        ])
+        .run(['$rootScope', '$location', 'simpleLogin', 'SECURED_ROUTES', 'loginRedirectPath',
+            function($rootScope, $location, simpleLogin, SECURED_ROUTES, loginRedirectPath) {
+                simpleLogin.watch(check, $rootScope);
+
+                $rootScope.$on('$routeChangeError', function(e, next, prev, err) {
+                    if (angular.isObject(err) && err.authRequired) {
+                        $location.path(loginRedirectPath);
+                    }
                 });
 
+                function check(user) {
+                    if (!user && authRequired($location.path())) {
+                        $location.path(loginRedirectPath);
+                    }
+                }
 
-        }]);;
+                function authRequired(path) {
+                    return SECURED_ROUTES.hasOwnProperty(path);
+                }
+
+
+            }
+        ])
+        .constant('SECURED_ROUTES', {});
 
     // setup dependency injection
     angular.module('myApp.controllers', []);
-    angular.module('myApp.directives', [ 'ui.bootstrap', 'ui.sortable']);
+    angular.module('myApp.directives', ['ui.bootstrap', 'ui.sortable']);
 
-    
 
-}());;(function() {
+
+}());
+;(function() {
     'use strict';
 
     // create the angular app
@@ -64132,6 +64202,168 @@ angular.module('ui.sortable', [])
 
 
 }());;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('ShowCtrl', ['$scope', '$routeParams',
+            function($scope, $routeParams) {
+
+                $scope.message = "Test";
+
+                $scope.nomaConfig = {
+
+                };
+
+                $scope.loadedData = 'cars';
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
+                $scope.onlyNumbers = /^\d+$/;
+
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = false;
+                $scope.nomaShapeRendering = 'auto';
+                $scope.nomaConfig.isGather = 'scatter';
+                $scope.nomaConfig.relativeModes = [false, true];
+                $scope.nomaConfig.relativeMode = 'absolute';
+                $scope.nomaConfig.binSize = 10;
+                $scope.nomaConfig.matrixMode = false;
+                $scope.nomaConfig.xDim;
+                $scope.nomaConfig.yDim;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+
+                $scope.$watch(function() {
+                    return $scope.nomaConfig.isGather;
+                }, function(newVals, oldVals) {
+                    // debugger;
+                    if (newVals == 'scatter') {
+
+                        $scope.isScatter = true;
+                    } else {
+
+                        $scope.isScatter = false;
+                    }
+                }, true);
+
+                $scope.changeActiveDataCars = function() {
+
+                    $scope.activeData = 'Cars Data';
+
+                    d3.csv('data/articlesForGatherplot.csv', function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+                        $scope.nomaConfig.xDim = '';
+                        $scope.nomaConfig.yDim = '';
+                        $scope.nomaConfig.colorDim = '';
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                        $scope.dataset = $routeParams.dataset;
+                        $scope.nomaConfig.xDim = $routeParams.xDim;
+                        $scope.nomaConfig.yDim = $routeParams.yDim;
+                        $scope.nomaConfig.colorDim = $routeParams.colorDim;
+                        $scope.nomaConfig.relativeMode = $routeParams.relativeMode;
+
+                        $scope.$apply();
+
+                    });
+
+
+
+                };
+
+
+                $scope.changeActiveDataCars()
+
+
+
+
+            }
+        ]);
+
+}());
+;'use strict';
+/**
+ * @ngdoc function
+ * @name muck2App.controller:AccountCtrl
+ * @description
+ * # AccountCtrl
+ * Provides rudimentary account management functions.
+ */
+angular.module('myApp.controllers')
+  .controller('AccountCtrl', function ($scope, user, simpleLogin, fbutil, $timeout) {
+    $scope.user = user;
+    $scope.logout = simpleLogin.logout;
+    $scope.messages = [];
+    var profile;
+    loadProfile(user);
+
+    $scope.changePassword = function(oldPass, newPass, confirm) {
+      $scope.err = null;
+      if( !oldPass || !newPass ) {
+        error('Please enter all fields');
+      }
+      else if( newPass !== confirm ) {
+        error('Passwords do not match');
+      }
+      else {
+        simpleLogin.changePassword(profile.email, oldPass, newPass)
+          .then(function() {
+            success('Password changed');
+          }, error);
+      }
+    };
+
+    $scope.changeEmail = function(pass, newEmail) {
+      $scope.err = null;
+      simpleLogin.changeEmail(pass, newEmail, profile.email)
+        .then(function() {
+          profile.email = newEmail;
+          profile.$save();
+          success('Email changed');
+        })
+        .catch(error);
+    };
+
+    function error(err) {
+      alert(err, 'danger');
+    }
+
+    function success(msg) {
+      alert(msg, 'success');
+    }
+
+    function alert(msg, type) {
+      var obj = {text: msg+'', type: type};
+      $scope.messages.unshift(obj);
+      $timeout(function() {
+        $scope.messages.splice($scope.messages.indexOf(obj), 1);
+      }, 10000);
+    }
+
+    function loadProfile(user) {
+      if( profile ) {
+        profile.$destroy();
+      }
+      profile = fbutil.syncObject('users/'+user.uid);
+      profile.$bindTo($scope, 'profile');
+    }
+  });
+;(function() {
     'use strict';
 
     angular.module('myApp.controllers')
@@ -67234,6 +67466,213 @@ angular.module('ui.sortable', [])
 
 
 }());;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams',
+            function($scope, $firebase, $location, FBURL, $routeParams) {
+
+                $scope.message = "Test";
+
+                $scope.nomaConfig = {
+
+                };
+
+                $scope.loadedData = 'cars';
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
+                $scope.onlyNumbers = /^\d+$/;
+
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = false;
+                $scope.nomaShapeRendering = 'auto';
+                $scope.nomaConfig.isGather = 'scatter';
+                $scope.nomaConfig.relativeModes = [false, true];
+                $scope.nomaConfig.relativeMode = 'absolute';
+                $scope.nomaConfig.binSize = 10;
+                $scope.nomaConfig.matrixMode = false;
+                $scope.nomaConfig.xDim;
+                $scope.nomaConfig.yDim;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+                $scope.isURLInput = true;
+
+                $scope.$watch(function() {
+                    return $scope.nomaConfig.isGather;
+                }, function(newVals, oldVals) {
+                    // debugger;
+                    if (newVals == 'scatter') {
+
+                        $scope.isScatter = true;
+                    } else {
+
+                        $scope.isScatter = false;
+                    }
+                }, true);
+
+                $scope.init = function() {
+
+
+                    if ($routeParams.csvKey == 'new') {
+
+                        $scope.isURLInput = true;
+                    } else {
+                        $scope.isURLInput = false;
+                        $scope.getUrlFromKey($routeParams.csvKey);
+                        
+                    }
+
+                };
+
+                $scope.getUrlFromKey = function(key) {
+
+                    var obj = $firebase(new Firebase(FBURL + '/csv/' + key)).$asObject();
+
+                    obj.$loaded().then(function() {
+
+                        $scope.loadDataFromCSVURL(obj.url);
+                    });
+
+                };
+
+                $scope.changeActiveDataCustomCSV = function(customCSV) {
+
+                    var ref = new Firebase(FBURL + '/csv');
+                    var sync = $firebase(ref);
+
+
+                    sync.$push({
+                        url: customCSV
+                    }).then(function(ref) {
+
+                        console.log(ref.key());
+                        $location.path('/load/' + ref.key()).replace();
+
+                    }, function(error) {
+                        console.log("Error:", error);
+                    });
+
+                }
+
+
+
+
+                $scope.loadDataFromCSVURL = function(customCSV) {
+
+                    $scope.activeData = 'Custom Data';
+
+                    $scope.isURLInput = false;
+
+                    d3.csv(customCSV, function(error, tdata) {
+
+                        if (error) { //If error is not null, something went wrong.
+
+                            console.log(error); //Log the error.
+                            $scope.csvURLError = true;
+                            $scope.isURLInput = true;
+                            $scope.csvErrorMsg = error;
+
+                        } else {
+
+                            $scope.isURLInput = false;
+
+                            $scope.csvURLError = false;
+                            $scope.csvErrorMsg = error;
+                            var count = 0;
+
+                            tdata.map(function(d) {
+                                d.id = count;
+                                count += 1;
+                            });
+
+                            $scope.nomaData = tdata;
+                            $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                            var index = $scope.nomaConfig.dims.indexOf('id');
+                            $scope.nomaConfig.dims.splice(index, 1);
+
+
+                            index = $scope.nomaConfig.dims.indexOf('Name');
+                            $scope.nomaConfig.dims.splice(index, 1);
+
+
+                            $scope.nomaConfig.xDim = null;
+                            $scope.nomaConfig.yDim = null;
+                            $scope.nomaConfig.colorDim = null;
+
+                            $scope.nomaConfig.isGather = 'gather';
+                            $scope.nomaConfig.relativeMode = 'absolute';
+
+                        }
+                        $scope.$apply();
+                    });
+
+
+
+                };
+
+                $scope.init();
+
+            }
+
+
+        ]);
+
+}());
+;'use strict';
+/**
+ * @ngdoc function
+ * @name gatherfireApp.controller:LoginCtrl
+ * @description
+ * # LoginCtrl
+ * Manages authentication to any active providers.
+ */
+angular.module('myApp.controllers')
+  .controller('LoginCtrl', function ($scope, simpleLogin, $location) {
+    $scope.oauthLogin = function(provider) {
+      $scope.err = null;
+      simpleLogin.login(provider, {rememberMe: true}).then(redirect, showError);
+    };
+
+    $scope.anonymousLogin = function() {
+      $scope.err = null;
+      simpleLogin.anonymousLogin({rememberMe: true}).then(redirect, showError);
+    };
+
+    $scope.passwordLogin = function(email, pass) {
+      $scope.err = null;
+      simpleLogin.passwordLogin({email: email, password: pass}, {rememberMe: true}).then(
+        redirect, showError
+      );
+    };
+
+    $scope.createAccount = function(email, pass, confirm) {
+      $scope.err = null;
+      if( !pass ) {
+        $scope.err = 'Please enter a password';
+      }
+      else if( pass !== confirm ) {
+        $scope.err = 'Passwords do not match';
+      }
+      else {
+        simpleLogin.createAccount(email, pass, {rememberMe: true})
+          .then(redirect, showError);
+      }
+    };
+    
+
+    function redirect() {
+      $location.path('/account');
+    }
+
+    function showError(err) {
+      $scope.err = err;
+    }
+
+
+  });
+;(function() {
     'use strict';
 
     angular.module('myApp.controllers')
