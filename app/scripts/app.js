@@ -5,6 +5,7 @@
     angular.module('myApp', [
             'myApp.controllers',
             'myApp.directives',
+            'myApp.services',
             'ngRoute',
             'firebase',
             'firebase.utils',
@@ -59,8 +60,13 @@
                         templateUrl: '../templates/partials/index_load.html',
                         controller: 'LoadCtrl'
                     })
-                    .when('/load', {
-                        redirectTo: '/load/new'
+                    .whenAuthenticated('/upload', {
+                        templateUrl: '../templates/partials/index_upload.html',
+                        controller: 'UploadCtrl'
+                    })
+                    .when('/browse', {
+                        templateUrl: '../templates/partials/browse.html',
+                        controller: 'BrowseCtrl'
                     })
                     .otherwise({
                         redirectTo: '/'
@@ -70,17 +76,19 @@
         ])
         .run(['$rootScope', '$location', 'simpleLogin', 'SECURED_ROUTES', 'loginRedirectPath',
             function($rootScope, $location, simpleLogin, SECURED_ROUTES, loginRedirectPath) {
+
                 simpleLogin.watch(check, $rootScope);
 
                 $rootScope.$on('$routeChangeError', function(e, next, prev, err) {
-                    if (angular.isObject(err) && err.authRequired) {
+                    // if (angular.isObject(err) && err.authRequired) {
+                        if (err === 'AUTH_REQUIRED') { 
                         $location.path(loginRedirectPath);
                     }
                 });
 
                 function check(user) {
                     if (!user && authRequired($location.path())) {
-                        $location.path(loginRedirectPath);
+                        $location.path(loginRedirectPath).replace();
                     }
                 }
 
@@ -96,6 +104,8 @@
     // setup dependency injection
     angular.module('myApp.controllers', []);
     angular.module('myApp.directives', ['ui.bootstrap', 'ui.sortable']);
+
+    angular.module('myApp.services', ['firebase', 'firebase.utils', 'firebase.config']);
 
 
 

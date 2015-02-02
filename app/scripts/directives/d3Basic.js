@@ -13,7 +13,9 @@
                         round: "=",
                         xdim: "@",
                         ydim: "@",
+                        context: "=",
                         shapeRenderingMode: "=",
+                        dimsum: "=",
                         onClick: '&'
                     },
 
@@ -55,10 +57,11 @@
 
 
                         var marginClusterRatio = 0.1; //Ratio of margin in the cluster 
+                        var node;
 
                         scope.config.dimSetting = {};
 
-                        var svg, svgGroup, nodeGroup, xAxisNodes, yAxisNodes;
+                        var svg, svgGroup, nodeGroup, brushGroup, xAxisNodes, yAxisNodes;
                         var maskGroup;
                         var tooltip;
                         var clusterControlBox;
@@ -80,21 +83,30 @@
 
                         var initialInnerRadiusOfPieLens = 20;
 
+                        var brush = d3.svg.brush();
+                        var shiftKey;
+
 
                         var initializeSVG = function() {
 
+
+                            d3.select("body")
+                                .attr("tabindex", 1)
+                                .on("keydown.brush", keyflip)
+                                .on("keyup.brush", keyflip)
+                                .each(function() {
+                                    this.focus();
+                                });
 
                             // .value("title");
 
                             labelDiv = d3.select(iElement[0])
                                 .append("div")
                                 .attr("class", "btn-group")
-                                .html('<a class="btn btn-default"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" ><i class="fa fa-align-left"></i></a><a class="btn btn-default"><i class="fa fa-align-center"></i></a><a class="btn btn-default" ><i class="fa fa-align-right"></i></a><a class="btn btn-default" ><i class="fa fa-align-justify"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+                                .html('<a class="btn btn-default" title="Pan and Zoom" id="toolbarPanZoom"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" title="Select" id="toolbarSelect"><i class="fa fa-square-o"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
 
                             svg = d3.select(iElement[0])
                                 .append("svg:svg");
-
-
 
                             svgGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
@@ -109,6 +121,9 @@
                                 .attr("class", "overlay")
                                 .attr("width", width)
                                 .attr("height", height);
+
+                            brushGroup = svg.append("g")
+                                .attr("transform", "translate(" + margin + "," + margin + ")");
 
 
                             xAxisNodes = svgGroup.append("g")
@@ -176,6 +191,47 @@
                         }, true);
 
 
+                        scope.$watch(function() {
+                            return scope.dimsum;
+                        }, function(newVals, oldVals) {
+                            return scope.handleDimsumChange(newVals);
+
+                        }, true);
+
+                        scope.handleDimsumChange = function(newDimsum) {
+
+                            if (!node) {
+                                return;
+                            }
+
+                            if (!scope.dimsum) {
+
+                                return;
+                            }
+
+                            if (!scope.dimsum.selectionSpace) {
+
+                                return;
+                            }
+
+
+
+                            node.classed("selected", function(d) {
+
+                                if (scope.dimsum.selectionSpace.indexOf(d.id) == -1) {
+
+                                    d.selected = false;
+                                } else {
+
+                                    d.selected = true;
+                                }
+
+                                return d.selected;
+                            });
+
+                        };
+
+
                         scope.renderBorderChange = function(isBorder) {
 
                             svgGroup.selectAll(".dot")
@@ -220,11 +276,9 @@
 
                             drawBackground();
 
-
-
                             if (scope.config.matrixMode === false) {
 
-                                nodeGroup.selectAll(".dot")
+                                node = nodeGroup.selectAll(".dot")
                                     .data(scope.data)
                                     .enter().append("rect")
                                     .attr("class", "dot")
@@ -243,12 +297,18 @@
                                         tooltip.html(d.commentTitle + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d) + "</br>" + d.commentBody + "</br>" + '<a href="' + d.articleURL + '" target="_blank">Click to See Article</a>')
                                             .style("left", (d3.event.pageX + 5) + "px")
                                             .style("top", (d3.event.pageY - 28) + "px");
+                                    })
+                                    .on("mouseout", function(d) {
+                                        // tooltip.transition()
+                                        //     .duration(500)
+                                        //     .style("opacity", 0);
+                                    })
+                                    .on("mousedown", function(d) {
+                                        if (d3.event.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
+                                        else node.classed("selected", function(p) {
+                                            return p.selected = d === p;
+                                        });
                                     });
-                                // .on("mouseout", function(d) {
-                                //     tooltip.transition()
-                                //         .duration(3000)
-                                //         .style("opacity", 0);
-                                // });
 
                             } else {
 
@@ -1251,6 +1311,70 @@
 
                             configZoom();
 
+                            configBrush();
+
+                        };
+
+                        var configBrush = function() {
+
+                            brush = brushGroup.append("g")
+                                .datum(function() {
+                                    return {
+                                        selected: false,
+                                        previouslySelected: false
+                                    };
+                                })
+                                .attr("class", "brush")
+                                .call(d3.svg.brush()
+                                    .x(xScale)
+                                    .y(yScale)
+                                    .on("brushstart", function(d) {
+                                        node.each(function(d) {
+
+                                            // if (d.Name.indexOf("ciera") > 0) {
+                                            //     console.log(d);
+                                            // }
+
+                                            d.previouslySelected = d3.event.sourceEvent.shiftKey && d.selected;
+                                        });
+                                    })
+                                    .on("brush", function() {
+                                        var extent = d3.event.target.extent();
+                                        node.classed("selected", function(d) {
+
+                                            //     return d.selected = d.previouslySelected ^
+                                            //         (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]));
+                                            // });
+
+                                            var nodeIndex = scope.dimsum.selectionSpace.indexOf(d.id);
+
+                                            if (d.previouslySelected ^ (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]))) {
+
+                                                if (nodeIndex == -1) {
+                                                    scope.dimsum.selectionSpace.push(d.id);
+                                                }
+                                            } else {
+
+                                                if (nodeIndex != -1) {
+                                                    scope.dimsum.selectionSpace.splice(nodeIndex,1);
+                                                }
+
+
+                                            }
+
+                                        });
+                                        scope.$apply();
+                                        scope.handleDimsumChange(scope.dimsum);
+
+
+                                    })
+                                    .on("brushend", function() {
+                                        d3.event.target.clear();
+                                        d3.select(this).call(d3.event.target);
+                                    }));
+
+
+
                         };
 
                         var configZoom = function() {
@@ -1267,9 +1391,19 @@
 
                             function zoomed() {
 
+                                // scope.$apply();
+
                                 svgGroup.select(".x.axis").call(xAxis);
                                 svgGroup.select(".y.axis").call(yAxis);
+
+                                scope.context.translate = d3.event.translate;
+                                scope.context.scale = d3.event.scale;
+
+
+
                                 nodeGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+
+
 
                             }
 
@@ -1291,6 +1425,11 @@
                                 nodeGroup.transition()
                                     .duration(700)
                                     .attr("transform", "translate(0,0) scale(1)");
+
+                                scope.context.translate = [0, 0];
+                                scope.context.scale = 1;
+
+                                // scope.$apply();
 
                                 d3.transition().duration(700).tween("zoom", function() {
 
@@ -1321,6 +1460,50 @@
                                     };
                                 });
                             }
+
+                            d3.select("#toolbarPanZoom").on("click", setZoomMode);
+
+                            function setZoomMode() {
+
+                                nodeGroup.transition()
+                                    .duration(700)
+                                    .attr("transform", "translate(0,0) scale(1)");
+
+                                scope.context.translate = [0, 0];
+                                scope.context.scale = 1;
+
+                                // scope.$apply();
+
+                                d3.transition().duration(700).tween("zoom", function() {
+
+                                    var range = getExtentConsideringXY(scope.xdim, scope.ydim);
+
+                                    var xRange = range.xRange;
+                                    var yRange = range.yRange;
+
+                                    var typeOfXYDim = findTypeOfXYDim();
+
+                                    if (typeOfXYDim === 'XNomYOrd') {
+
+                                        var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+
+                                    } else if (typeOfXYDim === 'XOrdYNom') {
+
+                                        var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+
+                                    }
+
+                                    var ix = d3.interpolate(xScale.domain(), xRange),
+                                        iy = d3.interpolate(yScale.domain(), yRange);
+
+                                    return function(t) {
+                                        zoom.x(xScale.domain(ix(t))).y(yScale.domain(iy(t)));
+
+                                        zoomReset();
+                                    };
+                                });
+                            }
+
 
                         };
 
@@ -1722,7 +1905,73 @@
                                 return yScale(yValue(d));
                             };
 
+                            brush = brushGroup.append("g")
+                                .datum(function() {
+                                    return {
+                                        selected: false,
+                                        previouslySelected: false
+                                    };
+                                })
+                                .attr("class", "brush")
+                                .call(d3.svg.brush()
+                                    .x(xScale)
+                                    .y(yScale)
+                                    .on("brushstart", function(d) {
+                                        node.each(function(d) {
+
+                                            // if (d.Name.indexOf("ciera") > 0) {
+                                            //     console.log(d);
+                                            // }
+
+                                            d.previouslySelected = d3.event.sourceEvent.shiftKey && d.selected;
+                                        });
+                                    })
+                                    .on("brush", function() {
+                                        var extent = d3.event.target.extent();
+                                        node.classed("selected", function(d) {
+
+                                            //     return d.selected = d.previouslySelected ^
+                                            //         (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]));
+                                            // });
+                                            if (d.previouslySelected ^ (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]))) {
+
+                                                if (scope.dimsum.selectionSpace.indexOf(d.id) == -1) {
+                                                    scope.dimsum.selectionSpace.push(d.id);
+                                                }
+                                            }
+
+                                        });
+                                        scope.$apply();
+                                        scope.handleDimsumChange(scope.dimsum);
+
+
+                                    })
+                                    .on("brushend", function() {
+                                        d3.event.target.clear();
+                                        d3.select(this).call(d3.event.target);
+                                    }));
+
+
                         };
+
+                        function keyflip() {
+                            shiftKey = d3.event.shiftKey || d3.event.metaKey;
+                        }
+
+                        function cross(a, b) {
+                            var c = [],
+                                n = a.length,
+                                m = b.length,
+                                i, j;
+                            for (i = -1; ++i < n;)
+                                for (j = -1; ++j < m;) c.push({
+                                    x: a[i],
+                                    i: i,
+                                    y: b[j],
+                                    j: j
+                                });
+                            return c;
+                        }
 
                         var restoreXYScaleForSameOrdDimGather = function() {
 

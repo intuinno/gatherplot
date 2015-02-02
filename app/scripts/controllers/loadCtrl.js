@@ -2,8 +2,66 @@
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams',
-            function($scope, $firebase, $location, FBURL, $routeParams) {
+        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin',
+            function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin) {
+
+                $scope.comments = Chart.comments($routeParams.csvKey);
+
+                simpleLogin.auth.$onAuth(function(authData) {
+
+                    $scope.user = authData;
+                    $scope.signedIn = !!authData;
+
+                    if (authData) {
+                        loadProfile(authData)
+                    }
+                });
+
+                $scope.user = simpleLogin.user;
+                $scope.signedIn = !!simpleLogin.user;
+                $scope.context = {};
+                $scope.context.translate = [0,0];
+                $scope.context.scale = 1;
+                $scope.dimsumData = {};
+
+                var profile;
+
+                // loadProfile(simpleLogin.user);
+
+                function loadProfile(user) {
+                    if (profile) {
+                        profile.$destroy();
+                    }
+                    profile = fbutil.syncObject('users/' + user.uid);
+                    profile.$bindTo($scope, 'profile');
+                }
+
+                $scope.addComment = function() {
+
+                    if (!$scope.commentText || $scope.commentText === '') {
+                        return;
+                    }
+
+                    var context = angular.copy($scope.nomaConfig);
+                    context.dimSetting = [];
+
+                    var comment = {
+                        text: $scope.commentText,
+                        creator: profile.name,
+                        creatorUID: $scope.user.uid,
+                        config: context,
+                        context: $scope.context,
+                        chartId: $routeParams.csvKey
+                    };
+
+                    $scope.comments.$add(comment);
+
+                    $scope.commentText = '';
+
+
+
+
+                };
 
                 $scope.message = "Test";
 
@@ -14,6 +72,9 @@
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
+
+                $scope.nomaConfig.translate = [];
+                $scope.nomaConfig.scale = 1;
 
 
                 $scope.nomaRound = true;
@@ -29,7 +90,7 @@
                 $scope.nomaConfig.isInteractiveAxis = false;
                 $scope.isScatter = false;
                 $scope.nomaConfig.lens = "noLens";
-                $scope.isURLInput = true;
+                $scope.isURLInput = false;
 
                 $scope.$watch(function() {
                     return $scope.nomaConfig.isGather;
@@ -53,42 +114,35 @@
                     } else {
                         $scope.isURLInput = false;
                         $scope.getUrlFromKey($routeParams.csvKey);
-                        
+
                     }
 
                 };
 
                 $scope.getUrlFromKey = function(key) {
 
-                    var obj = $firebase(new Firebase(FBURL + '/csv/' + key)).$asObject();
+                    var obj = Chart.get(key);
 
                     obj.$loaded().then(function() {
 
                         $scope.loadDataFromCSVURL(obj.url);
+                        $scope.activeData = obj.name;
+                    }, function(error) {
+                        console.log("Error:", error);
+                        $scope.mesage = error;
+                        $scope.isURLInput = true;
+                    }).then(function() {
+
+                        var uploader = $firebase(new Firebase(FBURL + '/users/' + obj.uploader)).$asObject();
+
+                        uploader.$loaded().then(function() {
+
+                            $scope.uploader = uploader.name;
+
+                        });
                     });
 
                 };
-
-                $scope.changeActiveDataCustomCSV = function(customCSV) {
-
-                    var ref = new Firebase(FBURL + '/csv');
-                    var sync = $firebase(ref);
-
-
-                    sync.$push({
-                        url: customCSV
-                    }).then(function(ref) {
-
-                        console.log(ref.key());
-                        $location.path('/load/' + ref.key()).replace();
-
-                    }, function(error) {
-                        console.log("Error:", error);
-                    });
-
-                }
-
-
 
 
                 $scope.loadDataFromCSVURL = function(customCSV) {
@@ -144,6 +198,7 @@
 
 
                 };
+
 
                 $scope.init();
 

@@ -64064,6 +64064,7 @@ angular.module('ui.sortable', [])
     angular.module('myApp', [
             'myApp.controllers',
             'myApp.directives',
+            'myApp.services',
             'ngRoute',
             'firebase',
             'firebase.utils',
@@ -64118,8 +64119,13 @@ angular.module('ui.sortable', [])
                         templateUrl: '../templates/partials/index_load.html',
                         controller: 'LoadCtrl'
                     })
-                    .when('/load', {
-                        redirectTo: '/load/new'
+                    .whenAuthenticated('/upload', {
+                        templateUrl: '../templates/partials/index_upload.html',
+                        controller: 'UploadCtrl'
+                    })
+                    .when('/browse', {
+                        templateUrl: '../templates/partials/browse.html',
+                        controller: 'BrowseCtrl'
                     })
                     .otherwise({
                         redirectTo: '/'
@@ -64129,17 +64135,19 @@ angular.module('ui.sortable', [])
         ])
         .run(['$rootScope', '$location', 'simpleLogin', 'SECURED_ROUTES', 'loginRedirectPath',
             function($rootScope, $location, simpleLogin, SECURED_ROUTES, loginRedirectPath) {
+
                 simpleLogin.watch(check, $rootScope);
 
                 $rootScope.$on('$routeChangeError', function(e, next, prev, err) {
-                    if (angular.isObject(err) && err.authRequired) {
+                    // if (angular.isObject(err) && err.authRequired) {
+                        if (err === 'AUTH_REQUIRED') { 
                         $location.path(loginRedirectPath);
                     }
                 });
 
                 function check(user) {
                     if (!user && authRequired($location.path())) {
-                        $location.path(loginRedirectPath);
+                        $location.path(loginRedirectPath).replace();
                     }
                 }
 
@@ -64155,6 +64163,8 @@ angular.module('ui.sortable', [])
     // setup dependency injection
     angular.module('myApp.controllers', []);
     angular.module('myApp.directives', ['ui.bootstrap', 'ui.sortable']);
+
+    angular.module('myApp.services', ['firebase', 'firebase.utils', 'firebase.config']);
 
 
 
@@ -64173,7 +64183,45 @@ angular.module('ui.sortable', [])
     angular.module('gatherLensApp.directives', [ 'ui.bootstrap', 'ui.sortable']);
 
 
-}());;(function() {
+}());;'use strict';
+
+/**
+ * @ngdoc service
+ * @name yearofmooAngularjsSeedRepoApp.chart
+ * @description
+ * # chart
+ * Factory in the yearofmooAngularjsSeedRepoApp.
+ */
+angular.module('myApp.services')
+  .factory('Chart', function ($firebase, FBURL) {
+    // Service logic
+    // ...
+    var ref = new Firebase(FBURL);
+    var charts = $firebase(ref.child('csv')).$asArray();
+
+    var Chart = {
+      all: charts, 
+
+      create: function(chart) {
+        return charts.$add(chart).then(function(chartRef) {
+          $firebase(ref.child('user_charts').child(chart.uploader)).$push(chartRef.name());
+          return chartRef;
+        });
+      }, 
+      get: function(chartId) {
+        return $firebase(ref.child('csv').child(chartId)).$asObject();
+      },
+      delete: function(chart) {
+        return charts.$remove(chart);
+      },
+      comments: function(chartId) {
+        return $firebase(ref.child('comments').child(chartId)).$asArray();
+      }
+    };
+    // Public API here
+    return Chart;
+  });
+;(function() {
   'use strict';
 
   angular.module('myApp.controllers')
@@ -64367,6 +64415,27 @@ angular.module('myApp.controllers')
     'use strict';
 
     angular.module('myApp.controllers')
+        .controller('BrowseCtrl', ['$scope', '$location', 'Chart', 'simpleLogin',
+            function($scope, $location, Chart, simpleLogin) {
+             
+                $scope.charts = Chart.all;
+
+                $scope.user = simpleLogin.user;
+
+                $scope.deleteChart = function(chart) {
+                    Chart.delete(chart);
+                };
+
+            }
+
+
+        ]);
+
+}());
+;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
         .controller('DemoCtrl', ['$scope', '$q','$window',
             function($scope, $q, $window) {
 
@@ -64382,6 +64451,12 @@ angular.module('myApp.controllers')
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
+
+                $scope.context = {};
+                $scope.context.translate = [0,0];
+                $scope.context.scale = 1;
+                $scope.dimsum = {};
+                $scope.dimsum.selectionSpace=[];
 
 
                 $scope.nomaRound = true;
@@ -67469,8 +67544,66 @@ angular.module('myApp.controllers')
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams',
-            function($scope, $firebase, $location, FBURL, $routeParams) {
+        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin',
+            function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin) {
+
+                $scope.comments = Chart.comments($routeParams.csvKey);
+
+                simpleLogin.auth.$onAuth(function(authData) {
+
+                    $scope.user = authData;
+                    $scope.signedIn = !!authData;
+
+                    if (authData) {
+                        loadProfile(authData)
+                    }
+                });
+
+                $scope.user = simpleLogin.user;
+                $scope.signedIn = !!simpleLogin.user;
+                $scope.context = {};
+                $scope.context.translate = [0,0];
+                $scope.context.scale = 1;
+                $scope.dimsumData = {};
+
+                var profile;
+
+                // loadProfile(simpleLogin.user);
+
+                function loadProfile(user) {
+                    if (profile) {
+                        profile.$destroy();
+                    }
+                    profile = fbutil.syncObject('users/' + user.uid);
+                    profile.$bindTo($scope, 'profile');
+                }
+
+                $scope.addComment = function() {
+
+                    if (!$scope.commentText || $scope.commentText === '') {
+                        return;
+                    }
+
+                    var context = angular.copy($scope.nomaConfig);
+                    context.dimSetting = [];
+
+                    var comment = {
+                        text: $scope.commentText,
+                        creator: profile.name,
+                        creatorUID: $scope.user.uid,
+                        config: context,
+                        context: $scope.context,
+                        chartId: $routeParams.csvKey
+                    };
+
+                    $scope.comments.$add(comment);
+
+                    $scope.commentText = '';
+
+
+
+
+                };
 
                 $scope.message = "Test";
 
@@ -67481,6 +67614,9 @@ angular.module('myApp.controllers')
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
+
+                $scope.nomaConfig.translate = [];
+                $scope.nomaConfig.scale = 1;
 
 
                 $scope.nomaRound = true;
@@ -67496,7 +67632,7 @@ angular.module('myApp.controllers')
                 $scope.nomaConfig.isInteractiveAxis = false;
                 $scope.isScatter = false;
                 $scope.nomaConfig.lens = "noLens";
-                $scope.isURLInput = true;
+                $scope.isURLInput = false;
 
                 $scope.$watch(function() {
                     return $scope.nomaConfig.isGather;
@@ -67520,42 +67656,35 @@ angular.module('myApp.controllers')
                     } else {
                         $scope.isURLInput = false;
                         $scope.getUrlFromKey($routeParams.csvKey);
-                        
+
                     }
 
                 };
 
                 $scope.getUrlFromKey = function(key) {
 
-                    var obj = $firebase(new Firebase(FBURL + '/csv/' + key)).$asObject();
+                    var obj = Chart.get(key);
 
                     obj.$loaded().then(function() {
 
                         $scope.loadDataFromCSVURL(obj.url);
+                        $scope.activeData = obj.name;
+                    }, function(error) {
+                        console.log("Error:", error);
+                        $scope.mesage = error;
+                        $scope.isURLInput = true;
+                    }).then(function() {
+
+                        var uploader = $firebase(new Firebase(FBURL + '/users/' + obj.uploader)).$asObject();
+
+                        uploader.$loaded().then(function() {
+
+                            $scope.uploader = uploader.name;
+
+                        });
                     });
 
                 };
-
-                $scope.changeActiveDataCustomCSV = function(customCSV) {
-
-                    var ref = new Firebase(FBURL + '/csv');
-                    var sync = $firebase(ref);
-
-
-                    sync.$push({
-                        url: customCSV
-                    }).then(function(ref) {
-
-                        console.log(ref.key());
-                        $location.path('/load/' + ref.key()).replace();
-
-                    }, function(error) {
-                        console.log("Error:", error);
-                    });
-
-                }
-
-
 
 
                 $scope.loadDataFromCSVURL = function(customCSV) {
@@ -67611,6 +67740,7 @@ angular.module('myApp.controllers')
 
 
                 };
+
 
                 $scope.init();
 
@@ -67764,6 +67894,77 @@ angular.module('myApp.controllers')
 
 
             }
+        ]);
+
+}());
+;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('UploadCtrl', ['$scope', '$location',  '$routeParams', 'user', 'fbutil', 'Chart',
+            function($scope, $location, $routeParams, user, fbutil, Chart) {
+
+                if (!user) {
+
+                    $location.path('/login').replace();
+
+                }
+
+                $scope.user = user;
+                var profile;
+                loadProfile(user);
+
+                $scope.uploadData = function(customCSV) {
+
+                    // var ref = new Firebase(FBURL + '/csv');
+                    // var sync = $firebase(ref);
+
+                    // sync.$push({
+                    //     url: customCSV,
+                    //     name: $scope.dataName,
+                    //     uploader: user.uid,
+                    //     uploaderName: user.name;
+                    // }).then(function(ref) {
+
+                    //     console.log(ref.key());
+                    //     $location.path('/load/' + ref.key()).replace();
+
+                    // }, function(error) {
+                    //     console.log("Error:", error);
+                    // });
+
+                    var newChart = {
+
+                        url: customCSV,
+                        name: $scope.dataName,
+                        uploader: user.uid,
+                        uploaderName: profile.name
+                    };
+
+                    Chart.create(newChart).then(function(ref) {
+
+                        console.log(ref.key());
+                        $location.path('/load/' + ref.key()).replace();
+
+                    }, function(error) {
+                        console.log("Error:", error);
+                    });
+
+                };
+
+
+                function loadProfile(user) {
+                    if (profile) {
+                        profile.$destroy();
+                    }
+                    profile = fbutil.syncObject('users/' + user.uid);
+                    profile.$bindTo($scope, 'profile');
+                }
+
+
+            }
+
+
         ]);
 
 }());

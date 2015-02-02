@@ -18,6 +18,12 @@
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
 
+                $scope.context = {};
+                $scope.context.translate = [0,0];
+                $scope.context.scale = 1;
+                $scope.dimsum = {};
+                $scope.dimsum.selectionSpace=[];
+
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;

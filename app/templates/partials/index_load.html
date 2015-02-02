@@ -1,36 +1,14 @@
-<form class="navbar-form navbar-left" role="search" name="CSVurlForm" ng-show="isURLInput">
+<div ng-show="isURLInput">
 
 
-
-    <h3> Load CSV </h3>
-
-    <p> Please enter the url of the file. For example, a shared file for dropbox can be 
-https://dl.dropboxusercontent.com/s/yvgvb0c5bldj049/TitanicPort3.csv
-    </p>
-
-    <br>
-
-    <div class="form-group">
-        <div class="input-group">
-            <input class="form-control" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV">
-            <span class="input-group-btn">
-        <a href="" class="btn btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
-        </span>
-        </div>
-
-    </div>
-
-    <a href={{customCSV}}>{{customCSV}}</a>
-    <alert class="error" ng-show="csvURLError">Not valid url! {{csvErrorMsg}}</alert>
-
-</form>
-
+</div>
 <div ng-hide="isURLInput">
     <!-- <div ng-controller="ShowCtrl"> -->
 
     <h5>
 	<div class="container-fluid">
 		<div class="row">
+		<h3 class="chart-title">{{activeData}}</h3>
 			<div class="col-md-6">
 				<div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
 					<div class="btn-group">
@@ -60,7 +38,9 @@ https://dl.dropboxusercontent.com/s/yvgvb0c5bldj049/TitanicPort3.csv
 			</div>
 		</h5>
 
-    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+
+
+    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" context="context" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
 
 
 
@@ -100,5 +80,34 @@ https://dl.dropboxusercontent.com/s/yvgvb0c5bldj049/TitanicPort3.csv
 
 
     </div>
+
+    <div> Data submitted by {{uploader}} </div>
+    <a ng-href="#/browse">Back to Charts List</a>
+
+    <div ng-repeat="comment in comments" class="row cmt">
+        <div class="col-md-12">
+            <p>{{ comment.text }}</p>
+            <p class="author">posted by
+                <a ng-href="#/users/{{ comment.creatorUID }}">
+          {{ comment.creator }}
+        </a>
+            </p>
+        </div>
+    </div>
+
+    <div class="cmt-form">
+        <div ng-hide="signedIn">
+            <p><a href="#/login">Sign in</a> to post a comment</p>
+        </div>
+
+        <form ng-show="signedIn" ng-submit="addComment()">
+            <textarea ng-model="commentText" placeholder="Post a Comment" class="form-control"></textarea>
+            <br />
+            <input type="submit" value="Post Comment" class="btn btn-primary" />
+        </form>
+    </div>
+
+    {{nomaConfig.translate}} <br>
+    {{nomaConfig.scale}}
 
 </div>
