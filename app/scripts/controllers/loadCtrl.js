@@ -22,8 +22,7 @@
                 $scope.context = {};
                 $scope.context.translate = [0,0];
                 $scope.context.scale = 1;
-                $scope.dimsum = {};
-                $scope.dimsum.selectionSpace=[];
+                $scope.dimsumData = {};
 
                 var profile;
 
@@ -52,8 +51,7 @@
                         creatorUID: $scope.user.uid,
                         config: context,
                         context: $scope.context,
-                        chartId: $routeParams.csvKey,
-                        dimsum: dimsumData
+                        chartId: $routeParams.csvKey
                     };
 
                     $scope.comments.$add(comment);

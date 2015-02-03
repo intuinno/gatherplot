@@ -122,7 +122,7 @@
                                 .attr("width", width)
                                 .attr("height", height);
 
-                            brushGroup = svgGroup.append("g")
+                            brushGroup = svg.append("g")
                                 .attr("transform", "translate(" + margin + "," + margin + ")");
 
 
@@ -1343,15 +1343,13 @@
 
                         var configBrush = function() {
 
-                            brush = svgGroup.append("g")
+                            brush = brushGroup.append("g")
                                 .datum(function() {
                                     return {
                                         selected: false,
                                         previouslySelected: false
                                     };
-                                }) 
-                                .attr("transform", "translate(" + margin + "," + margin + ")")
-                                .attr("transform", "translate(" + scope.context.translate + ")scale(" + scope.context.scale + ")")
+                                })
                                 .attr("class", "brush")
                                 .call(d3.svg.brush()
                                     .x(xScale)
@@ -1376,7 +1374,7 @@
 
                                             var nodeIndex = scope.dimsum.selectionSpace.indexOf(d.id);
 
-                                            if (d.previouslySelected ^ (xScale(extent[0][0]) <= (xMap(d)+d.XOffset) && (xMap(d)+d.XOffset) < xScale(extent[1][0]) && yScale(extent[0][1]) >= (yMap(d)-d.YOffset) && (yMap(d)-d.YOffset) > yScale(extent[1][1]))) {
+                                            if (d.previouslySelected ^ (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]))) {
 
                                                 if (nodeIndex == -1) {
                                                     scope.dimsum.selectionSpace.push(d.id);
@@ -1456,9 +1454,6 @@
 
                                 svgGroup.select(".x.axis").call(xAxis);
                                 svgGroup.select(".y.axis").call(yAxis);
-
-                                scope.context.translate = [0,0];
-                                scope.context.scale = 1;
 
 
 
