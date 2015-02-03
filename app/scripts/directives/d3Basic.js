@@ -1309,9 +1309,35 @@
 
                             drawPlot();
 
+                            configZoomToolbar();
+
+                            configBrushToolbar();
+
                             configZoom();
 
-                            configBrush();
+                        };
+
+                        var configZoomToolbar = function() {
+
+                            d3.select("#toolbarPanZoom").on("click", setZoomMode);
+
+
+                            function setZoomMode() {
+
+                                configZoom();
+                            }
+
+
+                        };
+
+                        var configBrushToolbar = function() {
+
+                            d3.select("#toolbarSelect").on("click", setSelectMode);
+
+                            function setSelectMode() {
+
+                                configBrush();
+                            }
 
                         };
 
@@ -1356,7 +1382,7 @@
                                             } else {
 
                                                 if (nodeIndex != -1) {
-                                                    scope.dimsum.selectionSpace.splice(nodeIndex,1);
+                                                    scope.dimsum.selectionSpace.splice(nodeIndex, 1);
                                                 }
 
 
@@ -1375,9 +1401,26 @@
 
 
 
+                            d3.select("#toolbarSelect").classed("active", true);
+
+
+                            d3.select("#toolbarPanZoom").classed("active", false);
+
+
+
+
                         };
 
                         var configZoom = function() {
+
+                            removeBrushMode();
+
+                            function removeBrushMode() {
+
+                                d3.selectAll(".brush").remove();
+
+
+                            }
 
                             var zoom = d3.behavior.zoom()
                                 .x(xScale)
@@ -1420,50 +1463,15 @@
 
                             d3.select("#toolbarReset").on("click", reset);
 
+                            d3.select("#toolbarSelect").classed("active", false);
+
+
+                            d3.select("#toolbarPanZoom").classed("active", true);
+
+
                             function reset() {
 
-                                nodeGroup.transition()
-                                    .duration(700)
-                                    .attr("transform", "translate(0,0) scale(1)");
-
-                                scope.context.translate = [0, 0];
-                                scope.context.scale = 1;
-
-                                // scope.$apply();
-
-                                d3.transition().duration(700).tween("zoom", function() {
-
-                                    var range = getExtentConsideringXY(scope.xdim, scope.ydim);
-
-                                    var xRange = range.xRange;
-                                    var yRange = range.yRange;
-
-                                    var typeOfXYDim = findTypeOfXYDim();
-
-                                    if (typeOfXYDim === 'XNomYOrd') {
-
-                                        var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
-
-                                    } else if (typeOfXYDim === 'XOrdYNom') {
-
-                                        var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
-
-                                    }
-
-                                    var ix = d3.interpolate(xScale.domain(), xRange),
-                                        iy = d3.interpolate(yScale.domain(), yRange);
-
-                                    return function(t) {
-                                        zoom.x(xScale.domain(ix(t))).y(yScale.domain(iy(t)));
-
-                                        zoomReset();
-                                    };
-                                });
-                            }
-
-                            d3.select("#toolbarPanZoom").on("click", setZoomMode);
-
-                            function setZoomMode() {
+                                resetSelection();
 
                                 nodeGroup.transition()
                                     .duration(700)
@@ -1503,9 +1511,18 @@
                                     };
                                 });
                             }
+
+
 
 
                         };
+
+                        var resetSelection = function() {
+
+                            scope.dimsum.selectionSpace = [];
+                            scope.handleDimsumChange(scope.dimsum);
+                            scope.$apply();
+                        }
 
                         var setClipPathForAxes = function() {
 
@@ -1904,52 +1921,6 @@
                             yMap = function(d) {
                                 return yScale(yValue(d));
                             };
-
-                            brush = brushGroup.append("g")
-                                .datum(function() {
-                                    return {
-                                        selected: false,
-                                        previouslySelected: false
-                                    };
-                                })
-                                .attr("class", "brush")
-                                .call(d3.svg.brush()
-                                    .x(xScale)
-                                    .y(yScale)
-                                    .on("brushstart", function(d) {
-                                        node.each(function(d) {
-
-                                            // if (d.Name.indexOf("ciera") > 0) {
-                                            //     console.log(d);
-                                            // }
-
-                                            d.previouslySelected = d3.event.sourceEvent.shiftKey && d.selected;
-                                        });
-                                    })
-                                    .on("brush", function() {
-                                        var extent = d3.event.target.extent();
-                                        node.classed("selected", function(d) {
-
-                                            //     return d.selected = d.previouslySelected ^
-                                            //         (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]));
-                                            // });
-                                            if (d.previouslySelected ^ (xScale(extent[0][0]) <= xMap(d) && xMap(d) < xScale(extent[1][0]) && yScale(extent[0][1]) >= yMap(d) && yMap(d) > yScale(extent[1][1]))) {
-
-                                                if (scope.dimsum.selectionSpace.indexOf(d.id) == -1) {
-                                                    scope.dimsum.selectionSpace.push(d.id);
-                                                }
-                                            }
-
-                                        });
-                                        scope.$apply();
-                                        scope.handleDimsumChange(scope.dimsum);
-
-
-                                    })
-                                    .on("brushend", function() {
-                                        d3.event.target.clear();
-                                        d3.select(this).call(d3.event.target);
-                                    }));
 
 
                         };
