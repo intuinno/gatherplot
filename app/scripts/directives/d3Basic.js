@@ -1341,15 +1341,29 @@
 
                         };
 
+                        var removeZoomMode = function() {
+
+                            var zoom = d3.behavior.zoom()
+                                .x(xScale)
+                                .y(yScale)
+                                .scaleExtent([1, 100])
+                                .on("zoom", null);
+
+                            svgGroup.call(zoom);
+                        };
+
                         var configBrush = function() {
 
-                            brush = brushGroup.append("g")
+                            removeZoomMode()
+
+                            brush = svgGroup.append("g")
                                 .datum(function() {
                                     return {
                                         selected: false,
                                         previouslySelected: false
                                     };
                                 })
+                                .attr("transform", "translate(" + scope.context.translate + ")scale(" + scope.context.scale + ")")
                                 .attr("class", "brush")
                                 .call(d3.svg.brush()
                                     .x(xScale)
