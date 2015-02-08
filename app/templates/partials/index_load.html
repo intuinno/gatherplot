@@ -39,9 +39,14 @@
 		</h5>
 
 
+    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}" context="context" comment="isComment"></div>
 
-    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" context="context" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+    <div ng-show="isCommentShowing" class="chart-title">
+        <h4>
+    	{{loadedCommentText}}
 
+    </h4>
+    </div>
 
 
 
@@ -86,7 +91,9 @@
 
     <div ng-repeat="comment in comments" class="row cmt">
         <div class="col-md-12">
-            <p>{{ comment.text }}</p>
+            <a ng-click="loadComment( comment )">
+                <p>{{ comment.text }}</p>
+            </a>
             <p class="author">posted by
                 <a ng-href="#/users/{{ comment.creatorUID }}">
           {{ comment.creator }}
@@ -107,7 +114,7 @@
         </form>
     </div>
 
-    {{nomaConfig.translate}} <br>
-    {{nomaConfig.scale}}
+    {{nomaConfig.translate}}
+    <br> {{nomaConfig.scale}}
 
 </div>

@@ -64115,7 +64115,7 @@ angular.module('ui.sortable', [])
                         templateUrl: '../templates/partials/account.html',
                         controller: 'AccountCtrl'
                     })
-                    .when('/load/:csvKey', {
+                    .when('/load/:csvKey/:comment?', {
                         templateUrl: '../templates/partials/index_load.html',
                         controller: 'LoadCtrl'
                     })
@@ -67548,6 +67548,9 @@ angular.module('myApp.controllers')
             function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin) {
 
                 $scope.comments = Chart.comments($routeParams.csvKey);
+                $scope.chartId = $routeParams.csvKey;
+
+                $scope.isCommentShowing = true;
 
                 simpleLogin.auth.$onAuth(function(authData) {
 
@@ -67559,16 +67562,31 @@ angular.module('myApp.controllers')
                     }
                 });
 
-                $scope.user = simpleLogin.user;
-                $scope.signedIn = !!simpleLogin.user;
-                $scope.context = {};
-                $scope.context.translate = [0,0];
-                $scope.context.scale = 1;
-                $scope.dimsumData = {};
+
+
 
                 var profile;
 
                 // loadProfile(simpleLogin.user);
+
+                $scope.loadComment = function(comment) {
+
+                    // comment.config.comment = true;
+
+                    
+                    $scope.nomaConfig = comment.config;
+                    $scope.context = comment.context;
+                    $scope.dimsum = comment.dimsum;
+
+                    $scope.isComment = true;
+                    $scope.loadedCommentText = comment.text;
+                    $scope.loadedCommentTextCreatorName = comment.creator;
+                    $scope.loadedCommentTextCreatorUID = comment.creatorUID;
+
+
+                    // $scope.$apply();
+
+                };
 
                 function loadProfile(user) {
                     if (profile) {
@@ -67585,7 +67603,6 @@ angular.module('myApp.controllers')
                     }
 
                     var context = angular.copy($scope.nomaConfig);
-                    context.dimSetting = [];
 
                     var comment = {
                         text: $scope.commentText,
@@ -67593,15 +67610,13 @@ angular.module('myApp.controllers')
                         creatorUID: $scope.user.uid,
                         config: context,
                         context: $scope.context,
-                        chartId: $routeParams.csvKey
+                        chartId: $routeParams.csvKey,
+                        dimsum: $scope.dimsum
                     };
 
                     $scope.comments.$add(comment);
 
                     $scope.commentText = '';
-
-
-
 
                 };
 
@@ -67610,17 +67625,16 @@ angular.module('myApp.controllers')
                 $scope.nomaConfig = {
 
                 };
-
+                $scope.loadedCommentText = '';
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
 
-                $scope.nomaConfig.translate = [];
-                $scope.nomaConfig.scale = 1;
-
+                $scope.isComment = true;
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
+                $scope.nomaConfig.comment = false;
                 $scope.nomaShapeRendering = 'auto';
                 $scope.nomaConfig.isGather = 'scatter';
                 $scope.nomaConfig.relativeModes = [false, true];
@@ -67634,11 +67648,20 @@ angular.module('myApp.controllers')
                 $scope.nomaConfig.lens = "noLens";
                 $scope.isURLInput = false;
 
+                $scope.user = simpleLogin.user;
+                $scope.signedIn = !!simpleLogin.user;
+                $scope.context = {};
+                $scope.context.translate = [0, 0];
+                $scope.context.scale = 1;
+                $scope.dimsumData = {};
+                $scope.dimsum = {};
+                $scope.dimsum.selectionSpace = [];
+
                 $scope.$watch(function() {
                     return $scope.nomaConfig.isGather;
                 }, function(newVals, oldVals) {
                     // debugger;
-                    if (newVals == 'scatter') {
+                    if (newVals === 'scatter') {
 
                         $scope.isScatter = true;
                     } else {
@@ -67650,7 +67673,7 @@ angular.module('myApp.controllers')
                 $scope.init = function() {
 
 
-                    if ($routeParams.csvKey == 'new') {
+                    if ($routeParams.csvKey === 'new') {
 
                         $scope.isURLInput = true;
                     } else {
@@ -67682,6 +67705,11 @@ angular.module('myApp.controllers')
                             $scope.uploader = uploader.name;
 
                         });
+
+                        if ($routeParams.comment) {
+
+                            console.log
+                        }
                     });
 
                 };

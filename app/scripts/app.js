@@ -56,7 +56,7 @@
                         templateUrl: '../templates/partials/account.html',
                         controller: 'AccountCtrl'
                     })
-                    .when('/load/:csvKey', {
+                    .when('/load/:csvKey/:comment?', {
                         templateUrl: '../templates/partials/index_load.html',
                         controller: 'LoadCtrl'
                     })

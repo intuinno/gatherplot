@@ -13,9 +13,10 @@
                         round: "=",
                         xdim: "@",
                         ydim: "@",
-                        context: "=",
                         shapeRenderingMode: "=",
                         dimsum: "=",
+                        context: "=",
+                        comment: "=",
                         onClick: '&'
                     },
 
@@ -24,6 +25,7 @@
                         //Constants and Setting Environment variables 
 
                         var margin = 80;
+                        var zoom;
 
 
                         var maxDotSize = 5;
@@ -59,7 +61,7 @@
                         var marginClusterRatio = 0.1; //Ratio of margin in the cluster 
                         var node;
 
-                        scope.config.dimSetting = {};
+                        var dimSetting = {};
 
                         var svg, svgGroup, nodeGroup, brushGroup, xAxisNodes, yAxisNodes;
                         var maskGroup;
@@ -185,6 +187,14 @@
                         }, false);
 
                         scope.$watch(function() {
+                            return scope.comment;
+                        }, function(newVals, oldVals) {
+                            if (newVals === true) {
+                                return scope.handleConfigChange(renderData, scope.config);
+                            }
+                        }, false);
+
+                        scope.$watch(function() {
                             return scope.shapeRenderingMode;
                         }, function(newVals, oldVals) {
                             return scope.renderShapeRenderingChange(newVals);
@@ -197,6 +207,8 @@
                             return scope.handleDimsumChange(newVals);
 
                         }, true);
+
+
 
                         scope.handleDimsumChange = function(newDimsum) {
 
@@ -346,7 +358,7 @@
                             }
 
 
-                            scope.config.dimSetting = {};
+                            dimSetting = {};
 
 
                         };
@@ -356,8 +368,8 @@
                             for (var i = 0; i < scope.config.dims.length; i++) {
 
                                 var dim = scope.config.dims[i];
-                                scope.config.dimSetting[dim] = {};
-                                scope.config.dimSetting[dim].dimType = identifyDimDataType(dim);
+                                dimSetting[dim] = {};
+                                dimSetting[dim].dimType = identifyDimDataType(dim);
                                 prepareDimSettingKeys(dim);
 
                             }
@@ -366,7 +378,7 @@
 
                         var prepareDimSettingKeys = function(dim) {
 
-                            var currentDimSetting = scope.config.dimSetting[dim];
+                            var currentDimSetting = dimSetting[dim];
 
                             if (currentDimSetting.dimType === 'ordinal') {
 
@@ -387,7 +399,7 @@
 
                         var doBinningAndSetKeys = function(dimName, numBin) {
 
-                            var currentDimSetting = scope.config.dimSetting[dimName];
+                            var currentDimSetting = dimSetting[dimName];
 
                             currentDimSetting.binnedData = scope.data.map(binningFunc(dimName, numBin));
 
@@ -417,9 +429,9 @@
                             });
 
 
-                            scope.config.dimSetting[dimName].halfOfBinDistance = (decodingBinScale(1) - decodingBinScale(0)) / 2;
+                            dimSetting[dimName].halfOfBinDistance = (decodingBinScale(1) - decodingBinScale(0)) / 2;
 
-                            scope.config.dimSetting[dimName].keyValue = initializeKeyValueObject(binKeys);
+                            dimSetting[dimName].keyValue = initializeKeyValueObject(binKeys);
 
                             return function(d) {
 
@@ -446,12 +458,12 @@
                                 return d.key;
                             });
 
-                            if (scope.config.dimSetting[dim].dimType === 'semiOrdinal') {
+                            if (dimSetting[dim].dimType === 'semiOrdinal') {
 
                                 keyValue.sort();
                             }
 
-                            scope.config.dimSetting[dim].keyValue = initializeKeyValueObject(keyValue);
+                            dimSetting[dim].keyValue = initializeKeyValueObject(keyValue);
 
 
                         };
@@ -538,7 +550,7 @@
                             }
 
 
-                            return d3.map(scope.config.dimSetting[dim].keyValue).keys();
+                            return d3.map(dimSetting[dim].keyValue).keys();
                         };
 
 
@@ -1402,12 +1414,26 @@
 
 
                             d3.select("#toolbarSelect").classed("active", true);
-
-
                             d3.select("#toolbarPanZoom").classed("active", false);
 
 
 
+
+                        };
+
+                        var zoomUsingContext = function() {
+
+
+                            zoom.translate(scope.context.translate);
+                            zoom.scale(scope.context.scale);
+
+                            svgGroup.select(".x.axis").call(xAxis);
+                            svgGroup.select(".y.axis").call(yAxis);
+
+                            nodeGroup.attr("transform", "translate(" + scope.context.translate + ")scale(" + scope.context.scale + ")");
+
+
+                            scope.comment = false;
 
                         };
 
@@ -1422,7 +1448,7 @@
 
                             }
 
-                            var zoom = d3.behavior.zoom()
+                            zoom = d3.behavior.zoom()
                                 .x(xScale)
                                 .y(yScale)
                                 .scaleExtent([1, 100])
@@ -1436,13 +1462,18 @@
 
                                 // scope.$apply();
 
+                                // scope.comment = false;
+
+
+                                // zoom.x(xScale).y(yScale);
+
                                 svgGroup.select(".x.axis").call(xAxis);
                                 svgGroup.select(".y.axis").call(yAxis);
 
                                 scope.context.translate = d3.event.translate;
                                 scope.context.scale = d3.event.scale;
-
-
+                                scope.context.xDomain = zoom.x().domain();
+                                scope.context.yDomain = zoom.y().domain();
 
                                 nodeGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 
@@ -1455,8 +1486,6 @@
                                 svgGroup.select(".x.axis").call(xAxis);
                                 svgGroup.select(".y.axis").call(yAxis);
 
-
-
                             }
 
                             setClipPathForAxes();
@@ -1465,9 +1494,7 @@
 
                             d3.select("#toolbarSelect").classed("active", false);
 
-
                             d3.select("#toolbarPanZoom").classed("active", true);
-
 
                             function reset() {
 
@@ -1512,12 +1539,28 @@
                                 });
                             }
 
+                            if (scope.comment === true) {
 
+                                zoomUsingContext();
 
+                            } else {
+
+                                scope.context.translate = [0, 0];
+                                scope.context.scale = 1;
+                                scope.context.xDomain = xScale.domain();
+                                scope.context.yDomain = yScale.domain();
+
+                            }
 
                         };
 
+
                         var resetSelection = function() {
+
+                            if (!scope.dimsum) {
+                                return;
+
+                            }
 
                             scope.dimsum.selectionSpace = [];
                             scope.handleDimsumChange(scope.dimsum);
@@ -1686,7 +1729,7 @@
                                 return [''];
                             }
 
-                            return scope.config.dimSetting[dim].keyValue;
+                            return dimSetting[dim].keyValue;
                         };
 
                         var getCalculatedPositions = function(dim) {
@@ -1746,7 +1789,7 @@
 
                             if (scope.config.isGather === 'gather') {
 
-                                if (scope.config.dimSetting[dim].dimType === 'ordinal') {
+                                if (dimSetting[dim].dimType === 'ordinal') {
 
                                     return getExtentFromOriginalExtent(dim);
 
@@ -1755,11 +1798,11 @@
                                     return getExtentFromCalculatedPoints(dim);
 
                                 }
-                            } else if (scope.config.dimSetting[dim].dimType === 'ordinal') {
+                            } else if (dimSetting[dim].dimType === 'ordinal') {
 
                                 return getExtentFromOriginalExtent(dim);
 
-                            } else if (scope.config.dimSetting[dim].dimType === 'semiOrdinal') {
+                            } else if (dimSetting[dim].dimType === 'semiOrdinal') {
 
                                 return getExtentFromSortedID(dim);
 
@@ -1781,7 +1824,7 @@
 
                             } else {
 
-                                return scope.config.dimSetting[dim].dimType;
+                                return dimSetting[dim].dimType;
                             }
                         };
 
@@ -1839,9 +1882,9 @@
                                 return;
                             }
 
-                            var keyValue = scope.config.dimSetting[dim].keyValue;
+                            var keyValue = dimSetting[dim].keyValue;
                             var increment;
-                            var keyLength = d3.map(scope.config.dimSetting[dim].keyValue).values().length;
+                            var keyLength = d3.map(dimSetting[dim].keyValue).values().length;
 
                             var key = getKeyFromIndex(dim, keyLength - 1);
 
@@ -2023,11 +2066,11 @@
                                 };
                             }
 
-                            if (scope.config.dimSetting[dim].isBinned) {
+                            if (dimSetting[dim].isBinned) {
 
                                 return function(d) {
 
-                                    return +scope.config.dimSetting[dim].binnedData[d.id];
+                                    return +dimSetting[dim].binnedData[d.id];
                                 };
 
 
@@ -2308,7 +2351,7 @@
                                 return;
                             }
 
-                            var keyValue = scope.config.dimSetting[dim].keyValue;
+                            var keyValue = dimSetting[dim].keyValue;
                             var increment;
                             var previousIncrement;
 
@@ -2363,7 +2406,7 @@
                         var calculatePositionOfClusterForBinnedGather = function(dim) {
 
 
-                            var keyValue = scope.config.dimSetting[dim].keyValue;
+                            var keyValue = dimSetting[dim].keyValue;
 
                             var keys = Object.keys(keyValue);
 
@@ -2390,7 +2433,7 @@
                                 };
                             }
 
-                            var dimType = scope.config.dimSetting[dimName].dimType;
+                            var dimType = dimSetting[dimName].dimType;
                             var dimNameClosure = dimName;
 
                             // Follow the dimValue branch logic
@@ -2400,7 +2443,7 @@
                             // ordinal           orig          orig           calculatedIDFromBin
 
                             var calculatedPositionValueFunc = function(d) {
-                                return scope.config.dimSetting[dimNameClosure].keyValue[d[dimNameClosure]].calculatedPosition;
+                                return dimSetting[dimNameClosure].keyValue[d[dimNameClosure]].calculatedPosition;
                             };
 
                             var origValueFunc = function(d) {
@@ -2409,19 +2452,19 @@
                             };
 
                             var calculatedPositionWithBinValueFunc = function(d) {
-                                var binKey = +scope.config.dimSetting[dimNameClosure].binnedData[d.id];
-                                if (!scope.config.dimSetting[dimNameClosure].keyValue[binKey]) {
+                                var binKey = +dimSetting[dimNameClosure].binnedData[d.id];
+                                if (!dimSetting[dimNameClosure].keyValue[binKey]) {
 
                                     console.log(binKey);
                                 }
 
-                                var positionWithBinKey = scope.config.dimSetting[dimNameClosure].keyValue[binKey].calculatedPosition;
+                                var positionWithBinKey = dimSetting[dimNameClosure].keyValue[binKey].calculatedPosition;
 
                                 return +positionWithBinKey;
                             };
 
                             var sortedPositionValueFunc = function(d) {
-                                return scope.config.dimSetting[dimNameClosure].keyValue[d[dimNameClosure]].sortedID;
+                                return dimSetting[dimNameClosure].keyValue[d[dimNameClosure]].sortedID;
                             };
 
                             if (dimType === 'nominal') {
@@ -2662,7 +2705,7 @@
 
                                 // debugger;
 
-                                if (isDimTypeNumerical(scope.config.dimSetting[colorDim].dimType)) {
+                                if (isDimTypeNumerical(dimSetting[colorDim].dimType)) {
 
                                     return numericalDimSortFunc(colorDim);
 
@@ -2679,11 +2722,11 @@
 
                         var nominalDimSortFunc = function(dim) {
 
-                            var dimSetting = scope.config.dimSetting[dim];
+                            var tempDimSetting = dimSetting[dim];
 
                             return function(a, b) {
                                 var myDim = dim;
-                                return dimSetting.keyValue[a[myDim]].sortedID - dimSetting.keyValue[b[myDim]].sortedID;
+                                return tempDimSetting.keyValue[a[myDim]].sortedID - tempDimSetting.keyValue[b[myDim]].sortedID;
                             };
 
                         };
@@ -2853,7 +2896,7 @@
                                 return false;
                             }
 
-                            return (scope.config.dimSetting[dim].keyValue[key].isMinimized);
+                            return (dimSetting[dim].keyValue[key].isMinimized);
                         };
 
                         var makeZeroOffset = function(cluster, offset) {
@@ -3238,7 +3281,7 @@
 
 
 
-                            if (scope.config.dimSetting[scope.config.colorDim].dimType === 'ordinal') {
+                            if (dimSetting[scope.config.colorDim].dimType === 'ordinal') {
 
                                 var colorDomain = d3.extent(scope.data, function(d) {
                                     return +d[scope.config.colorDim];
@@ -3356,17 +3399,17 @@
                                 return function(d) {
                                     return '';
                                 };
-                            } else if ((scope.config.dimSetting[dimName].dimType === 'ordinal')) {
+                            } else if ((dimSetting[dimName].dimType === 'ordinal')) {
 
                                 return function(d, i) {
 
                                     return +d;
                                 };
-                            } else if ((scope.config.dimSetting[dimName].dimType === 'semiOrdinal')) {
+                            } else if ((dimSetting[dimName].dimType === 'semiOrdinal')) {
 
                                 return function(d, i) {
 
-                                    return d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i];
+                                    return d3.map(dimSetting[dimName].keyValue).keys()[i];
                                 };
                             } else {
 
@@ -3389,21 +3432,21 @@
                                 return function(d) {
                                     return '';
                                 };
-                            } else if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
+                            } else if (dimSetting[dimName].dimType === 'ordinal') {
 
                                 var binDistanceFormatter = d3.format("3,.1f");
 
                                 return function(d, i) {
 
-                                    var binValue = d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i];
+                                    var binValue = d3.map(dimSetting[dimName].keyValue).keys()[i];
 
-                                    return binDistanceFormatter(+binValue) + '\u00B1' + binDistanceFormatter(+scope.config.dimSetting[dimName].halfOfBinDistance);
+                                    return binDistanceFormatter(+binValue) + '\u00B1' + binDistanceFormatter(+dimSetting[dimName].halfOfBinDistance);
                                 };
-                            } else if (scope.config.dimSetting[dimName].dimType === 'semiOrdinal') {
+                            } else if (dimSetting[dimName].dimType === 'semiOrdinal') {
 
                                 return function(d, i) {
 
-                                    return d3.map(scope.config.dimSetting[dimName].keyValue).keys()[i];
+                                    return d3.map(dimSetting[dimName].keyValue).keys()[i];
                                 };
                             } else {
 
@@ -3421,7 +3464,7 @@
 
                         var labelGeneratorForOrdinalGather = function(dim) {
 
-                            var keyValue = scope.config.dimSetting[dim].keyValue;
+                            var keyValue = dimSetting[dim].keyValue;
 
                             var keys = Object.keys(keyValue)
                                 .sort(function(a, b) {
@@ -3444,7 +3487,7 @@
 
                             if (!dimName) {
                                 return 0;
-                            } else if (scope.config.dimSetting[dimName].dimType === 'ordinal') {
+                            } else if (dimSetting[dimName].dimType === 'ordinal') {
 
                                 return 8;
 
@@ -4155,9 +4198,9 @@
                         var toggleMinimizeCluster = function(dim, i) {
 
 
-                            var key = d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
+                            var key = d3.map(dimSetting[dim].keyValue).values()[i].keyValue;
 
-                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+                            var keyObject = dimSetting[dim].keyValue[key];
 
                             keyObject.isMinimized = !keyObject.isMinimized;
 
@@ -4168,13 +4211,13 @@
                         var toggleMaximizeCluster = function(dim, i) {
 
 
-                            var key = d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
+                            var key = d3.map(dimSetting[dim].keyValue).values()[i].keyValue;
 
-                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+                            var keyObject = dimSetting[dim].keyValue[key];
 
                             keyObject.isMaximized = !keyObject.isMaximized;
 
-                            var keyValue = d3.map(scope.config.dimSetting[dim].keyValue).values();
+                            var keyValue = d3.map(dimSetting[dim].keyValue).values();
 
 
                             if (keyObject.isMaximized === true) {
@@ -4341,7 +4384,7 @@
 
                         var lengthOfCluster = function(dim, key, scale) {
 
-                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+                            var keyObject = dimSetting[dim].keyValue[key];
 
                             if (keyObject.isMinimized) {
 
@@ -4358,7 +4401,7 @@
 
                         var lengthOfClusterIncludingMargin = function(dim, key, scale) {
 
-                            var keyObject = scope.config.dimSetting[dim].keyValue[key];
+                            var keyObject = dimSetting[dim].keyValue[key];
 
                             if (keyObject.isMinimized) {
 
@@ -4377,18 +4420,18 @@
 
                         var getKeyFromIndex = function(dim, i) {
 
-                            if (!scope.config.dimSetting[dim].keyValue) {
+                            if (!dimSetting[dim].keyValue) {
 
                                 debugger;
                                 console.log(dim);
                             }
-                            if (!d3.map(scope.config.dimSetting[dim].keyValue).values()[i]) {
+                            if (!d3.map(dimSetting[dim].keyValue).values()[i]) {
 
                                 debugger;
                                 console.log(dim);
                             }
 
-                            return d3.map(scope.config.dimSetting[dim].keyValue).values()[i].keyValue;
+                            return d3.map(dimSetting[dim].keyValue).values()[i].keyValue;
 
                         };
 
@@ -4427,7 +4470,7 @@
                                 return;
                             }
 
-                            var currentDimSetting = scope.config.dimSetting[scope.config.colorDim];
+                            var currentDimSetting = dimSetting[scope.config.colorDim];
 
                             if (currentDimSetting.dimType === 'ordinal') {
 
