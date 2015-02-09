@@ -5,7 +5,7 @@
         .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin',
             function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin) {
 
-                $scope.comments = Chart.comments($routeParams.csvKey);
+
                 $scope.chartId = $routeParams.csvKey;
 
                 $scope.isCommentShowing = true;
@@ -20,6 +20,38 @@
                     }
                 });
 
+                var handleCommentsURL = function() {
+
+                    var commentsArray = Chart.comments($routeParams.csvKey);
+
+                    commentsArray.$loaded().then(function() {
+
+                        $scope.comments = commentsArray;
+
+                        var locationSearch = $location.search();
+
+                        if (locationSearch.comment) {
+
+                            console.log(locationSearch.comment);
+
+                            var pos = commentsArray.map(function(d) {return d.$id;}).indexOf(locationSearch.comment);
+
+                            $scope.loadComment(commentsArray[pos]);
+
+                        }
+
+
+                    }, function(error) {
+                        console.log("Error:", error);
+                        $scope.mesage = error;
+                    }).then(function() {
+
+
+                    });
+
+
+                };
+
 
 
 
@@ -31,7 +63,7 @@
 
                     // comment.config.comment = true;
 
-                    
+
                     $scope.nomaConfig = comment.config;
                     $scope.context = comment.context;
                     $scope.dimsum = comment.dimsum;
@@ -40,11 +72,16 @@
                     $scope.loadedCommentText = comment.text;
                     $scope.loadedCommentTextCreatorName = comment.creator;
                     $scope.loadedCommentTextCreatorUID = comment.creatorUID;
+                    $location.search({
+                        comment: comment.$id
+                    });
 
 
                     // $scope.$apply();
 
                 };
+
+
 
                 function loadProfile(user) {
                     if (profile) {
@@ -131,14 +168,10 @@
                 $scope.init = function() {
 
 
-                    if ($routeParams.csvKey === 'new') {
 
-                        $scope.isURLInput = true;
-                    } else {
-                        $scope.isURLInput = false;
-                        $scope.getUrlFromKey($routeParams.csvKey);
+                    $scope.isURLInput = false;
+                    $scope.getUrlFromKey($routeParams.csvKey);
 
-                    }
 
                 };
 
@@ -156,6 +189,8 @@
                         $scope.isURLInput = true;
                     }).then(function() {
 
+                        var locationSearch = $location.search();
+
                         var uploader = $firebase(new Firebase(FBURL + '/users/' + obj.uploader)).$asObject();
 
                         uploader.$loaded().then(function() {
@@ -164,9 +199,10 @@
 
                         });
 
-                        if ($routeParams.comment) {
+                        if (locationSearch.comment) {
 
-                            console.log
+                            console.log(locationSearch.comment);
+
                         }
                     });
 
@@ -220,6 +256,8 @@
                             $scope.nomaConfig.relativeMode = 'absolute';
 
                         }
+
+                        handleCommentsURL();
                         $scope.$apply();
                     });
 

@@ -58,7 +58,8 @@
                     })
                     .when('/load/:csvKey/:comment?', {
                         templateUrl: '../templates/partials/index_load.html',
-                        controller: 'LoadCtrl'
+                        controller: 'LoadCtrl',
+                        reloadOnSearch: false
                     })
                     .whenAuthenticated('/upload', {
                         templateUrl: '../templates/partials/index_upload.html',
