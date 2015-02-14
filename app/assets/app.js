@@ -64062,34 +64062,115 @@ angular.module('ui.sortable', [])
 
     // create the angular app
     angular.module('myApp', [
-        'myApp.controllers',
-        'myApp.directives',
-        'ngRoute'
-    ]).config(['$routeProvider', 
-        function($routeProvider) {
-            $routeProvider.
-                when('/demo', {
-                    templateUrl: '../templates/partials/index_full.html',
-                    controller: 'DemoCtrl'
-                }).
-                when('/show/:dataset/:xDim/:yDim/:colorDim/:relativeMode', {
-                    templateUrl: '../templates/partials/index_simple.html',
-                    controller: 'ShowCtrl'
-                }).
-                otherwise({
-                    redirectTo: '/demo'
+            'myApp.controllers',
+            'myApp.directives',
+            'myApp.services',
+            'ngRoute',
+            'firebase',
+            'firebase.utils',
+            'simpleLogin'
+        ]).config(['$routeProvider', 'SECURED_ROUTES',
+            function($routeProvider, SECURED_ROUTES) {
+
+                $routeProvider.whenAuthenticated = function(path, route) {
+
+                    route.resolve = route.resolve || {};
+
+                    route.resolve.user = ['authRequired', function(authRequired) {
+                        return authRequired();
+                    }];
+
+                    $routeProvider.when(path, route);
+                    SECURED_ROUTES[path] = true;
+
+                    return $routeProvider;
+                };
+
+            }
+        ])
+        .config(['$routeProvider',
+            function($routeProvider) {
+                $routeProvider
+                    .when('/', {
+                        templateUrl: '../templates/partials/index_full.html',
+                        controller: 'DemoCtrl'
+                    })
+                    .when('/demo', {
+                        templateUrl: '../templates/partials/index_full.html',
+                        controller: 'DemoCtrl'
+                    })
+                    .when('/show/:dataset/:xDim/:yDim/:colorDim/:relativeMode', {
+                        templateUrl: '../templates/partials/index_simple.html',
+                        controller: 'ShowCtrl'
+                    })
+                    .when('/dropbox/:dropbox_key/:dropbox_filename', {
+                        templateUrl: '../templates/partials/index_dropbox.html',
+                        controller: 'DropboxCtrl'
+                    })
+                    .when('/login', {
+                        templateUrl: '../templates/partials/login.html',
+                        controller: 'LoginCtrl'
+                    })
+                    .whenAuthenticated('/account', {
+                        templateUrl: '../templates/partials/account.html',
+                        controller: 'AccountCtrl'
+                    })
+                    .when('/load/:csvKey/:comment?', {
+                        templateUrl: '../templates/partials/index_load.html',
+                        controller: 'LoadCtrl',
+                        reloadOnSearch: false
+                    })
+                    .whenAuthenticated('/upload', {
+                        templateUrl: '../templates/partials/index_upload.html',
+                        controller: 'UploadCtrl'
+                    })
+                    .when('/browse', {
+                        templateUrl: '../templates/partials/browse.html',
+                        controller: 'BrowseCtrl'
+                    })
+                    .otherwise({
+                        redirectTo: '/'
+                    });
+
+            }
+        ])
+        .run(['$rootScope', '$location', 'simpleLogin', 'SECURED_ROUTES', 'loginRedirectPath',
+            function($rootScope, $location, simpleLogin, SECURED_ROUTES, loginRedirectPath) {
+
+                simpleLogin.watch(check, $rootScope);
+
+                $rootScope.$on('$routeChangeError', function(e, next, prev, err) {
+                    // if (angular.isObject(err) && err.authRequired) {
+                        if (err === 'AUTH_REQUIRED') { 
+                        $location.path(loginRedirectPath);
+                    }
                 });
 
+                function check(user) {
+                    if (!user && authRequired($location.path())) {
+                        $location.path(loginRedirectPath).replace();
+                    }
+                }
 
-        }]);;
+                function authRequired(path) {
+                    return SECURED_ROUTES.hasOwnProperty(path);
+                }
+
+
+            }
+        ])
+        .constant('SECURED_ROUTES', {});
 
     // setup dependency injection
     angular.module('myApp.controllers', []);
-    angular.module('myApp.directives', [ 'ui.bootstrap', 'ui.sortable']);
+    angular.module('myApp.directives', ['ui.bootstrap', 'ui.sortable']);
 
-    
+    angular.module('myApp.services', ['firebase', 'firebase.utils', 'firebase.config']);
 
-}());;(function() {
+
+
+}());
+;(function() {
     'use strict';
 
     // create the angular app
@@ -64103,7 +64184,45 @@ angular.module('ui.sortable', [])
     angular.module('gatherLensApp.directives', [ 'ui.bootstrap', 'ui.sortable']);
 
 
-}());;(function() {
+}());;'use strict';
+
+/**
+ * @ngdoc service
+ * @name yearofmooAngularjsSeedRepoApp.chart
+ * @description
+ * # chart
+ * Factory in the yearofmooAngularjsSeedRepoApp.
+ */
+angular.module('myApp.services')
+  .factory('Chart', function ($firebase, FBURL) {
+    // Service logic
+    // ...
+    var ref = new Firebase(FBURL);
+    var charts = $firebase(ref.child('csv')).$asArray();
+
+    var Chart = {
+      all: charts, 
+
+      create: function(chart) {
+        return charts.$add(chart).then(function(chartRef) {
+          $firebase(ref.child('user_charts').child(chart.uploader)).$push(chartRef.name());
+          return chartRef;
+        });
+      }, 
+      get: function(chartId) {
+        return $firebase(ref.child('csv').child(chartId)).$asObject();
+      },
+      delete: function(chart) {
+        return charts.$remove(chart);
+      },
+      comments: function(chartId) {
+        return $firebase(ref.child('comments').child(chartId)).$asArray();
+      }
+    };
+    // Public API here
+    return Chart;
+  });
+;(function() {
   'use strict';
 
   angular.module('myApp.controllers')
@@ -64135,6 +64254,189 @@ angular.module('ui.sortable', [])
     'use strict';
 
     angular.module('myApp.controllers')
+        .controller('ShowCtrl', ['$scope', '$routeParams',
+            function($scope, $routeParams) {
+
+                $scope.message = "Test";
+
+                $scope.nomaConfig = {
+
+                };
+
+                $scope.loadedData = 'cars';
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
+                $scope.onlyNumbers = /^\d+$/;
+
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = false;
+                $scope.nomaShapeRendering = 'auto';
+                $scope.nomaConfig.isGather = 'scatter';
+                $scope.nomaConfig.relativeModes = [false, true];
+                $scope.nomaConfig.relativeMode = 'absolute';
+                $scope.nomaConfig.binSize = 10;
+                $scope.nomaConfig.matrixMode = false;
+                $scope.nomaConfig.xDim;
+                $scope.nomaConfig.yDim;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+
+                $scope.$watch(function() {
+                    return $scope.nomaConfig.isGather;
+                }, function(newVals, oldVals) {
+                    // debugger;
+                    if (newVals == 'scatter') {
+
+                        $scope.isScatter = true;
+                    } else {
+
+                        $scope.isScatter = false;
+                    }
+                }, true);
+
+                $scope.changeActiveDataCars = function() {
+
+                    $scope.activeData = 'Cars Data';
+
+                    d3.csv('data/articlesForGatherplot.csv', function(error, tdata) {
+                        var count = 0;
+
+                        tdata.map(function(d) {
+                            d.id = count;
+                            count += 1;
+                        });
+
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+                        $scope.nomaConfig.xDim = '';
+                        $scope.nomaConfig.yDim = '';
+                        $scope.nomaConfig.colorDim = '';
+
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.isCarsOpen = true;
+                        $scope.nomaConfig.relativeMode = 'absolute';
+
+                        $scope.dataset = $routeParams.dataset;
+                        $scope.nomaConfig.xDim = $routeParams.xDim;
+                        $scope.nomaConfig.yDim = $routeParams.yDim;
+                        $scope.nomaConfig.colorDim = $routeParams.colorDim;
+                        $scope.nomaConfig.relativeMode = $routeParams.relativeMode;
+
+                        $scope.$apply();
+
+                    });
+
+
+
+                };
+
+
+                $scope.changeActiveDataCars()
+
+
+
+
+            }
+        ]);
+
+}());
+;'use strict';
+/**
+ * @ngdoc function
+ * @name muck2App.controller:AccountCtrl
+ * @description
+ * # AccountCtrl
+ * Provides rudimentary account management functions.
+ */
+angular.module('myApp.controllers')
+  .controller('AccountCtrl', function ($scope, user, simpleLogin, fbutil, $timeout) {
+    $scope.user = user;
+    $scope.logout = simpleLogin.logout;
+    $scope.messages = [];
+    var profile;
+    loadProfile(user);
+
+    $scope.changePassword = function(oldPass, newPass, confirm) {
+      $scope.err = null;
+      if( !oldPass || !newPass ) {
+        error('Please enter all fields');
+      }
+      else if( newPass !== confirm ) {
+        error('Passwords do not match');
+      }
+      else {
+        simpleLogin.changePassword(profile.email, oldPass, newPass)
+          .then(function() {
+            success('Password changed');
+          }, error);
+      }
+    };
+
+    $scope.changeEmail = function(pass, newEmail) {
+      $scope.err = null;
+      simpleLogin.changeEmail(pass, newEmail, profile.email)
+        .then(function() {
+          profile.email = newEmail;
+          profile.$save();
+          success('Email changed');
+        })
+        .catch(error);
+    };
+
+    function error(err) {
+      alert(err, 'danger');
+    }
+
+    function success(msg) {
+      alert(msg, 'success');
+    }
+
+    function alert(msg, type) {
+      var obj = {text: msg+'', type: type};
+      $scope.messages.unshift(obj);
+      $timeout(function() {
+        $scope.messages.splice($scope.messages.indexOf(obj), 1);
+      }, 10000);
+    }
+
+    function loadProfile(user) {
+      if( profile ) {
+        profile.$destroy();
+      }
+      profile = fbutil.syncObject('users/'+user.uid);
+      profile.$bindTo($scope, 'profile');
+    }
+  });
+;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('BrowseCtrl', ['$scope', '$location', 'Chart', 'simpleLogin',
+            function($scope, $location, Chart, simpleLogin) {
+             
+                $scope.charts = Chart.all;
+
+                $scope.user = simpleLogin.user;
+
+                $scope.deleteChart = function(chart) {
+                    Chart.delete(chart);
+                };
+
+            }
+
+
+        ]);
+
+}());
+;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
         .controller('DemoCtrl', ['$scope', '$q','$window',
             function($scope, $q, $window) {
 
@@ -64150,6 +64452,12 @@ angular.module('ui.sortable', [])
                 $scope.loadedData = 'cars';
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
+
+                $scope.context = {};
+                $scope.context.translate = [0,0];
+                $scope.context.scale = 1;
+                $scope.dimsum = {};
+                $scope.dimsum.selectionSpace=[];
 
 
                 $scope.nomaRound = true;
@@ -67237,6 +67545,334 @@ angular.module('ui.sortable', [])
     'use strict';
 
     angular.module('myApp.controllers')
+        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin',
+            function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin) {
+
+
+                $scope.chartId = $routeParams.csvKey;
+
+                $scope.isCommentShowing = true;
+
+                simpleLogin.auth.$onAuth(function(authData) {
+
+                    $scope.user = authData;
+                    $scope.signedIn = !!authData;
+
+                    if (authData) {
+                        loadProfile(authData)
+                    }
+                });
+
+                var handleCommentsURL = function() {
+
+                    var commentsArray = Chart.comments($routeParams.csvKey);
+
+                    commentsArray.$loaded().then(function() {
+
+                        $scope.comments = commentsArray;
+
+                        var locationSearch = $location.search();
+
+                        if (locationSearch.comment) {
+
+                            console.log(locationSearch.comment);
+
+                            var pos = commentsArray.map(function(d) {return d.$id;}).indexOf(locationSearch.comment);
+
+                            $scope.loadComment(commentsArray[pos]);
+
+                        }
+
+
+                    }, function(error) {
+                        console.log("Error:", error);
+                        $scope.mesage = error;
+                    }).then(function() {
+
+
+                    });
+
+
+                };
+
+
+
+
+                var profile;
+
+                // loadProfile(simpleLogin.user);
+
+                $scope.loadComment = function(comment) {
+
+                    // comment.config.comment = true;
+
+
+                    $scope.nomaConfig = comment.config;
+                    $scope.context = comment.context;
+                    $scope.dimsum = comment.dimsum;
+
+                    $scope.isComment = true;
+                    $scope.loadedCommentText = comment.text;
+                    $scope.loadedCommentTextCreatorName = comment.creator;
+                    $scope.loadedCommentTextCreatorUID = comment.creatorUID;
+                    $location.search({
+                        comment: comment.$id
+                    });
+
+
+                    // $scope.$apply();
+
+                };
+
+
+
+                function loadProfile(user) {
+                    if (profile) {
+                        profile.$destroy();
+                    }
+                    profile = fbutil.syncObject('users/' + user.uid);
+                    profile.$bindTo($scope, 'profile');
+                }
+
+                $scope.addComment = function() {
+
+                    if (!$scope.commentText || $scope.commentText === '') {
+                        return;
+                    }
+
+                    var context = angular.copy($scope.nomaConfig);
+
+                    var comment = {
+                        text: $scope.commentText,
+                        creator: profile.name,
+                        creatorUID: $scope.user.uid,
+                        config: context,
+                        context: $scope.context,
+                        chartId: $routeParams.csvKey,
+                        dimsum: $scope.dimsum
+                    };
+
+                    $scope.comments.$add(comment);
+
+                    $scope.commentText = '';
+
+                };
+
+                $scope.message = "Test";
+
+                $scope.nomaConfig = {
+
+                };
+                $scope.loadedCommentText = '';
+                $scope.loadedData = 'cars';
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
+                $scope.onlyNumbers = /^\d+$/;
+
+                $scope.isComment = true;
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = false;
+                $scope.nomaConfig.comment = false;
+                $scope.nomaShapeRendering = 'auto';
+                $scope.nomaConfig.isGather = 'scatter';
+                $scope.nomaConfig.relativeModes = [false, true];
+                $scope.nomaConfig.relativeMode = 'absolute';
+                $scope.nomaConfig.binSize = 10;
+                $scope.nomaConfig.matrixMode = false;
+                $scope.nomaConfig.xDim;
+                $scope.nomaConfig.yDim;
+                $scope.nomaConfig.isInteractiveAxis = false;
+                $scope.isScatter = false;
+                $scope.nomaConfig.lens = "noLens";
+                $scope.isURLInput = false;
+
+                $scope.user = simpleLogin.user;
+                $scope.signedIn = !!simpleLogin.user;
+                $scope.context = {};
+                $scope.context.translate = [0, 0];
+                $scope.context.scale = 1;
+                $scope.dimsumData = {};
+                $scope.dimsum = {};
+                $scope.dimsum.selectionSpace = [];
+
+                $scope.$watch(function() {
+                    return $scope.nomaConfig.isGather;
+                }, function(newVals, oldVals) {
+                    // debugger;
+                    if (newVals === 'scatter') {
+
+                        $scope.isScatter = true;
+                    } else {
+
+                        $scope.isScatter = false;
+                    }
+                }, true);
+
+                $scope.init = function() {
+
+
+
+                    $scope.isURLInput = false;
+                    $scope.getUrlFromKey($routeParams.csvKey);
+
+
+                };
+
+                $scope.getUrlFromKey = function(key) {
+
+                    var obj = Chart.get(key);
+
+                    obj.$loaded().then(function() {
+
+                        $scope.loadDataFromCSVURL(obj.url);
+                        $scope.activeData = obj.name;
+                    }, function(error) {
+                        console.log("Error:", error);
+                        $scope.mesage = error;
+                        $scope.isURLInput = true;
+                    }).then(function() {
+
+                        var locationSearch = $location.search();
+
+                        var uploader = $firebase(new Firebase(FBURL + '/users/' + obj.uploader)).$asObject();
+
+                        uploader.$loaded().then(function() {
+
+                            $scope.uploader = uploader.name;
+
+                        });
+
+                        if (locationSearch.comment) {
+
+                            console.log(locationSearch.comment);
+
+                        }
+                    });
+
+                };
+
+
+                $scope.loadDataFromCSVURL = function(customCSV) {
+
+                    $scope.activeData = 'Custom Data';
+
+                    $scope.isURLInput = false;
+
+                    d3.csv(customCSV, function(error, tdata) {
+
+                        if (error) { //If error is not null, something went wrong.
+
+                            console.log(error); //Log the error.
+                            $scope.csvURLError = true;
+                            $scope.isURLInput = true;
+                            $scope.csvErrorMsg = error;
+
+                        } else {
+
+                            $scope.isURLInput = false;
+
+                            $scope.csvURLError = false;
+                            $scope.csvErrorMsg = error;
+                            var count = 0;
+
+                            tdata.map(function(d) {
+                                d.id = count;
+                                count += 1;
+                            });
+
+                            $scope.nomaData = tdata;
+                            $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                            var index = $scope.nomaConfig.dims.indexOf('id');
+                            $scope.nomaConfig.dims.splice(index, 1);
+
+
+                            // index = $scope.nomaConfig.dims.indexOf('Name');
+                            // $scope.nomaConfig.dims.splice(index, 1);
+
+
+                            $scope.nomaConfig.xDim = null;
+                            $scope.nomaConfig.yDim = null;
+                            $scope.nomaConfig.colorDim = null;
+
+                            $scope.nomaConfig.isGather = 'gather';
+                            $scope.nomaConfig.relativeMode = 'absolute';
+
+                        }
+
+                        handleCommentsURL();
+                        $scope.$apply();
+                    });
+
+
+
+                };
+
+
+                $scope.init();
+
+            }
+
+
+        ]);
+
+}());
+;'use strict';
+/**
+ * @ngdoc function
+ * @name gatherfireApp.controller:LoginCtrl
+ * @description
+ * # LoginCtrl
+ * Manages authentication to any active providers.
+ */
+angular.module('myApp.controllers')
+  .controller('LoginCtrl', function ($scope, simpleLogin, $location) {
+    $scope.oauthLogin = function(provider) {
+      $scope.err = null;
+      simpleLogin.login(provider, {rememberMe: true}).then(redirect, showError);
+    };
+
+    $scope.anonymousLogin = function() {
+      $scope.err = null;
+      simpleLogin.anonymousLogin({rememberMe: true}).then(redirect, showError);
+    };
+
+    $scope.passwordLogin = function(email, pass) {
+      $scope.err = null;
+      simpleLogin.passwordLogin({email: email, password: pass}, {rememberMe: true}).then(
+        redirect, showError
+      );
+    };
+
+    $scope.createAccount = function(email, pass, confirm) {
+      $scope.err = null;
+      if( !pass ) {
+        $scope.err = 'Please enter a password';
+      }
+      else if( pass !== confirm ) {
+        $scope.err = 'Passwords do not match';
+      }
+      else {
+        simpleLogin.createAccount(email, pass, {rememberMe: true})
+          .then(redirect, showError);
+      }
+    };
+    
+
+    function redirect() {
+      $location.path('/account');
+    }
+
+    function showError(err) {
+      $scope.err = err;
+    }
+
+
+  });
+;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
         .controller('ShowCtrl', ['$scope', '$routeParams',
             function($scope, $routeParams) {
 
@@ -67325,6 +67961,77 @@ angular.module('ui.sortable', [])
 
 
             }
+        ]);
+
+}());
+;(function() {
+    'use strict';
+
+    angular.module('myApp.controllers')
+        .controller('UploadCtrl', ['$scope', '$location',  '$routeParams', 'user', 'fbutil', 'Chart',
+            function($scope, $location, $routeParams, user, fbutil, Chart) {
+
+                if (!user) {
+
+                    $location.path('/login').replace();
+
+                }
+
+                $scope.user = user;
+                var profile;
+                loadProfile(user);
+
+                $scope.uploadData = function(customCSV) {
+
+                    // var ref = new Firebase(FBURL + '/csv');
+                    // var sync = $firebase(ref);
+
+                    // sync.$push({
+                    //     url: customCSV,
+                    //     name: $scope.dataName,
+                    //     uploader: user.uid,
+                    //     uploaderName: user.name;
+                    // }).then(function(ref) {
+
+                    //     console.log(ref.key());
+                    //     $location.path('/load/' + ref.key()).replace();
+
+                    // }, function(error) {
+                    //     console.log("Error:", error);
+                    // });
+
+                    var newChart = {
+
+                        url: customCSV,
+                        name: $scope.dataName,
+                        uploader: user.uid,
+                        uploaderName: profile.name
+                    };
+
+                    Chart.create(newChart).then(function(ref) {
+
+                        console.log(ref.key());
+                        $location.path('/load/' + ref.key()).replace();
+
+                    }, function(error) {
+                        console.log("Error:", error);
+                    });
+
+                };
+
+
+                function loadProfile(user) {
+                    if (profile) {
+                        profile.$destroy();
+                    }
+                    profile = fbutil.syncObject('users/' + user.uid);
+                    profile.$bindTo($scope, 'profile');
+                }
+
+
+            }
+
+
         ]);
 
 }());

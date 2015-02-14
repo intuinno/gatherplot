@@ -1,0 +1,36 @@
+<div class="row">
+
+    <div class="col-md-1"></div>
+
+    <div class="col-md-5">
+
+        <form ng-submit="uploadData(customCSV)">
+
+
+
+            <h3> Load CSV </h3>
+
+            <p> Please enter the url of the file. For example, a shared file for dropbox can be https://dl.dropboxusercontent.com/s/yvgvb0c5bldj049/TitanicPort3.csv
+            </p>
+
+            <br>
+
+            <div class="form-group">
+                <label for="nameInput">Name of Dataset</label>
+                <input type="text" id="nameInput" placeholder="Enter name" class="form-control" name="input" ng-model="dataName" required ng-trim="true">
+            </div>
+            <div class="form-group">
+                <label for="urlInput"> URL of Dataset</label>
+                <input class="form-control" id="ulrInput" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV">
+            </div>
+            <input class="form-control" type="submit" value="Upload">
+
+
+
+            <a href={{customCSV}}>{{customCSV}}</a>
+            <alert class="error" ng-show="csvURLError">Not valid url! {{csvErrorMsg}}</alert>
+
+        </form>
+
+    </div>
+</div>

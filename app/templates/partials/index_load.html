@@ -1,8 +1,14 @@
-<!-- <div ng-controller="ShowCtrl"> -->
+<div ng-show="isURLInput">
 
-<h5>
+
+</div>
+<div ng-hide="isURLInput">
+    <!-- <div ng-controller="ShowCtrl"> -->
+
+    <h5>
 	<div class="container-fluid">
 		<div class="row">
+		<h3 class="chart-title">{{activeData}}</h3>
 			<div class="col-md-6">
 				<div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
 					<div class="btn-group">
@@ -32,13 +38,20 @@
 			</div>
 		</h5>
 
-<div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+
+    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}" context="context" comment="isComment"></div>
+
+    <div ng-show="isCommentShowing" class="chart-title">
+        <h4>
+    	{{loadedCommentText}}
+
+    </h4>
+    </div>
 
 
 
-
-<div class="chart-simple-interface">
-    <h5>Show me
+    <div class="chart-simple-interface">
+        <h5>Show me
 
 				<select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
 
@@ -64,11 +77,44 @@
 	</h5>
 
 
-    <div ng-class="{tryMe: isRelativeSelectFocused}">
-        <h6>
+        <div ng-class="{tryMe: isRelativeSelectFocused}">
+            <h6>
 			<input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.</h6>
+
+        </div>
+
 
     </div>
 
+    <div> Data submitted by {{uploader}} </div>
+    <a ng-href="#/browse">Back to Charts List</a>
+
+    <div ng-repeat="comment in comments" class="row cmt">
+        <div class="col-md-12">
+            <a ng-click="loadComment( comment )">
+                <p>{{ comment.text }}</p>
+            </a>
+            <p class="author">posted by
+                <a ng-href="#/users/{{ comment.creatorUID }}">
+          {{ comment.creator }}
+        </a>
+            </p>
+        </div>
+    </div>
+
+    <div class="cmt-form">
+        <div ng-hide="signedIn">
+            <p><a href="#/login">Sign in</a> to post a comment</p>
+        </div>
+
+        <form ng-show="signedIn" ng-submit="addComment()">
+            <textarea ng-model="commentText" placeholder="Post a Comment" class="form-control"></textarea>
+            <br />
+            <input type="submit" value="Post Comment" class="btn btn-primary" />
+        </form>
+    </div>
+
+    {{nomaConfig.translate}}
+    <br> {{nomaConfig.scale}}
 
 </div>
