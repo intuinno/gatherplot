@@ -67787,8 +67787,8 @@ angular.module('myApp.controllers')
                             $scope.nomaConfig.dims.splice(index, 1);
 
 
-                            index = $scope.nomaConfig.dims.indexOf('Name');
-                            $scope.nomaConfig.dims.splice(index, 1);
+                            // index = $scope.nomaConfig.dims.indexOf('Name');
+                            // $scope.nomaConfig.dims.splice(index, 1);
 
 
                             $scope.nomaConfig.xDim = null;
