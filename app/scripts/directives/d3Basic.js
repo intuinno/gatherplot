@@ -87,6 +87,7 @@
 
                         var brush = d3.svg.brush();
                         var shiftKey;
+                        // dimsum = {};
 
 
                         var initializeSVG = function() {

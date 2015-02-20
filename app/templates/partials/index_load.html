@@ -79,7 +79,13 @@
 
         <div ng-class="{tryMe: isRelativeSelectFocused}">
             <h6>
-			<input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.</h6>
+			<input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.
+
+            <a class="btn btn-default btn-link"  ng-click="openSession()" title="Open a linked window" id="toolbarSession"><i class="fa fa-external-link"></i>Open a linked window</a>
+
+
+            </h6>
+
 
         </div>
 

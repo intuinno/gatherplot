@@ -8,6 +8,8 @@
 
                 $scope.chartId = $routeParams.csvKey;
 
+                var sessionID;
+
                 $scope.isCommentShowing = true;
 
                 simpleLogin.auth.$onAuth(function(authData) {
@@ -34,7 +36,9 @@
 
                             console.log(locationSearch.comment);
 
-                            var pos = commentsArray.map(function(d) {return d.$id;}).indexOf(locationSearch.comment);
+                            var pos = commentsArray.map(function(d) {
+                                return d.$id;
+                            }).indexOf(locationSearch.comment);
 
                             $scope.loadComment(commentsArray[pos]);
 
@@ -48,6 +52,25 @@
 
 
                     });
+
+
+                };
+
+                var handleSession = function() {
+
+                    var locationSearch = $location.search();
+
+                    if (locationSearch.session) {
+
+
+                        var sessionObj = $firebase(new Firebase(FBURL + '/sessions/' + locationSearch.session)).$asObject();
+
+                        sessionObj.$bindTo($scope, 'dimsum');
+
+                        sessionID = locationSearch.session;
+
+                    }
+
 
 
                 };
@@ -115,6 +138,63 @@
 
                 };
 
+                $scope.openSession = function() {
+
+                    if (!sessionID) {
+
+                        createSession();
+                    } else {
+
+                        openNewWindow(sessionID);
+                    }
+
+                };
+
+                var openNewWindow = function(sessionID) {
+
+                    var url = '#' + $location.path();
+                    url = url + '?session=';
+                    url = url + sessionID;
+
+                    window.open(url, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=400, height=400");
+
+                };
+
+                var createSession = function() {
+
+                    var ref = new Firebase(FBURL + '/sessions/');
+                    var sync = $firebase(ref);
+
+                    sync.$push($scope.dimsum).then(function(newChildRef) {
+                        console.log("added record with id " + newChildRef.key());
+
+                        var ref = $firebase(newChildRef);
+                        var obj = ref.$asObject();
+                        obj.$bindTo($scope, "dimsum");
+
+                        $location.search({
+                            session: newChildRef.key()
+                        });
+
+                        sessionID = newChildRef.key();
+
+                        openNewWindow(newChildRef.key());
+
+                    });
+
+
+
+                    // sync.$push($scope.dimsum).then(function(newSessionID) {
+
+                    //     var session = $firebase(new Firebase(FBURL + '/sessions/' + newSessionID.key())).$asObject();
+                    //     session.$bindTo($scope, "dimsum");
+                    //     openNewWindow(newSessionID.key());
+
+                    // });
+
+
+                };
+
                 $scope.message = "Test";
 
                 $scope.nomaConfig = {
@@ -150,7 +230,8 @@
                 $scope.context.scale = 1;
                 $scope.dimsumData = {};
                 $scope.dimsum = {};
-                $scope.dimsum.selectionSpace = [];
+                $scope.dimsum.dummy = 1;
+                $scope.dimsum.selectionSpace = [-1];
 
                 $scope.$watch(function() {
                     return $scope.nomaConfig.isGather;
@@ -171,6 +252,10 @@
 
                     $scope.isURLInput = false;
                     $scope.getUrlFromKey($routeParams.csvKey);
+                    $scope.dimsum = {};
+                    $scope.dimsum.selectionSpace = [];
+                    $scope.dimsum.dummy = 1;
+                    $scope.dimsum.selectionSpace = [-1];
 
 
                 };
@@ -258,6 +343,7 @@
                         }
 
                         handleCommentsURL();
+                        handleSession();
                         $scope.$apply();
                     });
 
