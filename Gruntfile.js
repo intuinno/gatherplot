@@ -110,6 +110,8 @@ module.exports = function(grunt) {
           'bower_components/angular-sanitize/angular-sanitize.min.js',
           'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
           'bower_components/angular-ui-sortable/sortable.js',
+          'bower_components/qrcode-generator/js/qrcode.js',
+          'bower_components/angular-qrcode/qrcode.js',
           'app/scripts/app.js',
           'app/scripts/gatherLensApp.js',
           'app/scripts/services/**/*.js',

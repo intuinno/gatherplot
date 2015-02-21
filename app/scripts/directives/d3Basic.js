@@ -103,11 +103,13 @@
 
                             // .value("title");
 
-                            labelDiv = d3.select(iElement[0])
-                                .append("div")
-                                .attr("class", "btn-group")
-                                .html('<a class="btn btn-default" title="Pan and Zoom" id="toolbarPanZoom"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" title="Select" id="toolbarSelect"><i class="fa fa-square-o"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+                            if (!scope.config.matrixMode) {
 
+                                labelDiv = d3.select(iElement[0])
+                                    .append("div")
+                                    .attr("class", "btn-group")
+                                    .html('<a class="btn btn-default" title="Pan and Zoom" id="toolbarPanZoom"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" title="Select" id="toolbarSelect"><i class="fa fa-square-o"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+                            }
                             svg = d3.select(iElement[0])
                                 .append("svg:svg");
 
@@ -1299,7 +1301,7 @@
                             } else {
                                 outerWidth = d3.select(".matrixGroup").node().offsetWidth;
 
-                                outerWidth = outerWidth / (scope.config.dims.length) - 10;
+                                outerWidth = outerWidth / (scope.config.dims.length) - 2;
 
                             }
                             // calculate the height

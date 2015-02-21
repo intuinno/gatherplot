@@ -1,8 +1,10 @@
+
+
 (function() {
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin', '$q',
+        .controller('MatrixCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin', '$q',
 
             function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin, $q) {
 
@@ -164,16 +166,6 @@
 
                 $scope.openNewWindow = function(sessionID) {
 
-                    var url = '#' + $location.path();
-                    url = url + '?session=';
-                    url = url + sessionID;
-
-                    window.open(url, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=400, height=400");
-
-                };
-
-                $scope.openNewMatrix = function(sessionID) {
-
                     var url = '#/matrix/' + $routeParams.csvKey;
                     url = url + '?session=';
                     url = url + sessionID;
@@ -230,7 +222,7 @@
                 $scope.nomaConfig.SVGAspectRatio = 1.4;
                 $scope.onlyNumbers = /^\d+$/;
 
-                $scope.isComment = true;
+                $scope.isComment = false;
 
                 $scope.nomaRound = true;
                 $scope.nomaBorder = false;
@@ -365,7 +357,10 @@
                             $scope.nomaConfig.isGather = 'gather';
                             $scope.nomaConfig.relativeMode = 'absolute';
 
+
                         }
+
+                        $scope.nomaConfig.matrixMode = true;
 
                         handleCommentsURL();
                         handleSession();
@@ -385,3 +380,4 @@
         ]);
 
 }());
+

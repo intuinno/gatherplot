@@ -12,6 +12,7 @@
     "jquery-ui": "~1.10.4",
     "d3": "~3.4.3",
     "angular-ui-sortable": "~0.12.1",
-    "fontawesome": "~4.2.0"
+    "fontawesome": "~4.2.0",
+    "angular-qrcode": "monospaced/angular-qrcode#~5.1.0"
   }
 }

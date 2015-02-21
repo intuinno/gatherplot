@@ -63,7 +63,8 @@
                     <div>
                         <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
                     </div>
-                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+                    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}" context="context" comment="isComment"></div>
+
 
 
 
@@ -97,7 +98,7 @@
 
                         <div ng-class="{tryMe: isRelativeSelectFocused}">
                             <h6>
-                                <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>Check this to make it easy to compare groups of different sizes.</h6>
+                                <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="'relative'" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.</h6>
 
                         </div>
                         <alert class="chart-instruction" ng-show="isRelativeSelectFocused" close="isRelativeSelectFocused=false">
@@ -489,8 +490,18 @@
         </script>
 
     </div>
-    <script src="./assets/app.js"></script>
-    <script src="./scripts/directives/d3Basic.js"></script>
+            <script src="./assets/app.js"></script>
+        <!-- Firebase -->
+        <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+        <!-- AngularFire -->
+        <script src="https://cdn.firebase.com/libs/angularfire/0.9.1/angularfire.min.js"></script>
+        <script src="./scripts/directives/d3Basic.js"></script>
+        <script src="scripts/angularfire/config.js"></script>
+        <script src="scripts/angularfire/firebase.utils.js"></script>
+        <script src="scripts/angularfire/simpleLogin.js"></script>
+        <script src="scripts/directives/ngShowAuth.js"></script>
+        <script src="scripts/directives/ngHideAuth.js"></script>
+        <script src="scripts/services/chart.js"></script>
 
 </body>
 
