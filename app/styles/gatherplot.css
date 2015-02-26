@@ -1,3 +1,13 @@
+.commentList {
+  max-height: 660px;
+  overflow: auto;
+}
+
+.row.cmt {
+  margin-left: 15px;
+  margin-right: 15px;
+
+}
 
 .dot.selected {
   stroke: red;
