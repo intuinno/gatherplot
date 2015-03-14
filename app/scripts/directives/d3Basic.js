@@ -1174,6 +1174,7 @@
 
                             redrawLensPie(lensInfo);
 
+
                         };
 
                         var dragmoveCircle = function() {
@@ -1193,7 +1194,12 @@
                             clearLens();
 
                             var drag = d3.behavior.drag()
-                                .on("drag", dragmoveRectLens);
+                                .on("drag", dragmoveRectLens)
+                                .on("dragstart", function() {
+                                    d3.event.sourceEvent.stopPropagation(); // silence other listeners
+                                });
+
+
 
                             nodeGroup.append("rect")
                                 .attr("class", "lens")
@@ -1211,7 +1217,10 @@
                             clearLens();
 
                             var drag = d3.behavior.drag()
-                                .on("drag", dragmoveHistLens);
+                                .on("drag", dragmoveHistLens)
+                                .on("dragstart", function() {
+                                    d3.event.sourceEvent.stopPropagation(); // silence other listeners
+                                });
 
                             nodeGroup.append("rect")
                                 .attr("class", "lens")
@@ -1230,7 +1239,10 @@
                             clearLens();
 
                             var drag = d3.behavior.drag()
-                                .on("drag", dragmovePieLens);
+                                .on("drag", dragmovePieLens)
+                                .on("dragstart", function() {
+                                    d3.event.sourceEvent.stopPropagation(); // silence other listeners
+                                });
 
                             nodeGroup.append("rect")
                                 .attr("class", "lens")
@@ -1519,15 +1531,20 @@
                                     var xRange = range.xRange;
                                     var yRange = range.yRange;
 
-                                    var typeOfXYDim = findTypeOfXYDim();
 
-                                    if (typeOfXYDim === 'XNomYOrd') {
+                                    if (scope.config.isGather === 'gather') {
 
-                                        var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+                                        var typeOfXYDim = findTypeOfXYDim();
 
-                                    } else if (typeOfXYDim === 'XOrdYNom') {
+                                        if (typeOfXYDim === 'XNomYOrd') {
 
-                                        var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+                                            var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+
+                                        } else if (typeOfXYDim === 'XOrdYNom') {
+
+                                            var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+
+                                        }
 
                                     }
 
