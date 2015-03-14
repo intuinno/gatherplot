@@ -309,14 +309,14 @@
                                             .style("opacity", 0.9);
 
 
-                                        tooltip.html(d.commentTitle + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d) + "</br>" + d.commentBody + "</br>" + '<a href="' + d.articleURL + '" target="_blank">Click to See Article</a>')
+                                        tooltip.html(scope.xdim + ":" + xOriginalValue(d) + "<br/>" + scope.ydim + ":" + yOriginalValue(d) + "<br/>" + scope.config.colorDim + ":" + colorOriginalValue(d) + "")
                                             .style("left", (d3.event.pageX + 5) + "px")
                                             .style("top", (d3.event.pageY - 28) + "px");
                                     })
                                     .on("mouseout", function(d) {
-                                        // tooltip.transition()
-                                        //     .duration(500)
-                                        //     .style("opacity", 0);
+                                        tooltip.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
                                     })
                                     .on("mousedown", function(d) {
                                         if (d3.event.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
