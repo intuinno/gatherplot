@@ -111,7 +111,7 @@
 
     // setup dependency injection
     angular.module('myApp.controllers', []);
-    angular.module('myApp.directives', ['ui.bootstrap', 'ui.sortable']);
+    angular.module('myApp.directives', ['ui.bootstrap']);
 
     angular.module('myApp.services', ['firebase', 'firebase.utils', 'firebase.config']);
 

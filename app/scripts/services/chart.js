@@ -8,11 +8,11 @@
  * Factory in the yearofmooAngularjsSeedRepoApp.
  */
 angular.module('myApp.services')
-  .factory('Chart', function ($firebase, FBURL) {
+  .factory('Chart', function ($firebaseArray, $firebaseObject, FBURL) {
     // Service logic
     // ...
     var ref = new Firebase(FBURL);
-    var charts = $firebase(ref.child('csv')).$asArray();
+    var charts = $firebaseArray(ref.child('csv'));
 
     var Chart = {
       all: charts, 
@@ -24,13 +24,13 @@ angular.module('myApp.services')
         });
       }, 
       get: function(chartId) {
-        return $firebase(ref.child('csv').child(chartId)).$asObject();
+        return $firebaseObject(ref.child('csv').child(chartId));
       },
       delete: function(chart) {
         return charts.$remove(chart);
       },
       comments: function(chartId) {
-        return $firebase(ref.child('comments').child(chartId)).$asArray();
+        return $firebaseArray(ref.child('comments').child(chartId));
       }
     };
     // Public API here

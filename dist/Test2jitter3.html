@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatherplot</title>
+    <meta name="description" content="nomarect">
+    <link rel="stylesheet" type="text/css" href="./styles/gatherplotTest.css">
+</head>
+
+<body data-ng-app="myApp">
+
+    <div ng-controller="test1Ctrl">
+        <h2 class="chart-title">{{activeData}}</h2>
+        <div nomarect="nomarect" class="nomarect" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering"></div>
+
+        <div class="chart-simple-interface">
+           
+                                <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>Check this to compare groups of different sizes.
+            </br>
+
+        </div>
+
+        <script src="./assets/app.js"></script>
+        <script src="./scripts/directives/d3Basic.js"></script>
+
+        <script>
+        (function() {
+            'use strict';
+
+            angular.module('myApp.controllers')
+                .controller('test1Ctrl', ['$scope',
+                    function($scope) {
+
+                         $scope.nomaConfig = {
+
+                };
+
+
+                $scope.loadedData = 'cars';
+                $scope.nomaConfig.SVGAspectRatio = 1.4;
+
+                $scope.nomaRound = true;
+                $scope.nomaBorder = false;
+                $scope.nomaShapeRendering = 'auto';
+                $scope.nomaConfig.isGather = 'scatter';
+                $scope.nomaConfig.relativeModes = ['absolute', 'relative'];
+                $scope.nomaConfig.relativeMode = 'absolute';
+                $scope.nomaConfig.binSize = 10;
+                $scope.alerts = [];
+                $scope.isPlotSelectFocused = false;
+
+                $scope.addAlert = function(messageType, messageContent) {
+                    $scope.alerts.push({
+                        msg: messageContent,
+                        type: messageType
+                    });
+                };
+
+                $scope.closeAlert = function(index) {
+                    $scope.alerts.splice(index, 1);
+                };
+
+                $scope.focusElement = function(element) {
+                    $scope[element] = true;
+                };
+
+                var resetTutMsg = function() {
+                    $scope.alerts = [];
+                    $scope.isPlotSelectFocused = false;
+                    $scope.isRelativeSelectFocused = false;
+                    $scope.isBinSizeFocused = false;
+                };
+
+                $scope.d3OnClick = function(item) {
+                    alert(item.name);
+                };
+
+
+
+
+                $scope.changeActiveDataTitanic = function() {
+
+                    resetTutMsg();
+
+
+                    $scope.activeData = 'Survivor of Titanic';
+
+                    var lowMeanHighSDRandomNumberGenerator = d3.random.normal(30, 5);
+                    var highMeanLowSDRandomNumberGenerator = d3.random.normal(50, 10);
+
+
+
+                    d3.csv('data/TitanicPort2.csv', function(error, tdata) {
+                        var count = 0;
+
+                       
+                        $scope.nomaData = tdata;
+                        $scope.nomaConfig.dims = d3.keys(tdata[0]);
+
+                        var index = $scope.nomaConfig.dims.indexOf('id');
+                        $scope.nomaConfig.dims.splice(index, 1);
+
+                        $scope.nomaConfig.xDim = 'Survived';
+                        $scope.nomaConfig.yDim = 'Class';
+                        $scope.nomaConfig.colorDim = 'Port';
+                        $scope.nomaConfig.isGather = 'gather';
+                        $scope.nomaConfig.isInteractiveAxis = false;
+
+                        $scope.$apply();
+
+                    });
+
+
+                }; //End  $scope.changeActiveDataTitanic()
+
+
+                        $scope.changeActiveDataTitanic();
+
+                    }
+                ]);
+        })();
+        </script>
+</body>
+
+</html>

@@ -2,9 +2,9 @@
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('LoadCtrl', ['$scope', '$firebase', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin', '$q',
+        .controller('LoadCtrl', ['$scope', '$firebaseObject', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin', '$q',
 
-            function($scope, $firebase, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin, $q) {
+            function($scope, $firebaseObject, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin, $q) {
 
 
                 $scope.chartId = $routeParams.csvKey;
@@ -64,7 +64,7 @@
                     if (locationSearch.session) {
 
 
-                        var sessionObj = $firebase(new Firebase(FBURL + '/sessions/' + locationSearch.session)).$asObject();
+                        var sessionObj = $firebaseObject(new Firebase(FBURL + '/sessions/' + locationSearch.session));
 
                         sessionObj.$bindTo($scope, 'dimsum');
 
@@ -221,7 +221,7 @@
                             console.log("added record with id " + newChildRef.key());
 
                             var ref = $firebase(newChildRef);
-                            var obj = ref.$asObject();
+                            var obj = $firebaseObject(ref);
                             obj.$bindTo($scope, "dimsum");
 
                             $location.search({
@@ -320,7 +320,9 @@
 
                         var locationSearch = $location.search();
 
-                        var uploader = $firebase(new Firebase(FBURL + '/users/' + obj.uploader)).$asObject();
+                        var ref = new Firebase(FBURL + '/users/' + obj.uploader);
+
+                        var uploader = $firebaseObject(ref);
 
                         uploader.$loaded().then(function() {
 
