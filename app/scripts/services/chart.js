@@ -19,7 +19,7 @@ angular.module('myApp.services')
 
       create: function(chart) {
         return charts.$add(chart).then(function(chartRef) {
-          $firebase(ref.child('user_charts').child(chart.uploader)).$push(chartRef.name());
+          $firebaseArray(ref.child('user_charts').child(chart.uploader)).$add(chartRef.name());
           return chartRef;
         });
       }, 

@@ -1,3 +1,14 @@
+#duckGrid .ui-grid-header-canvas {
+
+  height:90px;
+}
+
+.myGrid {
+  /*width: 650px;*/
+  height: 600px;
+}
+
+
 .commentList {
   max-height: 660px;
   overflow: auto;

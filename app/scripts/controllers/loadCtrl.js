@@ -2,9 +2,9 @@
     'use strict';
 
     angular.module('myApp.controllers')
-        .controller('LoadCtrl', ['$scope', '$firebaseObject', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin', '$q',
+        .controller('LoadCtrl', ['$scope', '$firebaseObject', '$firebaseArray', '$location', 'FBURL', '$routeParams', 'fbutil', 'Chart', 'simpleLogin', '$q',
 
-            function($scope, $firebaseObject, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin, $q) {
+            function($scope, $firebaseObject, $firebaseArray, $location, FBURL, $routeParams, fbutil, Chart, simpleLogin, $q) {
 
 
                 $scope.chartId = $routeParams.csvKey;
@@ -174,11 +174,11 @@
 
                 $scope.openNewInspector = function(sessionID) {
 
-                    var url = '#' + $location.path();
+                    var url = '#/inspect/' + $routeParams.csvKey;
                     url = url + '?session=';
                     url = url + sessionID;
 
-                    window.open(url, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=800, height=600");
+                    window.open(url, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=500, left=500, width=800, height=800");
 
                 };
 
@@ -215,13 +215,13 @@
                     return $q(function(resolve, reject) {
 
                         var ref = new Firebase(FBURL + '/sessions/');
-                        var sync = $firebase(ref);
+                        var sync = $firebaseArray(ref);
 
-                        sync.$push($scope.dimsum).then(function(newChildRef) {
+                        sync.$add($scope.dimsum).then(function(newChildRef) {
                             console.log("added record with id " + newChildRef.key());
 
-                            var ref = $firebase(newChildRef);
-                            var obj = $firebaseObject(ref);
+                            // var ref = $firebase(newChildRef);
+                            var obj = $firebaseObject(newChildRef);
                             obj.$bindTo($scope, "dimsum");
 
                             $location.search({

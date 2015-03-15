@@ -244,6 +244,8 @@
                                 return d.selected;
                             });
 
+                            scope.dimsum.source = "gatherplot";
+
                         };
 
 

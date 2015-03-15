@@ -11,6 +11,11 @@
             'firebase.utils',
             'simpleLogin',
             'ui.grid',
+            'ui.grid.resizeColumns',
+            'ui.grid.pinning',
+            'ui.grid.pagination',
+            'ui.grid.exporter',
+            'ui.grid.selection',
             'monospaced.qrcode'
         ]).config(['$routeProvider', 'SECURED_ROUTES',
             function($routeProvider, SECURED_ROUTES) {
@@ -61,6 +66,11 @@
                     .when('/load/:csvKey/:comment?', {
                         templateUrl: '../templates/partials/index_load.html',
                         controller: 'LoadCtrl',
+                        reloadOnSearch: false
+                    })
+                    .when('/inspect/:csvKey/:comment?', {
+                        templateUrl: '../templates/partials/inspect.html',
+                        controller: 'InspectCtrl',
                         reloadOnSearch: false
                     })
                     .when('/matrix/:csvKey', {
