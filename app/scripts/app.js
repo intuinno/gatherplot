@@ -10,6 +10,7 @@
             'firebase',
             'firebase.utils',
             'simpleLogin',
+            'ui.grid',
             'monospaced.qrcode'
         ]).config(['$routeProvider', 'SECURED_ROUTES',
             function($routeProvider, SECURED_ROUTES) {

@@ -100,7 +100,8 @@ module.exports = function(grunt) {
                 src: [
                     // 'bower_components/jquery-ui/themes/base/jquery-ui.css',
                     'bower_components/bootstrap/dist/css/bootstrap.css',
-                    'app/styles/gatherplot.css'
+                    'app/styles/gatherplot.css',
+                    'bower_components/angular-ui-grid/ui-grid.css',
                     //place your Stylesheet files here
                 ]
             },
@@ -120,6 +121,7 @@ module.exports = function(grunt) {
                     'bower_components/angular-ui-sortable/sortable.js',
                     'bower_components/qrcode-generator/js/qrcode.js',
                     'bower_components/angular-qrcode/qrcode.js',
+                    'bower_components/angular-ui-grid/ui-grid.js',
                     'app/scripts/app.js',
                     'app/scripts/gatherLensApp.js',
                     'app/scripts/services/**/*.js',
