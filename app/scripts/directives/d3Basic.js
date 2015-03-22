@@ -420,11 +420,11 @@
                             });
 
                             var encodingBinScale = d3.scale.linear()
-                                .range([0, numBin - 1])
+                                .range([0, numBin-1])
                                 .domain([minValue, maxValue]);
 
                             var decodingBinScale = d3.scale.linear()
-                                .domain([0, numBin - 1])
+                                .domain([0, numBin-1])
                                 .range([minValue, maxValue]);
 
                             var binKeys = d3.range(0, numBin, 1);
@@ -2266,7 +2266,7 @@
                             while (true) {
 
 
-                                if (maxCrowdedBinCount * dotSize > norDimLength) {
+                                if ((maxCrowdedBinCount) * dotSize > norDimLength) {
 
                                     increment = previousIncrement * 2;
 
@@ -2290,23 +2290,18 @@
                                 dotSize = ordDimLength / numBin;
 
                                 loopCount = loopCount + 1;
-                                console.log(loopCount + ": NumBin = " + numBin);
-
-                                console.log(loopCount + ": increment = " + increment);
                             }
 
-                            // while (maxCrowdedBinCount * dotSize > norDimLength) {
-                            
 
-                            //     numBin = numBin + 1;
 
-                            //     maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
-                            //     dotSize = ordDimLength / numBin;
+                            console.log(loopCount + ": NumBin = " + numBin);
 
-                            //     console.log(loopCount + ": NumBin = " + numBin);
+                            console.log(loopCount + ": increment = " + increment);
 
-                            // }
 
+                            console.log(loopCount + ": maxCrowdedBinCount = " + getMaxCrowdedBinCount(ordDim, nomDim, numBin));
+
+                            numBin = numBin + 1;
 
                             doBinningAndSetKeys(ordDim, numBin);
 
@@ -2334,15 +2329,17 @@
                                 });
 
                                 var data = d3.layout.histogram()
-                                    .bins(ordinalScaleForGather.ticks(binCount))
+                                    .bins(binCount)
                                     (values);
+
+                                // console.log(data.bins());
 
                                 return d3.max(data, function(d) {
                                     return +d.y;
                                 });
                             });
 
-                            return d3.max(maxValues);
+                            return d3.max(maxValues)+1;
 
                         }
 
@@ -2844,6 +2841,7 @@
                         var getNodesSizeForAbsolute = function() {
 
                             var maxNumElementInCluster = getClusterWithMaximumPopulation();
+                            // console.log('maxNumElementInCluster = ' + maxNumElementInCluster )
                             var box = getClusterBox();
                             var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
 
@@ -2978,6 +2976,9 @@
                             if (isThemeRiverCondition(longEdge, shortEdge, numElement)) {
 
                                 numElement = getNumOfElementForThemeRiver(longEdge, shortEdge, cluster.length);
+                                if (numElement.numElementInShortEdge === 2) {
+                                    console.log('Hey');
+                                }
                             }
                             var nodeSize = getNodeSizeAbsoluteOrRelative(longEdge, shortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
                             var offsetForCenterPosition = calculateOffsetForCenterPosition(nodeSize.lengthInLongEdge, nodeSize.lengthInShortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
@@ -3026,7 +3027,17 @@
                         var getNumOfElementForThemeRiver = function(longEdge, shortEdge, numElement) {
 
                             var numElementInShortEdge = Math.ceil(shortEdge / getNodesSizeForAbsolute());
+                            
+
+                            if (numElementInShortEdge == 2 && getNodesSizeForAbsolute() < 1) {
+
+                                numElementInShortEdge = 1;
+
+
+                            }
+
                             var numElementInLongEdge = Math.ceil(numElement / numElementInShortEdge);
+
 
                             return {
                                 numElementInShortEdge: numElementInShortEdge,
@@ -4494,7 +4505,7 @@
                                 .attr("class", "axislabel")
                                 .attr("x", width / 2)
                                 .attr("y", 56)
-                                .style("text-anchor", "end")
+                                .style("text-anchor", "middle")
                                 .text(scope.xdim);
 
                             //Setup Y axis
@@ -4502,11 +4513,25 @@
                             yAxisNodes
                                 .append("text")
                                 .attr("class", "axislabel")
-                                .attr("x", -margin + 10)
-                                .attr("y", -margin / 2 + 10)
-                                .attr("dy", ".71em")
-                                .style("text-anchor", "right")
+                                .style("text-anchor", "middle")
+                                .attr('transform', function(d, i) { // NEW
+                                    var vert = height / 2; // NEW
+                                    // var horz = -margin / 2; // NEW
+                                    var horz = -60;
+                                    return 'translate(' + horz + ',' + vert + ')rotate(-90)'; // NEW
+                                })
                                 .text(scope.ydim);
+
+
+                            // yAxisNodes
+                            //     .append("text")
+                            //     .attr("class", "axislabel")
+                            //     .text(findDisplayName(scope.ydim))
+                            //     .attr('transform', function(d, i) { // NEW
+                            //         var vert = height / 2; // NEW
+                            //         var horz = -margin / 2; // NEW
+                            //         return 'translate(' + horz + ',' + vert + ')rotate(-90)'; // NEW
+                            //     });
 
 
 
