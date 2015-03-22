@@ -304,7 +304,9 @@ angular.module('myApp.controllers')
 
                         var temp = {};
                         temp.name = d;
+                        temp.displayName = d;
                         temp.enableFiltering = true;
+                        temp.width = d.length * 10 +10 ;
 
                         if (isNaN(tdata[0][d])) {
 
