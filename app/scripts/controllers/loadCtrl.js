@@ -391,6 +391,13 @@
                         handleCommentsURL();
                         handleSession();
                         $scope.$apply();
+                    }).on("progress", function(event) {
+                        //update progress bar
+                        if (d3.event.lengthComputable) {
+                            $scope.percentComplete = Math.round(d3.event.loaded * 100 / d3.event.total);
+                            $scope.$apply();
+                            console.log($scope.percentComplete);
+                        }
                     });
 
 

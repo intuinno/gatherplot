@@ -39,6 +39,9 @@
 
             <h4 class="chart-title">{{activeData}}</h4>
 
+            <div ng-hide="percentComplete == 0 || percentComplete == 100"><progressbar class="progress-striped" value="percentComplete" max='100' type="warning">Download {{percentComplete}}%</progressbar></div>
+        
+
             <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}" context="context" comment="isComment"></div>
 
             <div ng-show="isCommentShowing" class="chart-title">

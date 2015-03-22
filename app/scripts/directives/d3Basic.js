@@ -2258,14 +2258,55 @@
 
                             var maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
 
-                            while (maxCrowdedBinCount * dotSize > norDimLength) {
+                            var loopCount = 0;
 
-                                numBin = numBin + 1;
+                            var increment = numBin;
+                            var previousIncrement = 1;
+
+                            while (true) {
+
+
+                                if (maxCrowdedBinCount * dotSize > norDimLength) {
+
+                                    increment = previousIncrement * 2;
+
+                                } else {
+
+                                    increment = Math.round(previousIncrement * (-0.5));
+
+                                }
+
+                                numBin = numBin + increment;
+
+                                previousIncrement = Math.abs(increment);
+
+
+                                if (Math.abs(increment) < 2) {
+
+                                    break;
+                                }
 
                                 maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
-
                                 dotSize = ordDimLength / numBin;
+
+                                loopCount = loopCount + 1;
+                                console.log(loopCount + ": NumBin = " + numBin);
+
+                                console.log(loopCount + ": increment = " + increment);
                             }
+
+                            // while (maxCrowdedBinCount * dotSize > norDimLength) {
+                            
+
+                            //     numBin = numBin + 1;
+
+                            //     maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
+                            //     dotSize = ordDimLength / numBin;
+
+                            //     console.log(loopCount + ": NumBin = " + numBin);
+
+                            // }
+
 
                             doBinningAndSetKeys(ordDim, numBin);
 
@@ -2303,18 +2344,6 @@
 
                             return d3.max(maxValues);
 
-
-
-
-                            // var data = d3.layout.histogram()
-                            //     .bins(binCount)
-                            //     (values);
-
-                            // var maxCount = d3.max(data, function(d) {
-                            //     return +d.y;
-                            // });
-
-                            // return maxCount;
                         }
 
                         var findTypeOfXYDim = function() {
