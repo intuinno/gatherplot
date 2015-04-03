@@ -28,7 +28,7 @@
                         var zoom;
 
 
-                        var maxDotSize = 5;
+                        var maxDotSize = 2;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
