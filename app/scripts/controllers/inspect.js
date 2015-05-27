@@ -23,6 +23,7 @@ angular.module('myApp.controllers')
             enableGridMenu: true,
             enableRowSelection: true,
             enableSelectionBatchEvent: false,
+            enableColumnResizing: true,
             onRegisterApi: function(gridApi) {
                 //set gridApi on scope
                 $scope.gridApi = gridApi;

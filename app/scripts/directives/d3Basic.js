@@ -517,7 +517,7 @@
 
                         var isSemiOrdinalDim = function(dim) {
 
-                            if (getRawNumberOfKeys(dim) < 60) {
+                            if (getRawNumberOfKeys(dim) < 10) {
                                 return true;
                             } else {
                                 return false;
@@ -2405,7 +2405,7 @@
 
 
 
-                            d3.map(keyValue).entries().forEach(function(d, i, all) {
+                            d3.map(keyValue).entries().sort(function(a,b){ return +a.value.sortedID - b.value.sortedID;}).forEach(function(d, i, all) {
 
 
                                 if (i === 0) {
@@ -3500,7 +3500,7 @@
 
                                 return function(d, i) {
 
-                                    var binValue = d3.map(dimSetting[dimName].keyValue).keys()[i];
+                                    var binValue = d3.map(dimSetting[dimName].keyValue).entries().sort(function(a,b){ return +a.value.sortedID - b.value.sortedID;})[i].key
 
                                     return binDistanceFormatter(+binValue) + '\u00B1' + binDistanceFormatter(+dimSetting[dimName].halfOfBinDistance);
                                 };
@@ -3508,7 +3508,7 @@
 
                                 return function(d, i) {
 
-                                    return d3.map(dimSetting[dimName].keyValue).keys()[i];
+                                    return +d3.map(dimSetting[dimName].keyValue).entries().sort(function(a,b){ return +a.value.sortedID - b.value.sortedID;})[i].key;
                                 };
                             } else {
 
