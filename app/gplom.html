@@ -88,10 +88,10 @@
 
                         <div class="matrixRow" ng-repeat="xDimMatrix in nomaConfig.dims">
 
-                            <div gatherplot class="GPLOMBrush" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{xDimMatrix}}" ydim="{{yDimMatrix}}"></div>
+                            <div gatherplot class="GPLOMBrush" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{xDimMatrix}}" ydim="{{yDimMatrix}}" dimsum="dimsum" context="context" comment="isComment"></div>
 
 
- <!-- {{yDimMatrix}}  {{xDimMatrix}} -->
+                            <!-- {{yDimMatrix}}  {{xDimMatrix}} -->
 
                         </div>
 
@@ -137,7 +137,7 @@
                 (i[r].q = i[r].q || []).push(arguments)
             }, i[r].l = 1 * new Date();
             a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
+                m = s.getElementsByTagName(o)[0];
             a.async = 1;
             a.src = g;
             m.parentNode.insertBefore(a, m)
@@ -149,7 +149,17 @@
 
     </div>
     <script src="./assets/app.js"></script>
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/0.9.1/angularfire.min.js"></script>
     <script src="./scripts/directives/d3Basic.js"></script>
+    <script src="scripts/angularfire/config.js"></script>
+    <script src="scripts/angularfire/firebase.utils.js"></script>
+    <script src="scripts/angularfire/simpleLogin.js"></script>
+    <script src="scripts/directives/ngShowAuth.js"></script>
+    <script src="scripts/directives/ngHideAuth.js"></script>
+    <script src="scripts/services/chart.js"></script>
 
 </body>
 

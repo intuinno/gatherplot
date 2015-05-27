@@ -1,0 +1,147 @@
+<!-- <ol class="breadcrumb">
+    <li><a href="#">Home</a>
+    </li>
+    <li><a href="#/browse">Browse</a>
+    </li>
+    <li class="active">{{activeData}}</li>
+</ol> -->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-7">
+            <h5>
+                    <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
+                        <div class="btn-group">
+
+                                <button type="button" class="btn btn-default active" ng-model="nomaConfig.isGather" btn-radio="'scatter'">Scatter</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'jitter'">Jitter</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'">Gather</button>
+
+                        </div>
+                    </div>
+                        <alert class="chart-instruction" ng-show="isPlotSelectFocused" close="isPlotSelectFocused=false">
+                            Try these buttons.</alert>
+
+                    <div class="btn-group" ng-show="isScatter">
+
+                                <button type="button" class="btn btn-default active" ng-model="nomaConfig.lens" btn-radio="'noLens'">No Lens</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'rectLens'">Rect Lens</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'histLens'">Histogram Lens</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'pieLens'"> Pie Lens</button>
+
+                    </div>
+            </h5>
+
+            <h4 class="chart-title">{{activeData}}</h4>
+
+            <div ng-hide="percentComplete == 0 || percentComplete == 100"><progressbar class="progress-striped" value="percentComplete" max='100' type="warning">Download {{percentComplete}}%</progressbar></div>
+        
+
+            <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" dimsum="dimsum" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}" context="context" comment="isComment"></div>
+
+            <div ng-show="isCommentShowing" class="chart-title">
+                <h4>{{loadedCommentText}}</h4>
+            </div>
+
+
+
+            <div class="chart-simple-interface">
+                Show me
+
+                <select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
+
+                    <option value="">-- undefined --</option>
+
+                </select>&nbsp;vs&nbsp;.
+
+                <select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
+
+                    <option value="">-- undefined --</option>
+
+                </select>
+
+                </br>
+                </br>
+                Mark nodes with color according to
+
+                <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
+
+                    <option value="">-- undefined --</option>
+
+                </select>
+
+                <br>
+
+                <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.
+
+                <br>
+
+                <a class="btn btn-default btn-link" ng-click="launchSession(openNewWindow)" title="Open a linked window" id="toolbarSession"><i class="fa fa-external-link"></i> Link</a>
+
+                <a class="btn btn-default btn-link" ng-click="launchSession(openNewQR)" title="Open a QR code for linked window" id="toolbarSession"><i class="fa fa-qrcode"></i> QR code</a>
+
+                <a class="btn btn-default btn-link" ng-click="launchSession(openNewInspector)" title="Open an Inspector to examine selected value" id="toolbarInspector"><i class="fa fa-table"></i> Inspector</a>
+
+                <a class="btn btn-default btn-link" ng-click="launchSession(openNewMatrix)" title="Open a Gatherplot Matrix" id="toolbarMatrix"><i class="fa fa-th"></i> Matrix</a>
+
+
+            </div>
+
+
+
+
+            <div ng-show='isQRcodeVisible'>
+                QR code for the linked window
+                <br>
+                <a href={{qrcodeURL}}>{{qrcodeURL}}</a>
+                <br>
+                <qrcode version="7" error-correction-level="M" size="210" data={{qrcodeURL}} href={{qrcodeURL}}></qrcode>
+            </div>
+
+
+
+            <div> Data submitted by {{uploader}} </div>
+
+        </div>
+
+
+        <div class="col-md-5">
+
+            <div class="cmt-form">
+                <div ng-hide="signedIn">
+                    <p><a href="#/login">Sign in</a> to post a comment</p>
+                </div>
+
+                <form ng-show="signedIn" ng-submit="addComment()">
+                    <textarea ng-model="commentText" placeholder="Post a Comment" class="form-control"></textarea>
+                    <br />
+                    <input type="submit" value="Post Comment" class="btn btn-primary" />
+                </form>
+            </div>
+
+            <div class="commentList">
+
+                <div ng-repeat="comment in comments" class="row cmt">
+                    <div>
+                        <a ng-click="loadComment( comment )">
+                            <p>{{ comment.text }}</p>
+                        </a>
+                        <p class="author">posted by
+                            <a ng-href="#/users/{{ comment.creatorUID }}">
+                            {{ comment.creator }}
+                        </a>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatherplot</title>
+    <meta name="description" content="nomarect">
+    <link rel="stylesheet" type="text/css" href="./assets/app.css">
+</head>
+
+<body data-ng-app="myApp">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="glyphicon glyphicon-bar"></span>
+                        <span class="glyphicon glyphicon-bar"></span>
+                        <span class="glyphicon glyphicon-bar"></span>
+                    </button><a class="navbar-brand" href="#">Gatherplot Matrices</a>
+                </div>
+
+                <div class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/index.html">Home</a>
+                        </li>
+                        <li><a href="#about">About</a>
+                        </li>
+                        <li><a href="#about">Help</a>
+                        </li>
+                        <li><a href="#contact">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.navbar-collapse -->
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid" ng-controller="gplomCtrl">
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <h5>
+                        <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
+                            <div class="btn-group">
+
+                                <button type="button" class="btn btn-default active" ng-model="nomaConfig.isGather" btn-radio="'scatter'" ng-change="changeGPLOM()">Scatter</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'jitter'" ng-change="changeGPLOM()">Jitter</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'" ng-change="changeGPLOM()">Gather</button>
+
+                            </div>
+                            <div class="btn-group">
+                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'absolute'" ng-change="changeGPLOM()">Abs</label>
+                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'relative'" ng-change="changeGPLOM()">Rel</label>
+                            </div>
+
+                            color according to
+
+                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims" ng-change="changeGPLOM()">
+
+                                <option value="">-- undefined --</option>
+
+                            </select>
+                            <!-- 
+                            <input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value='absolute'>
+ -->
+
+                        </div>
+                        <alert class="chart-instruction" ng-show="isPlotSelectFocused" close="isPlotSelectFocused=false">
+                            Try these buttons.</alert>
+
+                    </h5>
+
+                    <h4 class="chart-title">{{activeData}}</h4>
+                    <div>
+                        <alert ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">{{alert.msg}}</alert>
+                    </div>
+                    <!-- <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)"></div>
+ -->
+
+                    <!-- Matrix -->
+
+                    <div ng-repeat="yDimMatrix in nomaConfig.dims" class="matrixGroup">
+
+                        <div class="matrixRow" ng-repeat="xDimMatrix in nomaConfig.dims">
+
+                            <div gatherplot class="GPLOMBrush" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{xDimMatrix}}" ydim="{{yDimMatrix}}" dimsum="dimsum" context="context" comment="isComment"></div>
+
+
+                            <!-- {{yDimMatrix}}  {{xDimMatrix}} -->
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+            <!--/span-->
+
+            <!--/span-->
+        </div>
+        <!--/row-->
+        <hr>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'gatherplot'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+        </script>
+
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+        <!-- <footer>
+            <p>© <a href="http://www.intuinno.com" > Intuinno</a> at PivotLab in Purdue University 2013</p>
+        </footer> -->
+
+        <script>
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-35545255-2', 'gatherplot.org');
+        ga('send', 'pageview');
+        </script>
+
+    </div>
+    <script src="./assets/app.js"></script>
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/0.9.1/angularfire.min.js"></script>
+    <script src="./scripts/directives/d3Basic.js"></script>
+    <script src="scripts/angularfire/config.js"></script>
+    <script src="scripts/angularfire/firebase.utils.js"></script>
+    <script src="scripts/angularfire/simpleLogin.js"></script>
+    <script src="scripts/directives/ngShowAuth.js"></script>
+    <script src="scripts/directives/ngHideAuth.js"></script>
+    <script src="scripts/services/chart.js"></script>
+
+</body>
+
+</html>

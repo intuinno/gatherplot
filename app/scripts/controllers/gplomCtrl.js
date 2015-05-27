@@ -29,6 +29,13 @@
                 $scope.alerts = [];
                 $scope.isPlotSelectFocused = false;
                 $scope.nomaConfig.isInteractiveAxis = true;
+                $scope.context = {};
+                $scope.context.translate = [0, 0];
+                $scope.context.scale = 1;
+                $scope.dimsumData = {};
+                $scope.dimsum = {};
+                $scope.dimsum.dummy = 1;
+                $scope.dimsum.selectionSpace = [-1];
 
                 $scope.addAlert = function(messageType, messageContent) {
                     $scope.alerts.push({

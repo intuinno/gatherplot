@@ -9,7 +9,14 @@
             'ngRoute',
             'firebase',
             'firebase.utils',
-            'simpleLogin'
+            'simpleLogin',
+            'ui.grid',
+            'ui.grid.resizeColumns',
+            'ui.grid.pinning',
+            'ui.grid.pagination',
+            'ui.grid.exporter',
+            'ui.grid.selection',
+            'monospaced.qrcode'
         ]).config(['$routeProvider', 'SECURED_ROUTES',
             function($routeProvider, SECURED_ROUTES) {
 
@@ -61,6 +68,16 @@
                         controller: 'LoadCtrl',
                         reloadOnSearch: false
                     })
+                    .when('/inspect/:csvKey/:comment?', {
+                        templateUrl: '../templates/partials/inspect.html',
+                        controller: 'InspectCtrl',
+                        reloadOnSearch: false
+                    })
+                    .when('/matrix/:csvKey', {
+                        templateUrl: '../templates/partials/index_matrix.html',
+                        controller: 'MatrixCtrl',
+                        reloadOnSearch: false
+                    })
                     .whenAuthenticated('/upload', {
                         templateUrl: '../templates/partials/index_upload.html',
                         controller: 'UploadCtrl'
@@ -82,7 +99,7 @@
 
                 $rootScope.$on('$routeChangeError', function(e, next, prev, err) {
                     // if (angular.isObject(err) && err.authRequired) {
-                        if (err === 'AUTH_REQUIRED') { 
+                    if (err === 'AUTH_REQUIRED') {
                         $location.path(loginRedirectPath);
                     }
                 });
@@ -104,7 +121,7 @@
 
     // setup dependency injection
     angular.module('myApp.controllers', []);
-    angular.module('myApp.directives', ['ui.bootstrap', 'ui.sortable']);
+    angular.module('myApp.directives', ['ui.bootstrap']);
 
     angular.module('myApp.services', ['firebase', 'firebase.utils', 'firebase.config']);
 

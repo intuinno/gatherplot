@@ -1,0 +1,20 @@
+<div class="container posts-page">
+  <div class="post row" ng-repeat="chart in charts">
+    <div class="col-xs-1 col-md-1">
+    </div>
+    <div class="col-md-9 col-xs-11">
+
+      <div class="info">
+        <a ng-href="#/load/{{ chart.$id }}">
+          {{ chart.name }}
+          
+        </a>
+      </div>
+      <div>
+        <span>submitted by <a ng-href="#/users/{{ chart.uploader }}">{{ chart.uploaderName }}</a></span>
+        &mdash;
+        <a ng-click="deleteChart(chart)" ng-show="user.uid === chart.uploader"> <i class="fa fa-times">delete </i></a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -28,7 +28,7 @@
                         var zoom;
 
 
-                        var maxDotSize = 5;
+                        var maxDotSize = 4;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
@@ -87,6 +87,7 @@
 
                         var brush = d3.svg.brush();
                         var shiftKey;
+                        // dimsum = {};
 
 
                         var initializeSVG = function() {
@@ -102,11 +103,13 @@
 
                             // .value("title");
 
-                            labelDiv = d3.select(iElement[0])
-                                .append("div")
-                                .attr("class", "btn-group")
-                                .html('<a class="btn btn-default" title="Pan and Zoom" id="toolbarPanZoom"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" title="Select" id="toolbarSelect"><i class="fa fa-square-o"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+                            if (!scope.config.matrixMode) {
 
+                                labelDiv = d3.select(iElement[0])
+                                    .append("div")
+                                    .attr("class", "btn-group")
+                                    .html('<a class="btn btn-default" title="Pan and Zoom" id="toolbarPanZoom"><i class="fa fa-search-plus"></i></a><a class="btn btn-default" title="Select" id="toolbarSelect"><i class="fa fa-square-o"></i></a><a class="btn btn-default" title="Reset" id="toolbarReset"><i class="fa fa-undo"></i></a>');
+                            }
                             svg = d3.select(iElement[0])
                                 .append("svg:svg");
 
@@ -241,6 +244,8 @@
                                 return d.selected;
                             });
 
+                            scope.dimsum.source = "gatherplot";
+
                         };
 
 
@@ -306,14 +311,14 @@
                                             .style("opacity", 0.9);
 
 
-                                        tooltip.html(d.commentTitle + "<br/>" + scope.xdim + ":" + xOriginalValue(d) + "<br/> " + scope.ydim + ":" + yOriginalValue(d) + "</br>" + scope.config.colorDim + ":" + colorOriginalValue(d) + "</br>" + d.commentBody + "</br>" + '<a href="' + d.articleURL + '" target="_blank">Click to See Article</a>')
+                                        tooltip.html(scope.xdim + ":" + xOriginalValue(d) + "<br/>" + scope.ydim + ":" + yOriginalValue(d) + "<br/>" + scope.config.colorDim + ":" + colorOriginalValue(d) + "")
                                             .style("left", (d3.event.pageX + 5) + "px")
                                             .style("top", (d3.event.pageY - 28) + "px");
                                     })
                                     .on("mouseout", function(d) {
-                                        // tooltip.transition()
-                                        //     .duration(500)
-                                        //     .style("opacity", 0);
+                                        tooltip.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
                                     })
                                     .on("mousedown", function(d) {
                                         if (d3.event.shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
@@ -415,11 +420,11 @@
                             });
 
                             var encodingBinScale = d3.scale.linear()
-                                .range([0, numBin - 1])
+                                .range([0, numBin-1])
                                 .domain([minValue, maxValue]);
 
                             var decodingBinScale = d3.scale.linear()
-                                .domain([0, numBin - 1])
+                                .domain([0, numBin-1])
                                 .range([minValue, maxValue]);
 
                             var binKeys = d3.range(0, numBin, 1);
@@ -1171,6 +1176,7 @@
 
                             redrawLensPie(lensInfo);
 
+
                         };
 
                         var dragmoveCircle = function() {
@@ -1190,7 +1196,12 @@
                             clearLens();
 
                             var drag = d3.behavior.drag()
-                                .on("drag", dragmoveRectLens);
+                                .on("drag", dragmoveRectLens)
+                                .on("dragstart", function() {
+                                    d3.event.sourceEvent.stopPropagation(); // silence other listeners
+                                });
+
+
 
                             nodeGroup.append("rect")
                                 .attr("class", "lens")
@@ -1208,7 +1219,10 @@
                             clearLens();
 
                             var drag = d3.behavior.drag()
-                                .on("drag", dragmoveHistLens);
+                                .on("drag", dragmoveHistLens)
+                                .on("dragstart", function() {
+                                    d3.event.sourceEvent.stopPropagation(); // silence other listeners
+                                });
 
                             nodeGroup.append("rect")
                                 .attr("class", "lens")
@@ -1227,7 +1241,10 @@
                             clearLens();
 
                             var drag = d3.behavior.drag()
-                                .on("drag", dragmovePieLens);
+                                .on("drag", dragmovePieLens)
+                                .on("dragstart", function() {
+                                    d3.event.sourceEvent.stopPropagation(); // silence other listeners
+                                });
 
                             nodeGroup.append("rect")
                                 .attr("class", "lens")
@@ -1298,7 +1315,7 @@
                             } else {
                                 outerWidth = d3.select(".matrixGroup").node().offsetWidth;
 
-                                outerWidth = outerWidth / (scope.config.dims.length) - 10;
+                                outerWidth = outerWidth / (scope.config.dims.length) - 2;
 
                             }
                             // calculate the height
@@ -1516,15 +1533,20 @@
                                     var xRange = range.xRange;
                                     var yRange = range.yRange;
 
-                                    var typeOfXYDim = findTypeOfXYDim();
 
-                                    if (typeOfXYDim === 'XNomYOrd') {
+                                    if (scope.config.isGather === 'gather') {
 
-                                        var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+                                        var typeOfXYDim = findTypeOfXYDim();
 
-                                    } else if (typeOfXYDim === 'XOrdYNom') {
+                                        if (typeOfXYDim === 'XNomYOrd') {
 
-                                        var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+                                            var yRange = getExtentFromCalculatedPointsForBinnedGather(scope.ydim);
+
+                                        } else if (typeOfXYDim === 'XOrdYNom') {
+
+                                            var xRange = getExtentFromCalculatedPointsForBinnedGather(scope.xdim);
+
+                                        }
 
                                     }
 
@@ -2236,14 +2258,50 @@
 
                             var maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
 
-                            while (maxCrowdedBinCount * dotSize > norDimLength) {
+                            var loopCount = 0;
 
-                                numBin = numBin + 1;
+                            var increment = numBin;
+                            var previousIncrement = 1;
+
+                            while (true) {
+
+
+                                if ((maxCrowdedBinCount) * dotSize > norDimLength) {
+
+                                    increment = previousIncrement * 2;
+
+                                } else {
+
+                                    increment = Math.round(previousIncrement * (-0.5));
+
+                                }
+
+                                numBin = numBin + increment;
+
+                                previousIncrement = Math.abs(increment);
+
+
+                                if (Math.abs(increment) < 2) {
+
+                                    break;
+                                }
 
                                 maxCrowdedBinCount = getMaxCrowdedBinCount(ordDim, nomDim, numBin);
-
                                 dotSize = ordDimLength / numBin;
+
+                                loopCount = loopCount + 1;
                             }
+
+
+
+                            console.log(loopCount + ": NumBin = " + numBin);
+
+                            console.log(loopCount + ": increment = " + increment);
+
+
+                            console.log(loopCount + ": maxCrowdedBinCount = " + getMaxCrowdedBinCount(ordDim, nomDim, numBin));
+
+                            numBin = numBin + 1;
 
                             doBinningAndSetKeys(ordDim, numBin);
 
@@ -2271,28 +2329,18 @@
                                 });
 
                                 var data = d3.layout.histogram()
-                                    .bins(ordinalScaleForGather.ticks(binCount))
+                                    .bins(binCount)
                                     (values);
+
+                                // console.log(data.bins());
 
                                 return d3.max(data, function(d) {
                                     return +d.y;
                                 });
                             });
 
-                            return d3.max(maxValues);
+                            return d3.max(maxValues)+1;
 
-
-
-
-                            // var data = d3.layout.histogram()
-                            //     .bins(binCount)
-                            //     (values);
-
-                            // var maxCount = d3.max(data, function(d) {
-                            //     return +d.y;
-                            // });
-
-                            // return maxCount;
                         }
 
                         var findTypeOfXYDim = function() {
@@ -2793,6 +2841,7 @@
                         var getNodesSizeForAbsolute = function() {
 
                             var maxNumElementInCluster = getClusterWithMaximumPopulation();
+                            // console.log('maxNumElementInCluster = ' + maxNumElementInCluster )
                             var box = getClusterBox();
                             var size = calculateNodesSizeForAbsolute(box, maxNumElementInCluster);
 
@@ -2927,6 +2976,9 @@
                             if (isThemeRiverCondition(longEdge, shortEdge, numElement)) {
 
                                 numElement = getNumOfElementForThemeRiver(longEdge, shortEdge, cluster.length);
+                                if (numElement.numElementInShortEdge === 2) {
+                                    console.log('Hey');
+                                }
                             }
                             var nodeSize = getNodeSizeAbsoluteOrRelative(longEdge, shortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
                             var offsetForCenterPosition = calculateOffsetForCenterPosition(nodeSize.lengthInLongEdge, nodeSize.lengthInShortEdge, numElement.numElementInLongEdge, numElement.numElementInShortEdge);
@@ -2975,7 +3027,17 @@
                         var getNumOfElementForThemeRiver = function(longEdge, shortEdge, numElement) {
 
                             var numElementInShortEdge = Math.ceil(shortEdge / getNodesSizeForAbsolute());
+                            
+
+                            if (numElementInShortEdge == 2 && getNodesSizeForAbsolute() < 1) {
+
+                                numElementInShortEdge = 1;
+
+
+                            }
+
                             var numElementInLongEdge = Math.ceil(numElement / numElementInShortEdge);
+
 
                             return {
                                 numElementInShortEdge: numElementInShortEdge,
@@ -4443,7 +4505,7 @@
                                 .attr("class", "axislabel")
                                 .attr("x", width / 2)
                                 .attr("y", 56)
-                                .style("text-anchor", "end")
+                                .style("text-anchor", "middle")
                                 .text(scope.xdim);
 
                             //Setup Y axis
@@ -4451,11 +4513,25 @@
                             yAxisNodes
                                 .append("text")
                                 .attr("class", "axislabel")
-                                .attr("x", -margin + 10)
-                                .attr("y", -margin / 2 + 10)
-                                .attr("dy", ".71em")
-                                .style("text-anchor", "right")
+                                .style("text-anchor", "middle")
+                                .attr('transform', function(d, i) { // NEW
+                                    var vert = height / 2; // NEW
+                                    // var horz = -margin / 2; // NEW
+                                    var horz = -60;
+                                    return 'translate(' + horz + ',' + vert + ')rotate(-90)'; // NEW
+                                })
                                 .text(scope.ydim);
+
+
+                            // yAxisNodes
+                            //     .append("text")
+                            //     .attr("class", "axislabel")
+                            //     .text(findDisplayName(scope.ydim))
+                            //     .attr('transform', function(d, i) { // NEW
+                            //         var vert = height / 2; // NEW
+                            //         var horz = -margin / 2; // NEW
+                            //         return 'translate(' + horz + ',' + vert + ')rotate(-90)'; // NEW
+                            //     });
 
 
 

@@ -1,0 +1,43 @@
+<h1 class="text-center"> {{activeData}}  </h1>
+
+
+
+<div class="btn-group">
+
+    <label class="btn btn-default" ng-model="showAll" btn-radio=false> Selected only </label>
+    <label class="btn btn-default" ng-model="showAll" btn-radio=true> All objects </label>
+</div>
+
+<button class="btn btn-default pull-right " ng-model="filterButton" ng-click="addFilter()"> Add Filter <i class="fa fa-plus"></i>
+</button>
+
+<br/>
+<div ui-grid="gridData" class="myGrid grid" id="duckGrid" ui.grid.resizeColumns ui-grid-pinning ui-grid-pagination ui-grid-exporter ui-grid-selection ui-grid-cellNav></div>
+
+
+<script type="text/ng-template" id="addFilter.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Please select filter setting</h3>
+    </div>
+    <div class="modal-body">
+        <h4> Select column to apply filter: </h4>
+        <select ng-model="newFilter.selectedHeader">
+            <option ng-repeat="header in headers" value="{{header}}">
+                {{header}}
+            </option>
+        </select>
+
+        <br> <h4> Select filter type: </h4>
+        
+        <input type="radio" ng-model="newFilter.type" value="text"> Text filter
+        <br/>
+        <input type="radio" ng-model="newFilter.type" ng-value="number"> Range filter for numbers
+        <br/>
+        <br>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+
+</script>

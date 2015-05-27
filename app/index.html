@@ -1,6 +1,5 @@
-
-
 <!doctype html>
+
 <html>
 
 <head>
@@ -8,8 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gatherplot</title>
     <meta name="description" content="nomarect">
-    <link rel="stylesheet" type="text/css" href="./assets/app.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css" />
+    <link rel="stylesheet" href="bower_components/angular-ui-grid/ui-grid.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/gatherplot.css">
+    <!-- endbuild -->
+
 </head>
 
 <body data-ng-app="myApp">
@@ -35,52 +46,70 @@
                         </li>
                     </ul>
 
-
-                    <!-- 
-                    <form class="navbar-form navbar-left" role="search" name="CSVurlForm">
-
-                        <div class="form-group">
-
-
-                            <input class="form-control" name="csvInput" type="text" ng-model="customCSV" placeholder="Enter the url of CSV">
-                        </div>
-                        <a href="" class="btn btn-default" ng-click="changeActiveDataCustomCSV(customCSV)">Load</a>
-
-                        <alert class="error" ng-show="csvInput.$error.url">Not valid url!</alert>
-
-                    </form>
- -->
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a ng-hide-auth="" href='#/login'>log in</a>
                             <a ng-show-auth="" href="#/account">account</a>
+                        </li>
+                    </ul>
 
-
-                            <!--  <form class="navbar-form navbar-left" role="search">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search for Data">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form> -->
                 </div>
-                <!--/.navbar-collapse -->
             </div>
         </div>
 
         <div ng-view></div>
 
-        <script src="./assets/app.js"></script>
-        <!-- Firebase -->
-        <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
-        <!-- AngularFire -->
-        <script src="https://cdn.firebase.com/libs/angularfire/0.9.1/angularfire.min.js"></script>
-        <script src="./scripts/directives/d3Basic.js"></script>
+        <!-- build:js(.) scripts/oldieshim.js -->
+        <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.js"></script>
+    <![endif]-->
+        <!-- endbuild -->
+
+        <!-- build:js(.) scripts/vendor.js -->
+        <!-- bower:js -->
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="bower_components/angular-resource/angular-resource.js"></script>
+        <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <script src="bower_components/angular-animate/angular-animate.js"></script>
+        <script src="bower_components/angular-touch/angular-touch.js"></script>
+        <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="bower_components/firebase/firebase.js"></script>
+        <script src="bower_components/angularfire/dist/angularfire.js"></script>
+        <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+        <script src="bower_components/d3/d3.js"></script>
+        <script src="bower_components/angular-utils-pagination/dirPagination.js"></script>
+        <script src="bower_components/angular-ui-select/dist/select.js"></script>
+        <script src="bower_components/topojson/topojson.js"></script>
+        <script src="bower_components/d3-tip/index.js"></script>
+        <script src="bower_components/crossfilter/crossfilter.js"></script>
+        <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
+        <script src="bower_components/qrcode-generator/js/qrcode.js"></script>
+        <script src="bower_components/angular-qrcode/qrcode.js"></script>
+        <!-- endbower -->
+        <!-- endbuild -->
+
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/app.js"></script>
+        <script src="scripts/controllers/uploadCtrl.js"></script>
         <script src="scripts/angularfire/config.js"></script>
         <script src="scripts/angularfire/firebase.utils.js"></script>
         <script src="scripts/angularfire/simpleLogin.js"></script>
-        <script src="scripts/directives/ngShowAuth.js"></script>
+        <script src="scripts/controllers/account.js"></script>
+        <script src="scripts/controllers/browseCtrl.js"></script>
+        <script src="scripts/directives/d3Basic.js"></script>
         <script src="scripts/directives/ngHideAuth.js"></script>
+        <script src="scripts/directives/ngShowAuth.js"></script>
+        <script src="scripts/controllers/login.js"></script>
+        <script src="scripts/controllers/demoCtrl.js"></script>
+        <script src="scripts/controllers/loadCtrl.js"></script>
         <script src="scripts/services/chart.js"></script>
+        <script src="scripts/controllers/inspect.js"></script>
+        <script src="scripts/controllers/addfiltermodal.js"></script>
+        <!-- endbuild -->
 
 </body>
 

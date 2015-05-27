@@ -1,0 +1,96 @@
+<!doctype html>
+<html data-ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatherplot</title>
+    <meta name="description" content="nomarect">
+    <link rel="stylesheet" type="text/css" href="./assets/app.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- <div ng-controller="ShowCtrl"> -->
+
+    <h5>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
+					<div class="btn-group">
+
+						<button type="button" class="btn btn-default active" ng-model="nomaConfig.isGather" btn-radio="'scatter'">Scatter</button>
+
+						<button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'jitter'">Jitter</button>
+
+						<button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'">Gather</button>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="btn-group" ng-show="isScatter">
+
+					<button type="button" class="btn btn-default active" ng-model="nomaConfig.lens" btn-radio="'noLens'">No Lens</button>
+
+					<button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'rectLens'">Rect Lens</button>
+
+					<button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'histLens'">Histogram Lens</button>
+
+					<button type="button" class="btn btn-default" ng-model="nomaConfig.lens" btn-radio="'pieLens'"> Pie Lens</button>
+
+				</div>
+			</div>
+		</h5>
+
+    <div gatherplot data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{nomaConfig.xDim}}" ydim="{{nomaConfig.yDim}}"></div>
+
+
+
+
+    <div class="chart-simple-interface">
+        <h5>Show me
+
+				<select ng-model="nomaConfig.xDim" ng-options="f for f in nomaConfig.dims">
+
+					<option value="">-- undefined --</option>
+
+				</select>&nbsp;vs&nbsp;.
+
+				<select ng-model="nomaConfig.yDim" ng-options="f for f in nomaConfig.dims">
+
+					<option value="">-- undefined --</option>
+
+				</select>
+
+			</br>
+		</br>
+		Mark nodes with color according to
+
+		<select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims">
+
+			<option value="">-- undefined --</option>
+
+		</select>
+	</h5>
+
+
+        <div ng-class="{tryMe: isRelativeSelectFocused}">
+            <h6>
+			<input type='checkbox' ng-model="nomaConfig.relativeMode" ng-trueValue="relative" ng-false-value="'absolute'">Check this to make it easy to compare groups of different sizes.</h6>
+
+        </div>
+        <alert class="chart-instruction" ng-show="isRelativeSelectFocused" close="isRelativeSelectFocused=false">
+            Try this check button.</alert>
+
+
+    </div>
+
+    <script src="./assets/app.js"></script>
+    <script src="./scripts/directives/d3Basic.js"></script>
+</body>
+
+</html>

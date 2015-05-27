@@ -1,0 +1,60 @@
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <h5>
+                        <div ng-class="{tryMe: isPlotSelectFocused}" focus-me="isPlotSelectFocused" popover="Try me!" popover-trigger="focus" popover-placement="right">
+                            <div class="btn-group">
+
+                                <button type="button" class="btn btn-default active" ng-model="nomaConfig.isGather" btn-radio="'scatter'" ng-change="changeGPLOM()">Scatter</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'jitter'" ng-change="changeGPLOM()">Jitter</button>
+
+                                <button type="button" class="btn btn-default" ng-model="nomaConfig.isGather" btn-radio="'gather'" ng-change="changeGPLOM()">Gather</button>
+
+                            </div>
+                            <div class="btn-group">
+                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'absolute'" ng-change="changeGPLOM()">Abs</label>
+                                <label class="btn btn-default" ng-model="nomaConfig.relativeMode" btn-radio="'relative'" ng-change="changeGPLOM()">Rel</label>
+                            </div>
+
+                            color according to
+
+                            <select ng-model="nomaConfig.colorDim" ng-options="f for f in nomaConfig.dims" ng-change="changeGPLOM()">
+
+                                <option value="">-- undefined --</option>
+
+                            </select>
+                            
+
+                        </div>
+                       
+                    </h5>
+
+                    <h4 class="chart-title">{{activeData}}</h4>
+
+                    <div ng-repeat="yDimMatrix in nomaConfig.dims" class="matrixGroup">
+
+                        <div class="matrixRow" ng-repeat="xDimMatrix in nomaConfig.dims">
+
+                            <div gatherplot class="GPLOMBrush" data="nomaData" config="nomaConfig" border="nomaBorder" round="nomaRound" shaperenderingmode="nomaShapeRendering" on-click="d3OnClick(item)" xdim="{{xDimMatrix}}" ydim="{{yDimMatrix}}" dimsum="dimsum" context="context" comment="isComment"></div>
+
+
+                            <!-- {{yDimMatrix}}  {{xDimMatrix}} -->
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+            <!--/span-->
+
+            <!--/span-->
+        </div>
+
+    </div>
+

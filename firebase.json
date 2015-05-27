@@ -1,6 +1,6 @@
 {
-  "firebase": "gatherplot-dev",
-  "public": "app",
+  "firebase": "habit3",
+  "public": "dist",
   "ignore": [
     "firebase.json",
     "**/.*",
