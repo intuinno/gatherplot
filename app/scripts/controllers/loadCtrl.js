@@ -201,15 +201,6 @@
 
                 };
 
-                $scope.openNewQR = function(sessionID) {
-
-                    var url = $location.absUrl();
-
-                    $scope.qrcodeURL = url;
-                    $scope.isQRcodeVisible = true;
-
-                };
-
                 function createSession() {
 
                     return $q(function(resolve, reject) {

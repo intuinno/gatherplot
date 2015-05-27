@@ -1,5 +1,5 @@
 {
-  "firebase": "gatherplot",
+  "firebase": "habit3",
   "public": "dist",
   "ignore": [
     "firebase.json",
