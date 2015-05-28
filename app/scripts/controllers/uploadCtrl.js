@@ -34,6 +34,12 @@
                     //     console.log("Error:", error);
                     // });
 
+                    console.log(customCSV);
+
+                    customCSV = customCSV.replace(/https:\/\/www.dropbox.com/i, "https://dl.dropboxusercontent.com")
+
+                    console.log(customCSV);
+                    
                     var newChart = {
 
                         url: customCSV,

@@ -28,7 +28,7 @@
                         var zoom;
 
 
-                        var maxDotSize = 4;
+                        var maxDotSize = 5;
 
                         if (scope.config.matrixMode === true) {
                             margin = 5;
@@ -465,7 +465,7 @@
 
                             if (dimSetting[dim].dimType === 'semiOrdinal') {
 
-                                keyValue.sort();
+                                keyValue.sort(function(a,b) {return +a-b;});
                             }
 
                             dimSetting[dim].keyValue = initializeKeyValueObject(keyValue);
@@ -517,7 +517,7 @@
 
                         var isSemiOrdinalDim = function(dim) {
 
-                            if (getRawNumberOfKeys(dim) < 10) {
+                            if (getRawNumberOfKeys(dim) < 20) {
                                 return true;
                             } else {
                                 return false;
