@@ -1,14 +1,11 @@
 <!doctype html>
-
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gatherplot</title>
     <meta name="description" content="nomarect">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
@@ -20,11 +17,9 @@
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/gatherplot.css">
     <!-- endbuild -->
-
 </head>
 
 <body data-ng-app="myApp">
-
     <div>
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
@@ -36,36 +31,29 @@
                         <span class="icon-bar"></span>
                     </button><a class="navbar-brand" ng-href="#/">Gatherplot</a>
                 </div>
-
                 <div class="navbar-collapse" ng-class="{collapse: isCollapsed}">
-
                     <ul class="nav navbar-nav">
                         <li><a href="#upload">Load new data</a>
                         </li>
                         <li><a href="#browse">Browse data</a>
                         </li>
                     </ul>
-
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a ng-hide-auth="" href='#/login'>log in</a>
                             <a ng-show-auth="" href="#/account">account</a>
                         </li>
                     </ul>
-
                 </div>
             </div>
         </div>
-
         <div ng-view></div>
-
         <!-- build:js(.) scripts/oldieshim.js -->
         <!--[if lt IE 9]>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/json3/lib/json3.js"></script>
     <![endif]-->
         <!-- endbuild -->
-
         <!-- build:js(.) scripts/vendor.js -->
         <!-- bower:js -->
         <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -91,7 +79,6 @@
         <script src="bower_components/angular-qrcode/qrcode.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
-
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/uploadCtrl.js"></script>
@@ -100,7 +87,7 @@
         <script src="scripts/angularfire/simpleLogin.js"></script>
         <script src="scripts/controllers/account.js"></script>
         <script src="scripts/controllers/browseCtrl.js"></script>
-        <script src="scripts/directives/d3Basic.js"></script>
+        <script src="scripts/directives/gatherplot.js"></script>
         <script src="scripts/directives/ngHideAuth.js"></script>
         <script src="scripts/directives/ngShowAuth.js"></script>
         <script src="scripts/controllers/login.js"></script>
@@ -110,7 +97,6 @@
         <script src="scripts/controllers/inspect.js"></script>
         <script src="scripts/controllers/addfiltermodal.js"></script>
         <!-- endbuild -->
-
 </body>
 
 </html>
