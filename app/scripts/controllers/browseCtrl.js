@@ -7,6 +7,8 @@
              
                 $scope.charts = Chart.all;
 
+                console.log('Hey, browser', $scope.charts)
+
                 $scope.user = simpleLogin.user;
 
                 $scope.deleteChart = function(chart) {
