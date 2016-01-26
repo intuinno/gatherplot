@@ -1,22 +1,17 @@
 <!doctype html>
-
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gatherplot</title>
     <meta name="description" content="nomarect">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <link rel="stylesheet" href="styles/vendor.6d0dd750.css">
     <link rel="stylesheet" href="styles/main.7aff9000.css">
-
 </head>
 
 <body data-ng-app="myApp">
-
     <div>
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
@@ -28,37 +23,28 @@
                         <span class="icon-bar"></span>
                     </button><a class="navbar-brand" ng-href="#/">Gatherplot</a>
                 </div>
-
                 <div class="navbar-collapse" ng-class="{collapse: isCollapsed}">
-
                     <ul class="nav navbar-nav">
                         <li><a href="#upload">Load new data</a>
                         </li>
                         <li><a href="#browse">Browse data</a>
                         </li>
                     </ul>
-
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a ng-hide-auth="" href='#/login'>log in</a>
                             <a ng-show-auth="" href="#/account">account</a>
                         </li>
                     </ul>
-
                 </div>
             </div>
         </div>
-
         <div ng-view></div>
-
         <!--[if lt IE 9]>
         <script src="scripts/oldieshim.572be7b4.js"></script>
         <![endif]-->
-
         <script src="scripts/vendor.052329c0.js"></script>
-
-        <script src="scripts/scripts.3d4ed6e0.js"></script>
-
+        <script src="scripts/scripts.59117b53.js"></script>
 </body>
 
 </html>
