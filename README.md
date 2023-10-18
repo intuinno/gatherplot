@@ -29,6 +29,6 @@ You can see the demo of this version [HERE][2]!
 
 
   [1]: http://gatherplot.herokuapp.com
-  [2]: http://www.gatherplot.org 
+  [2]: https://gatherplot.firebaseapp.com/#/ 
   
   
